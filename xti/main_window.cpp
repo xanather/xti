@@ -5,6 +5,9 @@
 
 // 1. Qt framework headers
 #include <QScreen>
+#include <QPalette>
+#include <QBrush>
+#include <QColor>
 // 2. System/OS headers
 // 3. C++ standard library headers
 // 4. Project classes
@@ -21,6 +24,11 @@ main_window::main_window(QWidget *parent)
     }
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
+
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(0, 0, 0));
+    setPalette(palette);
+
     setGeometry(0, screen->geometry().height() / 2 - 100, screen->geometry().width(), 200);
 }
 
