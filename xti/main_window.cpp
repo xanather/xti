@@ -20,7 +20,7 @@ main_window::main_window(QWidget *parent)
         throw std::runtime_error("main_window::main_window (1)");
     }
 
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
     setGeometry(0, screen->geometry().height() / 2 - 100, screen->geometry().width(), 200);
 }
 
