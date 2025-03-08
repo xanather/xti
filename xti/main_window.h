@@ -26,5 +26,9 @@ public:
 
 private:
     Ui::main_window *ui;
+
+private slots:
+    void ui_on_control();
+    void ui_on_windows();
 };
 #endif // MAIN_WINDOW_H
