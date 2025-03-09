@@ -9,8 +9,12 @@
 #include <QBrush>
 #include <QColor>
 #include <QPushButton>
+#include <QDebug>
 // 2. System/OS headers
+#include <windows.h>
+#include <psapi.h>
 // 3. C++ standard library headers
+#include "stdint.h"
 // 4. Project classes
 
 main_window::main_window(QWidget *parent)
@@ -180,11 +184,14 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_enter);
 
     // Inserting shortcuits
+    // FORKERS: adjust comboBox_shortcutsAbove and comboBox_shortcutsBelow contents accordingly
     ui->comboBox_shortcutsAbove->addItem("Firefox");
     ui->comboBox_shortcutsAbove->addItem("OneNote");
     ui->comboBox_shortcutsAbove->addItem("Bitwarden");
     ui->comboBox_shortcutsAbove->addItem("Yubico");
     ui->comboBox_shortcutsAbove->addItem("Spotify");
+    ui->comboBox_shortcutsAbove->addItem("Terminal");
+    ui->comboBox_shortcutsAbove->addItem("iCloud Mail");
 
     ui->comboBox_shortcutsBelow->addItem("recrypt_gateway");
     ui->comboBox_shortcutsBelow->addItem("recrypt_core");
@@ -219,6 +226,9 @@ main_window::main_window(QWidget *parent)
 
     connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
+
+    std::wstring nam = L"Firefox";
+    main_window::open_or_show_app(nam);
 }
 
 main_window::~main_window()
@@ -226,6 +236,57 @@ main_window::~main_window()
     delete ui;
 }
 
+void main_window::open_or_show_app(std::wstring& name) {
+    // FORKERS: adjust code below accordingly.
+    if (name == L"Firefox") {
+        std::vector<std::wstring> processes = get_process_list();
+        for (size_t i = 0; i < processes.size(); i++) {
+            qDebug() << processes[i];
+        }
+    }
+}
+
+std::vector<std::wstring> main_window::get_process_list() {
+    uint32_t processesArray[1024];
+    uint32_t needed;
+    int32_t errorCode;
+    std::vector<std::wstring> output;
+    errorCode = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
+    if (errorCode == 0)
+    {
+        throw std::runtime_error("Failure on EnumProcesses()");
+    }
+    uint32_t processCount = needed / sizeof(uint32_t);
+    for (size_t i = 0; i < processCount; i++)
+    {
+        if (processesArray[i] == 0) {
+            continue; // kernel
+        }
+        ::HANDLE processHandle = ::OpenProcess(PROCESS_QUERY_INFORMATION, false, processesArray[i]);
+        if (processHandle == nullptr) {
+            throw std::runtime_error("Failure on OpenProcess()");
+        }
+        ::HMODULE moduleHandle;
+        errorCode = ::EnumProcessModulesEx(processHandle, &moduleHandle, sizeof(moduleHandle), reinterpret_cast<::DWORD*>(&needed), LIST_MODULES_DEFAULT);
+        if (errorCode == 0)
+        {
+            throw std::runtime_error("Failure on EnumProcessModulesEx()");
+        }
+        wchar_t processName[MAX_PATH];
+        errorCode = ::GetModuleBaseNameW(processHandle, moduleHandle, processName, sizeof(processName) / sizeof(wchar_t));
+        if (errorCode == 0)
+        {
+            throw std::runtime_error("Failure on GetModuleBaseNameW()");
+        }
+        output.push_back(processName);
+        errorCode = ::CloseHandle(processHandle);
+        if (errorCode == 0)
+        {
+            throw std::runtime_error("Failure on CloseHandle()");
+        }
+    }
+    return output;
+}
 
 void main_window::ui_on_control() {
     QPalette palette = ui->pushButton_control->palette();

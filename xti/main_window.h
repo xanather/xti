@@ -29,6 +29,8 @@ public:
 private:
     std::vector<QPushButton*> m_buttonList;
     Ui::main_window *ui;
+    void open_or_show_app(std::wstring& name);
+    std::vector<std::wstring> get_process_list();
 
 private slots:
     void ui_on_control();
