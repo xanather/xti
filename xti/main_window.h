@@ -7,8 +7,10 @@
 #include <QMainWindow>
 // 2. System/OS headers
 // 3. C++ standard library headers
+#include <vector>
 // 4. Project classes
 // 5. Forward decl
+class QPushButton;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,6 +27,7 @@ public:
     ~main_window();
 
 private:
+    std::vector<QPushButton*> m_buttonList;
     Ui::main_window *ui;
 
 private slots:
