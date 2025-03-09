@@ -4,18 +4,17 @@
 #include "./ui_main_window.h"
 
 // 1. Qt framework headers
+#include <QApplication>
+#include <QPushButton>
 #include <QScreen>
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
-#include <QPushButton>
 #include <QDebug>
 // 2. System/OS headers
-#include <windows.h>
-#include <psapi.h>
 // 3. C++ standard library headers
-#include "stdint.h"
 // 4. Project classes
+#include "windows_subsystem.h"
 
 main_window::main_window(QWidget *parent)
     : QMainWindow(parent)
@@ -227,6 +226,8 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
 
+    //windows_subsystem::apply_system_super_admin_privilege();
+
     std::wstring nam = L"Firefox";
     main_window::open_or_show_app(nam);
 }
@@ -239,53 +240,12 @@ main_window::~main_window()
 void main_window::open_or_show_app(std::wstring& name) {
     // FORKERS: adjust code below accordingly.
     if (name == L"Firefox") {
-        std::vector<std::wstring> processes = get_process_list();
+        std::vector<std::wstring> processes = windows_subsystem::get_all_process_names();
         for (size_t i = 0; i < processes.size(); i++) {
             qDebug() << processes[i];
         }
+        qDebug() << processes.size();
     }
-}
-
-std::vector<std::wstring> main_window::get_process_list() {
-    uint32_t processesArray[1024];
-    uint32_t needed;
-    int32_t errorCode;
-    std::vector<std::wstring> output;
-    errorCode = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
-    if (errorCode == 0)
-    {
-        throw std::runtime_error("Failure on EnumProcesses()");
-    }
-    uint32_t processCount = needed / sizeof(uint32_t);
-    for (size_t i = 0; i < processCount; i++)
-    {
-        if (processesArray[i] == 0) {
-            continue; // kernel
-        }
-        ::HANDLE processHandle = ::OpenProcess(PROCESS_QUERY_INFORMATION, false, processesArray[i]);
-        if (processHandle == nullptr) {
-            throw std::runtime_error("Failure on OpenProcess()");
-        }
-        ::HMODULE moduleHandle;
-        errorCode = ::EnumProcessModulesEx(processHandle, &moduleHandle, sizeof(moduleHandle), reinterpret_cast<::DWORD*>(&needed), LIST_MODULES_DEFAULT);
-        if (errorCode == 0)
-        {
-            throw std::runtime_error("Failure on EnumProcessModulesEx()");
-        }
-        wchar_t processName[MAX_PATH];
-        errorCode = ::GetModuleBaseNameW(processHandle, moduleHandle, processName, sizeof(processName) / sizeof(wchar_t));
-        if (errorCode == 0)
-        {
-            throw std::runtime_error("Failure on GetModuleBaseNameW()");
-        }
-        output.push_back(processName);
-        errorCode = ::CloseHandle(processHandle);
-        if (errorCode == 0)
-        {
-            throw std::runtime_error("Failure on CloseHandle()");
-        }
-    }
-    return output;
 }
 
 void main_window::ui_on_control() {

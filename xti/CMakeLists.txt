@@ -11,6 +11,8 @@ set(PROJECT_SOURCES
         main_window.cpp
         main_window.h
         main_window.ui
+        windows_subsystem.h
+        windows_subsystem.cpp
 )
 set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/recrypt.rc")
 qt_add_executable(xti
