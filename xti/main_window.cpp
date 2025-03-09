@@ -8,6 +8,7 @@
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
+#include <QPushButton>
 // 2. System/OS headers
 // 3. C++ standard library headers
 // 4. Project classes
@@ -45,7 +46,7 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_f10);
     m_buttonList.push_back(ui->pushButton_f11);
     m_buttonList.push_back(ui->pushButton_f12);
-    m_buttonList.push_back(ui->pushButton_delete);
+    m_buttonList.push_back(ui->pushButton_backspace);
     m_buttonList.push_back(ui->pushButton_tilde);
     m_buttonList.push_back(ui->pushButton_exclamationMark);
     m_buttonList.push_back(ui->pushButton_at);
@@ -87,6 +88,7 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_I);
     m_buttonList.push_back(ui->pushButton_O);
     m_buttonList.push_back(ui->pushButton_P);
+    m_buttonList.push_back(ui->pushButton_equals);
     m_buttonList.push_back(ui->pushButton_doubleQuote);
     m_buttonList.push_back(ui->pushButton_A);
     m_buttonList.push_back(ui->pushButton_S);
