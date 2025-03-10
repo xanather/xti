@@ -6,9 +6,7 @@
 // 1. Qt framework headers
 // 2. System/OS headers
 // 3. C++ standard library headers
-#include <vector>
 #include <string>
-#include <cstdint>
 // 4. Project classes
 // 5. Forward decl
 
@@ -16,7 +14,8 @@ class windows_subsystem
 {
 public:
     static void apply_system_super_admin_privilege();
-    static std::vector<std::wstring> get_all_process_names();
+    static bool is_process_running(const std::wstring& processName);
+    static void start_process(const std::wstring& path, const std::wstring& workingDirectory);
 };
 
 #endif // WINDOWS_SUBSYSTEM_H

@@ -183,53 +183,54 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_enter);
 
     // Inserting shortcuits
-    // FORKERS: adjust comboBox_shortcutsAbove and comboBox_shortcutsBelow contents accordingly
-    ui->comboBox_shortcutsAbove->addItem("Firefox");
-    ui->comboBox_shortcutsAbove->addItem("OneNote");
-    ui->comboBox_shortcutsAbove->addItem("Bitwarden");
-    ui->comboBox_shortcutsAbove->addItem("Yubico");
-    ui->comboBox_shortcutsAbove->addItem("Spotify");
-    ui->comboBox_shortcutsAbove->addItem("Terminal");
-    ui->comboBox_shortcutsAbove->addItem("iCloud Mail");
+    // FORKERS: adjust comboBox_shortcutsAbove and comboBox_shortcutsBelow contents
+    { // scope to modify begin
+        ui->comboBox_shortcutsAbove->addItem("Firefox");
+        ui->comboBox_shortcutsAbove->addItem("OneNote");
+        ui->comboBox_shortcutsAbove->addItem("Bitwarden");
+        ui->comboBox_shortcutsAbove->addItem("Yubico");
+        ui->comboBox_shortcutsAbove->addItem("Spotify");
+        ui->comboBox_shortcutsAbove->addItem("Terminal");
+        ui->comboBox_shortcutsAbove->addItem("iCloud Mail");
 
-    ui->comboBox_shortcutsBelow->addItem("recrypt_gateway");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_core");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_account");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_auth");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_node");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_db");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_model");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_model_admin");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_model_internal");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_admin");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_client");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_gateway");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_core");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_account");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_auth");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_node");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_db");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_model");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_model_admin");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_model_internal");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_admin");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_client");
 
-    ui->comboBox_shortcutsBelow->addItem("system_monitor");
-    ui->comboBox_shortcutsBelow->addItem("ami_gen");
-    ui->comboBox_shortcutsBelow->addItem("v_common");
-    ui->comboBox_shortcutsBelow->addItem("aws_helpers");
-    ui->comboBox_shortcutsBelow->addItem("vpc");
-    ui->comboBox_shortcutsBelow->addItem("repository");
-    ui->comboBox_shortcutsBelow->addItem("secrets");
-    ui->comboBox_shortcutsBelow->addItem("dns_records");
-    ui->comboBox_shortcutsBelow->addItem("ephemeral");
-    ui->comboBox_shortcutsBelow->addItem("recrypt_template");
-    ui->comboBox_shortcutsBelow->addItem("enrichment_center");
-    ui->comboBox_shortcutsBelow->addItem("environment_manager");
-    ui->comboBox_shortcutsBelow->addItem("viron_site");
-    ui->comboBox_shortcutsBelow->addItem("vbalance");
-    ui->comboBox_shortcutsBelow->addItem("ci_script_generator");
-    ui->comboBox_shortcutsBelow->addItem("documentation");
+        ui->comboBox_shortcutsBelow->addItem("system_monitor");
+        ui->comboBox_shortcutsBelow->addItem("ami_gen");
+        ui->comboBox_shortcutsBelow->addItem("v_common");
+        ui->comboBox_shortcutsBelow->addItem("aws_helpers");
+        ui->comboBox_shortcutsBelow->addItem("vpc");
+        ui->comboBox_shortcutsBelow->addItem("repository");
+        ui->comboBox_shortcutsBelow->addItem("secrets");
+        ui->comboBox_shortcutsBelow->addItem("dns_records");
+        ui->comboBox_shortcutsBelow->addItem("ephemeral");
+        ui->comboBox_shortcutsBelow->addItem("recrypt_template");
+        ui->comboBox_shortcutsBelow->addItem("enrichment_center");
+        ui->comboBox_shortcutsBelow->addItem("environment_manager");
+        ui->comboBox_shortcutsBelow->addItem("viron_site");
+        ui->comboBox_shortcutsBelow->addItem("vbalance");
+        ui->comboBox_shortcutsBelow->addItem("ci_script_generator");
+        ui->comboBox_shortcutsBelow->addItem("documentation");
 
-    ui->comboBox_shortcutsBelow->addItem("notepad++");
+        ui->comboBox_shortcutsBelow->addItem("notepad++");
+    }
 
     connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
 
-    //windows_subsystem::apply_system_super_admin_privilege();
+    connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
 
-    std::wstring nam = L"Firefox";
-    main_window::open_or_show_app(nam);
+    //windows_subsystem::apply_system_super_admin_privilege();
 }
 
 main_window::~main_window()
@@ -237,14 +238,15 @@ main_window::~main_window()
     delete ui;
 }
 
-void main_window::open_or_show_app(std::wstring& name) {
-    // FORKERS: adjust code below accordingly.
+// FORKERS: adjust code below handlers accordingly.
+void main_window::open_or_show_app(const std::wstring& name) {
     if (name == L"Firefox") {
-        std::vector<std::wstring> processes = windows_subsystem::get_all_process_names();
-        for (size_t i = 0; i < processes.size(); i++) {
-            qDebug() << processes[i];
+        std::wstring exeToCheck = L"firefox.exe";
+        if (windows_subsystem::is_process_running(exeToCheck)) {
+
+        } else {
+            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox");
         }
-        qDebug() << processes.size();
     }
 }
 
@@ -262,4 +264,8 @@ void main_window::ui_on_windows() {
     ui->pushButton_windows->setAutoFillBackground(true);
     ui->pushButton_windows->setPalette(palette);
     ui->pushButton_control->setPalette(QApplication::palette());
+}
+
+void main_window::ui_on_shortcuts_above_changed(int32_t index) {
+    open_or_show_app(ui->comboBox_shortcutsAbove->itemText(index).toStdWString());
 }

@@ -6,6 +6,7 @@
 // 2. System/OS headers
 #include <windows.h>
 #include <psapi.h>
+#include <shellapi.h>
 // 3. C++ standard library headers
 #include <stdexcept>
 // 4. Project classes
@@ -43,11 +44,10 @@ void windows_subsystem::apply_system_super_admin_privilege() {
     }
 }
 
-std::vector<std::wstring> windows_subsystem::get_all_process_names() {
+bool windows_subsystem::is_process_running(const std::wstring& processName) {
     uint32_t processesArray[1024];
     uint32_t needed;
     int32_t r;
-    std::vector<std::wstring> output;
     r = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
     if (r == 0)
     {
@@ -85,18 +85,28 @@ std::vector<std::wstring> windows_subsystem::get_all_process_names() {
             }
             throw std::runtime_error("Failure on EnumProcessModulesEx()");
         }
-        wchar_t processName[MAX_PATH];
-        r = ::GetModuleBaseNameW(processHandle, moduleHandle, processName, sizeof(processName) / sizeof(wchar_t));
+        wchar_t processNameRunning[MAX_PATH];
+        r = ::GetModuleBaseNameW(processHandle, moduleHandle, processNameRunning, sizeof(processNameRunning) / sizeof(wchar_t));
         if (r == 0)
         {
             throw std::runtime_error("Failure on GetModuleBaseNameW()");
         }
-        output.push_back(processName);
         r = ::CloseHandle(processHandle);
         if (r == 0)
         {
             throw std::runtime_error("Failure on CloseHandle()");
         }
+        if (processNameRunning == processName)
+        {
+            return true;
+        }
     }
-    return output;
+    return false;
+}
+
+void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory) {
+    HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_NORMAL);
+    if (instance == nullptr) {
+        throw std::runtime_error("Failure on ShellExecuteW()");
+    }
 }
