@@ -99,7 +99,7 @@ void windows_subsystem::move_window_below([[maybe_unused]] const void* window) {
 thread_local std::wstring windows_subsystem::enumWindowProcExeName;
 thread_local std::wstring windows_subsystem::enumWindowProcTitleContains;
 thread_local void* windows_subsystem::enumWindowProcHwndOut;
-int32_t windows_subsystem::enum_window_proc(void* window, [[maybe_unused]] int64_t param)
+int32_t __stdcall windows_subsystem::enum_window_proc(void* window, [[maybe_unused]] int64_t param)
 {
     uint32_t processId;
     int32_t r = ::GetWindowThreadProcessId(reinterpret_cast<HWND>(window), reinterpret_cast<::DWORD*>(&processId));

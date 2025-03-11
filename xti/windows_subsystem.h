@@ -24,7 +24,7 @@ private:
     static thread_local std::wstring enumWindowProcExeName;
     static thread_local std::wstring enumWindowProcTitleContains;
     static thread_local void* enumWindowProcHwndOut;
-    static int32_t enum_window_proc(void* window, int64_t param);
+    static int32_t __stdcall enum_window_proc(void* window, int64_t param);
     static std::wstring get_exe_name_from_process_id(uint32_t processId);
 };
 
