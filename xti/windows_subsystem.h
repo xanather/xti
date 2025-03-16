@@ -5,26 +5,48 @@
 
 // 1. Qt framework headers
 // 2. System/OS headers
+#include <Windows.h>
 // 3. C++ standard library headers
 #include <string>
 #include <cstdint>
 // 4. Project classes
 // 5. Forward decl
 
-class windows_subsystem
+class windows_subsystem // static members only
 {
+    // public apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
+    // see cpp file for more info.
 public:
     static void apply_system_super_admin_privilege();
+
+    // public start_process(): Starts a new process and positioning either above or below the xti keyboard.
+    // see cpp file for more info.
+public:
+    static void start_process(const std::wstring& path, const std::wstring& workingDirectory, bool above);
+
+    // public is_process_running(): Determines if a process is running within the system.
+    // see cpp file for more info.
+public:
     static bool is_process_running(const std::wstring& processName);
-    static void start_process(const std::wstring& path, const std::wstring& workingDirectory);
-    static void* show_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains /* empty means no requirement*/);
-    static void move_window_above(const void* windowHandle);
-    static void move_window_below(const void* windowHandle);
+
+    // public get_window(): Get a window based on specific underlying exe name and title.
+    // see cpp file for more info.
+public:
+    static HWND get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains /* empty means no requirement*/);
 private:
     static thread_local std::wstring enumWindowProcExeName;
     static thread_local std::wstring enumWindowProcTitleContains;
-    static thread_local void* enumWindowProcHwndOut;
-    static int32_t __stdcall enum_window_proc(void* window, int64_t param);
+    static thread_local HWND enumWindowProcHwndOut;
+    static int32_t __stdcall enum_window_proc(HWND window, int64_t param);
+
+    // public move_window(): moves a window either above, or below the xti keyboard.
+    // see cpp file for more info.
+public:
+    static void move_window(HWND windowHandle, bool above);
+
+    // private get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
+    // see cpp file for more info.
+private:
     static std::wstring get_exe_name_from_process_id(uint32_t processId);
 };
 

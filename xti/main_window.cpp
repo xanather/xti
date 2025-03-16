@@ -229,8 +229,9 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
 
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
+    connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
 
-    //windows_subsystem::apply_system_super_admin_privilege();
+    // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
 }
 
 main_window::~main_window()
@@ -243,9 +244,19 @@ void main_window::open_or_show_app(const std::wstring& name) {
     if (name == L"Firefox") {
         std::wstring exeToCheck = L"firefox.exe";
         if (windows_subsystem::is_process_running(exeToCheck)) {
-
+            qDebug() << "Running " << name;
         } else {
-            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox");
+            qDebug() << "Starting " << name;
+            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox", true);
+        }
+    }
+    if (name == L"notepad++") {
+        std::wstring exeToCheck = L"notepad.exe";
+        if (windows_subsystem::is_process_running(exeToCheck)) {
+            qDebug() << "Running " << name;
+        } else {
+            qDebug() << "Starting " << name;
+            windows_subsystem::start_process(L"C:\\Windows\\System32\\notepad.exe", L"C:\\Users\\Jordan", false);
         }
     }
 }
@@ -269,3 +280,8 @@ void main_window::ui_on_windows() {
 void main_window::ui_on_shortcuts_above_changed(int32_t index) {
     open_or_show_app(ui->comboBox_shortcutsAbove->itemText(index).toStdWString());
 }
+
+void main_window::ui_on_shortcuts_below_changed(int32_t index) {
+    open_or_show_app(ui->comboBox_shortcutsBelow->itemText(index).toStdWString());
+}
+

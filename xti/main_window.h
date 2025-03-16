@@ -35,5 +35,6 @@ private slots:
     void ui_on_control();
     void ui_on_windows();
     void ui_on_shortcuts_above_changed(int32_t index);
+    void ui_on_shortcuts_below_changed(int32_t index);
 };
 #endif // MAIN_WINDOW_H
