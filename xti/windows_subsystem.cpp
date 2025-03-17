@@ -57,7 +57,7 @@
     STARTUPINFOW startupInfo = {};
     startupInfo.cb = sizeof(STARTUPINFOW);
     PROCESS_INFORMATION processInfo;
-    int32_t r = ::CreateProcessW(exePath.c_str(), nullptr, nullptr, nullptr, false, 0, nullptr, workingDirectory.c_str(), &startupInfo, &processInfo);
+    int32_t r = ::CreateProcessW(exePath.c_str(), nullptr, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS, nullptr, workingDirectory.c_str(), &startupInfo, &processInfo);
     if (r == 0)
     {
         uint32_t errCode = ::GetLastError();
@@ -83,13 +83,13 @@
     {
         throw std::runtime_error("Failure on CloseHandle()");
     }
-    // Add an extra 2 seconds for application initialization
-    ::Sleep(2000);
+    // Add an extra 1 second for any other application initialization logic
+    ::Sleep(1000);
     size_t find = exePath.find_last_of('\\');
     if (find == std::wstring::npos) {
         throw std::runtime_error("exePath is not absolute");
     }
-    std::wstring exeOnly = exePath.substr(find);
+    std::wstring exeOnly = exePath.substr(find + 1);
     HWND window = get_window(exeOnly, L"");
     if (window == nullptr) {
         // Either application is reallly slow, or didnt open with an expected GUI window.
@@ -141,8 +141,10 @@
     enumWindowProcExeName = runningExe;
     enumWindowProcTitleContains = requiredTitleContains;
     enumWindowProcHwndOut = nullptr;
-    int32_t r = ::EnumDesktopWindows(nullptr, enum_window_proc, 0);
-    if (r == 0)
+    ::SetLastError(ERROR_SUCCESS);
+    ::EnumDesktopWindows(nullptr, enum_window_proc, 0); // throwing away return value here, can return 0 once enumeration stops.
+    uint32_t errCode =  ::GetLastError();
+    if (errCode != ERROR_SUCCESS)
     {
         throw std::runtime_error("Failure on EnumDesktopWindows()");
     }
