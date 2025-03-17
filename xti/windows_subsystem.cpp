@@ -50,12 +50,24 @@
     }
 }
 
+// --- move_active_window(): Moves the current active foreground window above or below the xti keyboard.
+// ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
+// ----- appDimensions: Where windows should be placed in the desktop.
+// --------------------------------------------------------------------------------------/
+/* public */ void windows_subsystem::move_active_window(bool above, const app_dimensions& appDimensions) {
+    HWND window = ::GetForegroundWindow();
+    if (window == nullptr) {
+        return;
+    }
+    move_window(window, above, appDimensions);
+}
+
 // --- start_process(): Starts a new process and positioning either above or below the xti keyboard.
 // ----- exePath: absolute file path of the executable
 // ----- workingDirectory: absolute working directory to run it under
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
-// --------------------------------------------------------------------------------------------------------------------------------/
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions) {
     HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
     if (instance == nullptr) {

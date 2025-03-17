@@ -234,7 +234,7 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_delete);
     m_buttonList.push_back(ui->pushButton_enter);
 
-    // Inserting shortcuts
+    // Inserting shortcuts.
     for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
     {
         QJsonObject obj = entry->toObject();
@@ -245,6 +245,7 @@ main_window::main_window(QWidget *parent)
         }
     }
 
+    // Hook buttons and controls.
     connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
 
@@ -252,6 +253,9 @@ main_window::main_window(QWidget *parent)
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
     connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
+
+    connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
+    connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
 }
@@ -311,3 +315,10 @@ void main_window::ui_on_shortcuts_below_reopen() {
     open_or_show_app(ui->comboBox_shortcutsBelow->currentData());
 }
 
+void main_window::ui_on_move_active_above() {
+    windows_subsystem::move_active_window(true, m_appDimensions);
+}
+
+void main_window::ui_on_move_active_below() {
+    windows_subsystem::move_active_window(false, m_appDimensions);
+}

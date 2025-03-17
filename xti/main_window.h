@@ -43,5 +43,7 @@ private slots:
     void ui_on_shortcuts_above_reopen();
     void ui_on_shortcuts_below_changed(int32_t index);
     void ui_on_shortcuts_below_reopen();
+    void ui_on_move_active_above();
+    void ui_on_move_active_below();
 };
 #endif // MAIN_WINDOW_H

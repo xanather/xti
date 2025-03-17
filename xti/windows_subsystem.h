@@ -20,6 +20,11 @@ class windows_subsystem // static members only
 public:
     static void apply_system_super_admin_privilege();
 
+    // public move_active_window(): Moves the current active foreground window above or below the xti keyboard.
+    // see cpp file for more info.
+public:
+    static void move_active_window(bool above, const app_dimensions& appDimensions);
+
     // public start_process(): Starts a new process and positioning either above or below the xti keyboard.
     // see cpp file for more info.
 public:
@@ -43,7 +48,7 @@ private:
     // public move_window(): moves a window either above, or below the xti keyboard.
     // see cpp file for more info.
 public:
-    static void move_window(HWND windowHandle, bool above, const app_dimensions& dimensions);
+    static void move_window(HWND window, bool above, const app_dimensions& dimensions);
 
     // private get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
     // see cpp file for more info.
