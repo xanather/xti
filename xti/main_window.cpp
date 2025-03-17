@@ -29,7 +29,8 @@ main_window::main_window(QWidget *parent)
     ui->setupUi(this);
 
     // Make window top-most with no border + make background black.
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    windows_subsystem::apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);

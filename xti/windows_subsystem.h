@@ -15,6 +15,11 @@
 
 class windows_subsystem // static members only
 {
+public:
+    // public apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
+    // see cpp file for more info.
+    static void apply_keyboard_window_style(HWND window);
+
     // public apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
     // see cpp file for more info.
 public:

@@ -12,6 +12,23 @@
 #include <memory>
 // 4. Project classes
 
+
+// --- apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
+// ----- window: HWND of the Qt app.
+// --------------------------------------------------------------------------------------------/
+/* public */ void windows_subsystem::apply_keyboard_window_style(HWND window) {
+    // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
+    // despite setting Qt::WindowDoesNotAcceptFocus at startup.
+    int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
+    if (r == 0) {
+        throw std::runtime_error("Failure on GetWindowLongPtr()");
+    }
+    r = ::SetWindowLongPtrW(window, GWL_EXSTYLE, r | WS_EX_NOACTIVATE | WS_EX_TOPMOST);
+    if (r == 0) {
+        throw std::runtime_error("Failure on SetWindowLongPtrW()");
+    }
+}
+
 // --- apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
 // --------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::apply_system_super_admin_privilege() {
