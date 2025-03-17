@@ -10,7 +10,13 @@
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
-#include <QDebug>
+#include <QFile>
+#include <QIODevice>
+#include <QStandardPaths>
+#include <QByteArray>
+#include <QDir>
+#include <QJsonArray>
+#include <QJsonObject>
 // 2. System/OS headers
 // 3. C++ standard library headers
 // 4. Project classes
@@ -23,15 +29,15 @@ main_window::main_window(QWidget *parent)
     ui->setupUi(this);
 
     // Make window top-most with no border + make background black.
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);
 
     // Configure xti dimensions.
-    QScreen *screen = QApplication::primaryScreen();
+    QScreen* screen = QApplication::primaryScreen();
     if (screen == nullptr) {
-        throw std::runtime_error("main_window::main_window (1)");
+        throw std::runtime_error("Missing desktop screen");
     }
     int32_t height = this->height();
     setGeometry(0, screen->availableGeometry().height() / 2 - (height / 2), screen->availableGeometry().width(), height);
@@ -39,6 +45,47 @@ main_window::main_window(QWidget *parent)
     m_appDimensions.dimensionsAboveYEnd = screen->availableGeometry().height() / 2 - (height / 2);
     m_appDimensions.dimensionsBelowYStart = m_appDimensions.dimensionsAboveYEnd + height;
     m_appDimensions.dimensionsBelowYEnd = screen->availableGeometry().height();
+
+    // Load app config. Assumes UTF-8 encoding.
+    QFile configFile(QDir::homePath() + "/xti.json");
+    if (!configFile.open(QIODevice::ReadOnly)) {
+        throw std::runtime_error("No config file found");
+    }
+    QByteArray configData = configFile.readAll();
+    configFile.close();
+    m_appConfig = QJsonDocument::fromJson(configData);
+
+    // Validate config.
+    if (!m_appConfig.isArray()) {
+        throw std::runtime_error("Bad config");
+    }
+    QJsonArray configEntries = m_appConfig.array();
+    for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
+    {
+        if (!entry->isObject())
+        {
+            throw std::runtime_error("Bad config");
+        }
+        QJsonObject obj = entry->toObject();
+        QJsonObject::iterator display = obj.find("exe");
+        QJsonObject::iterator exe = obj.find("exe");
+        QJsonObject::iterator dir = obj.find("dir");
+        QJsonObject::iterator title = obj.find("title");
+        QJsonObject::iterator above = obj.find("above");
+        if (display == obj.end() || exe == obj.end() || dir == obj.end() || title == obj.end() || above == obj.end())
+        {
+            throw std::runtime_error("Bad config");
+        }
+        if (!display->isString() || !exe->isString() || !dir->isString() || !title->isString() || !above->isBool())
+        {
+            throw std::runtime_error("Bad config");
+        }
+        std::wstring exePath = exe->toString().toStdWString();
+        size_t find = exePath.find_last_of('\\');
+        if (find == std::wstring::npos) {
+            throw std::runtime_error("Bad config");
+        }
+    }
 
     // Collecting all buttons.
     m_buttonList.push_back(ui->pushButton_escape);
@@ -187,53 +234,23 @@ main_window::main_window(QWidget *parent)
     m_buttonList.push_back(ui->pushButton_delete);
     m_buttonList.push_back(ui->pushButton_enter);
 
-    // Inserting shortcuits
-    // FORKERS: adjust comboBox_shortcutsAbove and comboBox_shortcutsBelow contents
-    { // scope to modify begin
-        ui->comboBox_shortcutsAbove->addItem("Firefox");
-        ui->comboBox_shortcutsAbove->addItem("OneNote");
-        ui->comboBox_shortcutsAbove->addItem("Bitwarden");
-        ui->comboBox_shortcutsAbove->addItem("Yubico");
-        ui->comboBox_shortcutsAbove->addItem("Spotify");
-        ui->comboBox_shortcutsAbove->addItem("Terminal");
-        ui->comboBox_shortcutsAbove->addItem("iCloud Mail");
-
-        ui->comboBox_shortcutsBelow->addItem("recrypt_gateway");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_core");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_account");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_auth");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_node");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_db");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_model");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_model_admin");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_model_internal");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_admin");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_client");
-
-        ui->comboBox_shortcutsBelow->addItem("system_monitor");
-        ui->comboBox_shortcutsBelow->addItem("ami_gen");
-        ui->comboBox_shortcutsBelow->addItem("v_common");
-        ui->comboBox_shortcutsBelow->addItem("aws_helpers");
-        ui->comboBox_shortcutsBelow->addItem("vpc");
-        ui->comboBox_shortcutsBelow->addItem("repository");
-        ui->comboBox_shortcutsBelow->addItem("secrets");
-        ui->comboBox_shortcutsBelow->addItem("dns_records");
-        ui->comboBox_shortcutsBelow->addItem("ephemeral");
-        ui->comboBox_shortcutsBelow->addItem("recrypt_template");
-        ui->comboBox_shortcutsBelow->addItem("enrichment_center");
-        ui->comboBox_shortcutsBelow->addItem("environment_manager");
-        ui->comboBox_shortcutsBelow->addItem("viron_site");
-        ui->comboBox_shortcutsBelow->addItem("vbalance");
-        ui->comboBox_shortcutsBelow->addItem("ci_script_generator");
-        ui->comboBox_shortcutsBelow->addItem("documentation");
-
-        ui->comboBox_shortcutsBelow->addItem("notepad++");
+    // Inserting shortcuts
+    for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
+    {
+        QJsonObject obj = entry->toObject();
+        if (obj.find("above")->toBool()) {
+            ui->comboBox_shortcutsAbove->addItem(obj.find("display")->toString(), obj);
+        } else {
+            ui->comboBox_shortcutsBelow->addItem(obj.find("display")->toString(), obj);
+        }
     }
 
     connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
     connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
 
+    connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
+    connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
@@ -245,24 +262,21 @@ main_window::~main_window()
 }
 
 // FORKERS: adjust code below handlers accordingly.
-void main_window::open_or_show_app(const std::wstring& name) {
-    if (name == L"Firefox") {
-        std::wstring exeToCheck = L"firefox.exe";
-        if (windows_subsystem::is_process_running(exeToCheck)) {
-            HWND window = windows_subsystem::get_window(L"firefox.exe", L"");
-            if (window != nullptr) {
-                windows_subsystem::move_window(window, false, m_appDimensions);
-            }
-        } else {
-            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox", true, m_appDimensions);
+void main_window::open_or_show_app(const QVariant& iObj) {
+    QJsonObject obj = iObj.toJsonObject();
+    std::wstring exePath = obj.find("exe")->toString().toStdWString();
+    size_t find = exePath.find_last_of('\\');
+    std::wstring exeOnly = exePath.substr(find + 1);
+    std::wstring windowTitle = obj.find("title")->toString().toStdWString();
+    bool isAbove = obj.find("above")->toBool();
+    if (windows_subsystem::is_process_running(exeOnly)) {
+        HWND window = windows_subsystem::get_window(exeOnly, windowTitle);
+        if (window != nullptr) {
+            windows_subsystem::move_window(window, isAbove, m_appDimensions);
         }
-    }
-    if (name == L"notepad++") {
-        std::wstring exeToCheck = L"notepad.exe";
-        if (windows_subsystem::is_process_running(exeToCheck)) {
-        } else {
-            windows_subsystem::start_process(L"C:\\Windows\\System32\\notepad.exe", L"C:\\Users\\Jordan", false, m_appDimensions);
-        }
+    } else {
+        std::wstring workingDirectory = obj.find("dir")->toString().toStdWString();
+        windows_subsystem::start_process(exePath, workingDirectory, isAbove, m_appDimensions);
     }
 }
 
@@ -283,10 +297,18 @@ void main_window::ui_on_windows() {
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index) {
-    open_or_show_app(ui->comboBox_shortcutsAbove->itemText(index).toStdWString());
+    open_or_show_app(ui->comboBox_shortcutsAbove->itemData(index));
+}
+
+void main_window::ui_on_shortcuts_above_reopen() {
+    open_or_show_app(ui->comboBox_shortcutsAbove->currentData());
 }
 
 void main_window::ui_on_shortcuts_below_changed(int32_t index) {
-    open_or_show_app(ui->comboBox_shortcutsBelow->itemText(index).toStdWString());
+    open_or_show_app(ui->comboBox_shortcutsBelow->itemData(index));
+}
+
+void main_window::ui_on_shortcuts_below_reopen() {
+    open_or_show_app(ui->comboBox_shortcutsBelow->currentData());
 }
 

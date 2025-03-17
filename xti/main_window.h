@@ -5,6 +5,8 @@
 
 // 1. Qt framework headers
 #include <QMainWindow>
+#include <QJsonDocument>
+#include <QVariant>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <vector>
@@ -30,13 +32,16 @@ public:
 private:
     std::vector<QPushButton*> m_buttonList;
     app_dimensions m_appDimensions;
+    QJsonDocument m_appConfig;
     Ui::main_window *ui;
-    void open_or_show_app(const std::wstring& name);
+    void open_or_show_app(const QVariant& iObj);
 
 private slots:
     void ui_on_control();
     void ui_on_windows();
     void ui_on_shortcuts_above_changed(int32_t index);
+    void ui_on_shortcuts_above_reopen();
     void ui_on_shortcuts_below_changed(int32_t index);
+    void ui_on_shortcuts_below_reopen();
 };
 #endif // MAIN_WINDOW_H

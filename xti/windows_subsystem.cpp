@@ -211,7 +211,7 @@
                        (above ? 0 : dimensions.dimensionsBelowYStart) + yAdjustment,
                        dimensions.dimensionsAvailableScreenWidth + widthAdjustment,
                        (above ? dimensions.dimensionsAboveYEnd : dimensions.dimensionsBelowYEnd - dimensions.dimensionsBelowYStart) + heightAdjustment,
-                       SWP_ASYNCWINDOWPOS | SWP_SHOWWINDOW);
+                       SWP_SHOWWINDOW);
     if (r == 0)
     {
         throw std::runtime_error("Failure on SetWindowPos()");
