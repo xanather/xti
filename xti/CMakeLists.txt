@@ -20,7 +20,7 @@ qt_add_executable(xti
     ${PROJECT_SOURCES}
     ${app_icon_resource_windows}
 )
-target_link_libraries(xti PRIVATE Qt6::Widgets Qt6::Gui)
+target_link_libraries(xti PRIVATE Qt6::Widgets Qt6::Gui Dwmapi)
 target_compile_definitions(xti PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_compile_options(xti PRIVATE /EHsc)
 target_compile_options(xti PRIVATE /W4 /WX)

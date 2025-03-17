@@ -5,6 +5,8 @@
 // 1. Qt framework headers
 // 2. System/OS headers
 #include <Psapi.h>
+#include <shellapi.h>
+#include <dwmapi.h>
 // 3. C++ standard library headers
 #include <stdexcept>
 #include <memory>
@@ -53,38 +55,13 @@
 // ----- workingDirectory: absolute working directory to run it under
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // --------------------------------------------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, [[maybe_unused]] bool above) {
-    STARTUPINFOW startupInfo = {};
-    startupInfo.cb = sizeof(STARTUPINFOW);
-    PROCESS_INFORMATION processInfo;
-    int32_t r = ::CreateProcessW(exePath.c_str(), nullptr, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS, nullptr, workingDirectory.c_str(), &startupInfo, &processInfo);
-    if (r == 0)
-    {
-        uint32_t errCode = ::GetLastError();
-        if (errCode == ERROR_FILE_NOT_FOUND || errCode == ERROR_PATH_NOT_FOUND)
-        {
-            // app may not be installed, lets not crash here.
-            return;
-        }
-        throw std::runtime_error("Failure on CreateProcessW()" + std::to_string(errCode));
+/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above) {
+    HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
+    if (instance == nullptr) {
+        throw std::runtime_error("Failure on ShellExecuteW()");
     }
-    r = ::CloseHandle(processInfo.hThread);
-    if (r == 0)
-    {
-        throw std::runtime_error("Failure on CloseHandle()");
-    }
-    uint32_t waitCode = ::WaitForInputIdle(processInfo.hProcess, 5000);
-    if (waitCode != 0 && waitCode != WAIT_TIMEOUT)
-    {
-        throw std::runtime_error("Failure on WaitForInputIdle()");
-    }
-    r = ::CloseHandle(processInfo.hProcess);
-    if (r == 0)
-    {
-        throw std::runtime_error("Failure on CloseHandle()");
-    }
-    // Add an extra 1 second for any other application initialization logic
-    ::Sleep(1000);
+    // Wait 2 seconds for any other application initialization logic
+    ::Sleep(2000);
     size_t find = exePath.find_last_of('\\');
     if (find == std::wstring::npos) {
         throw std::runtime_error("exePath is not absolute");
@@ -95,11 +72,7 @@
         // Either application is reallly slow, or didnt open with an expected GUI window.
         return;
     }
-    r = ::SetWindowPos(window, nullptr, 0, 0, 512, 512, SWP_ASYNCWINDOWPOS | SWP_SHOWWINDOW);
-    if (r == 0)
-    {
-        throw std::runtime_error("Failure on SetWindowPos()");
-    }
+    move_window(window, above);
 }
 
 // --- is_process_running(): Determines if a process is running within the system.
@@ -165,24 +138,39 @@
     std::wstring exeName = get_exe_name_from_process_id(processId);
     if (enumWindowProcExeName == exeName)
     {
-        if (enumWindowProcTitleContains.empty()) {
-            enumWindowProcHwndOut = window;
-            return false;
+        // We skip windows that are not visible.
+        r = ::IsWindowVisible(window);
+        if (r == 0)
+        {
+            return true;
         }
 
         int32_t windowTitleLength = ::GetWindowTextLengthW(window);
         // error response only available with GetLastError rather than return of GetWindowTextLengthW here.
-        uint32_t errorCode = ::GetLastError();
-        if (errorCode != ERROR_SUCCESS)
+        uint32_t errCode = ::GetLastError();
+        if (errCode != ERROR_SUCCESS)
         {
             throw std::runtime_error("Failure on GetWindowTextLengthW()");
         }
-
         std::unique_ptr<wchar_t[]> windowTitle = std::make_unique<wchar_t[]>(windowTitleLength + 1);
+        ::SetLastError(ERROR_SUCCESS);
         r = ::GetWindowTextW(window, windowTitle.get(), windowTitleLength + 1);
         if (r == 0)
         {
-            throw std::runtime_error("Failure on GetWindowTextW()");
+            errCode = ::GetLastError();
+            if (errCode != ERROR_SUCCESS)
+            {
+                throw std::runtime_error("Failure on GetWindowTextW()");
+            }
+            // We skip windows with no text or any other reason
+            // that prevents us from getting the title when LastError was not set.
+            return true;
+        }
+
+        if (enumWindowProcTitleContains.empty()) {
+            // No need to check windowTitle here, just return the window we found.
+            enumWindowProcHwndOut = window;
+            return false;
         }
 
         std::wstring windowTitleStr = windowTitle.get();
@@ -199,8 +187,28 @@
 // --- move_window(): moves a window either above, or below the xti keyboard.
 // ----- window: The window to move
 // ----- above: True if move above the xti keyboard, false if move below the xti keyboard.
-/* public */ void windows_subsystem::move_window([[maybe_unused]] HWND window, [[maybe_unused]] bool above) {
-
+/* public */ void windows_subsystem::move_window(HWND window, bool above) {
+    RECT currDimensions;
+    int32_t r = ::GetWindowRect(window, &currDimensions);
+    if (r == 0)
+    {
+        throw std::runtime_error("Failure on GetWindowRect()");
+    }
+    RECT adjDimensions;
+    r = ::DwmGetWindowAttribute(window, DWMWA_EXTENDED_FRAME_BOUNDS, &adjDimensions, sizeof(RECT));
+    if (r != S_OK)
+    {
+        throw std::runtime_error("Failure on DwmGetWindowAttribute()");
+    }
+    int32_t xAdjustment = currDimensions.left - adjDimensions.left;
+    int32_t yAdjustment = currDimensions.top - adjDimensions.top;
+    int32_t widthAdjustment = (currDimensions.right - currDimensions.left) - (adjDimensions.right - adjDimensions.left);
+    int32_t heightAdjustment = (currDimensions.bottom - currDimensions.top) - (adjDimensions.bottom - adjDimensions.top);
+    r = ::SetWindowPos(window, HWND_TOP, (above ? 0 : 512) + xAdjustment, 0 + yAdjustment, 512 + widthAdjustment, 512 + heightAdjustment, SWP_ASYNCWINDOWPOS | SWP_SHOWWINDOW);
+    if (r == 0)
+    {
+        throw std::runtime_error("Failure on SetWindowPos()");
+    }
 }
 
 // --- get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
