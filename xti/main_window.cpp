@@ -33,7 +33,8 @@ main_window::main_window(QWidget *parent)
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);
 
-    setGeometry(0, screen->geometry().height() / 2 - 100, screen->geometry().width(), 200);
+    int32_t height = this->height();
+    setGeometry(0, screen->availableGeometry().height() / 2 - (height / 2), screen->availableGeometry().width(), height);
 
     // Collecting all buttons
     m_buttonList.push_back(ui->pushButton_escape);
