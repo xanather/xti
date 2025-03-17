@@ -235,12 +235,13 @@
     int32_t yAdjustment = currDimensions.top - adjDimensions.top;
     int32_t widthAdjustment = (currDimensions.right - currDimensions.left) - (adjDimensions.right - adjDimensions.left);
     int32_t heightAdjustment = (currDimensions.bottom - currDimensions.top) - (adjDimensions.bottom - adjDimensions.top);
-    r = ::SetWindowPos(window, HWND_TOP,
-                       xAdjustment,
-                       (above ? 0 : dimensions.dimensionsBelowYStart) + yAdjustment,
-                       dimensions.dimensionsAvailableScreenWidth + widthAdjustment,
-                       (above ? dimensions.dimensionsAboveYEnd : dimensions.dimensionsBelowYEnd - dimensions.dimensionsBelowYStart) + heightAdjustment,
-                       SWP_SHOWWINDOW);
+
+    int32_t newX = xAdjustment;
+    int32_t newY = (above ? 0 : dimensions.dimensionsBelowYStart) + yAdjustment;
+    int32_t newWidth = dimensions.dimensionsAvailableScreenWidth + widthAdjustment;
+    int32_t newHeight = (above ? dimensions.dimensionsAboveYEnd : dimensions.dimensionsBelowYEnd - dimensions.dimensionsBelowYStart) + heightAdjustment;
+
+    r = ::SetWindowPos(window, HWND_TOP, newX, newY, newWidth, newHeight, SWP_SHOWWINDOW);
     if (r == 0)
     {
         throw std::runtime_error("Failure on SetWindowPos()");

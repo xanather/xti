@@ -40,6 +40,8 @@ main_window::main_window(QWidget *parent)
     if (screen == nullptr) {
         throw std::runtime_error("Missing desktop screen");
     }
+
+    // TODO fix below
     int32_t height = this->height();
     setGeometry(0, screen->availableGeometry().height() / 2 - (height / 2), screen->availableGeometry().width(), height);
     m_appDimensions.dimensionsAvailableScreenWidth = screen->availableGeometry().width();
