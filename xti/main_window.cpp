@@ -22,21 +22,25 @@ main_window::main_window(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QScreen *screen = QApplication::primaryScreen();
-    if (screen == nullptr) {
-        throw std::runtime_error("main_window::main_window (1)");
-    }
-
+    // Make window top-most with no border + make background black.
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
-
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);
 
+    // Configure xti dimensions.
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen == nullptr) {
+        throw std::runtime_error("main_window::main_window (1)");
+    }
     int32_t height = this->height();
     setGeometry(0, screen->availableGeometry().height() / 2 - (height / 2), screen->availableGeometry().width(), height);
+    m_appDimensions.dimensionsAvailableScreenWidth = screen->availableGeometry().width();
+    m_appDimensions.dimensionsAboveYEnd = screen->availableGeometry().height() / 2 - (height / 2);
+    m_appDimensions.dimensionsBelowYStart = m_appDimensions.dimensionsAboveYEnd + height;
+    m_appDimensions.dimensionsBelowYEnd = screen->availableGeometry().height();
 
-    // Collecting all buttons
+    // Collecting all buttons.
     m_buttonList.push_back(ui->pushButton_escape);
     m_buttonList.push_back(ui->pushButton_f1);
     m_buttonList.push_back(ui->pushButton_f2);
@@ -245,19 +249,19 @@ void main_window::open_or_show_app(const std::wstring& name) {
     if (name == L"Firefox") {
         std::wstring exeToCheck = L"firefox.exe";
         if (windows_subsystem::is_process_running(exeToCheck)) {
-            qDebug() << "Running " << name;
+            HWND window = windows_subsystem::get_window(L"firefox.exe", L"");
+            if (window != nullptr) {
+                windows_subsystem::move_window(window, false, m_appDimensions);
+            }
         } else {
-            qDebug() << "Starting " << name;
-            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox", true);
+            windows_subsystem::start_process(L"C:\\Program Files\\Mozilla Firefox\\firefox.exe", L"C:\\Program Files\\Mozilla Firefox", true, m_appDimensions);
         }
     }
     if (name == L"notepad++") {
         std::wstring exeToCheck = L"notepad.exe";
         if (windows_subsystem::is_process_running(exeToCheck)) {
-            qDebug() << "Running " << name;
         } else {
-            qDebug() << "Starting " << name;
-            windows_subsystem::start_process(L"C:\\Windows\\System32\\notepad.exe", L"C:\\Users\\Jordan", false);
+            windows_subsystem::start_process(L"C:\\Windows\\System32\\notepad.exe", L"C:\\Users\\Jordan", false, m_appDimensions);
         }
     }
 }

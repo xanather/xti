@@ -11,6 +11,7 @@
 #include <string>
 #include <cstdint>
 // 4. Project classes
+#include "app_dimensions.h"
 // 5. Forward decl
 class QWidget;
 class QPushButton;
@@ -28,6 +29,7 @@ public:
 
 private:
     std::vector<QPushButton*> m_buttonList;
+    app_dimensions m_appDimensions;
     Ui::main_window *ui;
     void open_or_show_app(const std::wstring& name);
 

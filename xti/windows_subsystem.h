@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdint>
 // 4. Project classes
+#include "app_dimensions.h"
 // 5. Forward decl
 
 class windows_subsystem // static members only
@@ -22,7 +23,7 @@ public:
     // public start_process(): Starts a new process and positioning either above or below the xti keyboard.
     // see cpp file for more info.
 public:
-    static void start_process(const std::wstring& path, const std::wstring& workingDirectory, bool above);
+    static void start_process(const std::wstring& path, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions);
 
     // public is_process_running(): Determines if a process is running within the system.
     // see cpp file for more info.
@@ -42,7 +43,7 @@ private:
     // public move_window(): moves a window either above, or below the xti keyboard.
     // see cpp file for more info.
 public:
-    static void move_window(HWND windowHandle, bool above);
+    static void move_window(HWND windowHandle, bool above, const app_dimensions& dimensions);
 
     // private get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
     // see cpp file for more info.

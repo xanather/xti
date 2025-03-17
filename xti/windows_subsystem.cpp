@@ -54,8 +54,9 @@
 // ----- exePath: absolute file path of the executable
 // ----- workingDirectory: absolute working directory to run it under
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
+// ----- appDimensions: Where windows should be placed in the desktop.
 // --------------------------------------------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above) {
+/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions) {
     HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
     if (instance == nullptr) {
         throw std::runtime_error("Failure on ShellExecuteW()");
@@ -72,7 +73,7 @@
         // Either application is reallly slow, or didnt open with an expected GUI window.
         return;
     }
-    move_window(window, above);
+    move_window(window, above, appDimensions);
 }
 
 // --- is_process_running(): Determines if a process is running within the system.
@@ -187,7 +188,8 @@
 // --- move_window(): moves a window either above, or below the xti keyboard.
 // ----- window: The window to move
 // ----- above: True if move above the xti keyboard, false if move below the xti keyboard.
-/* public */ void windows_subsystem::move_window(HWND window, bool above) {
+// ----- appDimensions: Where windows should be placed in the desktop.
+/* public */ void windows_subsystem::move_window(HWND window, bool above, const app_dimensions& dimensions) {
     RECT currDimensions;
     int32_t r = ::GetWindowRect(window, &currDimensions);
     if (r == 0)
@@ -204,7 +206,12 @@
     int32_t yAdjustment = currDimensions.top - adjDimensions.top;
     int32_t widthAdjustment = (currDimensions.right - currDimensions.left) - (adjDimensions.right - adjDimensions.left);
     int32_t heightAdjustment = (currDimensions.bottom - currDimensions.top) - (adjDimensions.bottom - adjDimensions.top);
-    r = ::SetWindowPos(window, HWND_TOP, (above ? 0 : 512) + xAdjustment, 0 + yAdjustment, 512 + widthAdjustment, 512 + heightAdjustment, SWP_ASYNCWINDOWPOS | SWP_SHOWWINDOW);
+    r = ::SetWindowPos(window, HWND_TOP,
+                       xAdjustment,
+                       (above ? 0 : dimensions.dimensionsBelowYStart) + yAdjustment,
+                       dimensions.dimensionsAvailableScreenWidth + widthAdjustment,
+                       (above ? dimensions.dimensionsAboveYEnd : dimensions.dimensionsBelowYEnd - dimensions.dimensionsBelowYStart) + heightAdjustment,
+                       SWP_ASYNCWINDOWPOS | SWP_SHOWWINDOW);
     if (r == 0)
     {
         throw std::runtime_error("Failure on SetWindowPos()");
