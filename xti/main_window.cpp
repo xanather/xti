@@ -261,7 +261,6 @@ main_window::~main_window()
     delete ui;
 }
 
-// FORKERS: adjust code below handlers accordingly.
 void main_window::open_or_show_app(const QVariant& iObj) {
     QJsonObject obj = iObj.toJsonObject();
     std::wstring exePath = obj.find("exe")->toString().toStdWString();
