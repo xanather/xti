@@ -9,6 +9,7 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 - The program expects only one primary screen attached (the tablet screen). Adding more monitors after starting will screw things up.
 - Must run as administrator otherwise Windows kernel will deny access to certain functions.
 - It is not designed to work with a physical keyboard or other virtual keyboards. This program takes over control of the system for keyboard input.
+- Requires D20 thumb dexterity.
 
 ## Installing
 Supports either x64 or Arm64 computers.
