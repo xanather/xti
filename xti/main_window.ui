@@ -1830,14 +1830,14 @@
              </size>
             </property>
             <property name="text">
-             <string>- REOPEN ↑</string>
+             <string>↑ REOPEN ↑</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_shortcutsAbove">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1845,13 +1845,13 @@
             <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>16777215</height>
              </size>
             </property>
            </widget>
@@ -1897,14 +1897,14 @@
              </size>
             </property>
             <property name="text">
-             <string>↑ WINDOW UP -</string>
+             <string>↑ WINDOW UP ↑</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_panic">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1912,17 +1912,17 @@
             <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>PANIC</string>
+             <string>                  PANIC</string>
             </property>
            </widget>
           </item>
@@ -1963,7 +1963,7 @@
           <item>
            <widget class="QComboBox" name="comboBox_shortcutsBelow">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1971,13 +1971,13 @@
             <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>16777215</height>
              </size>
             </property>
            </widget>
@@ -2003,7 +2003,7 @@
              </size>
             </property>
             <property name="text">
-             <string>- REOPEN ↓</string>
+             <string>↓ REOPEN ↓</string>
             </property>
            </widget>
           </item>
@@ -2030,7 +2030,7 @@
           <item>
            <widget class="QPushButton" name="pushButton">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2038,17 +2038,17 @@
             <property name="minimumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>40</height>
+              <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>RESTART</string>
+             <string>              RESTART</string>
             </property>
            </widget>
           </item>
@@ -2073,7 +2073,7 @@
              </size>
             </property>
             <property name="text">
-             <string>↓ WINDOW DN -</string>
+             <string>↓ WINDOW DN ↓</string>
             </property>
            </widget>
           </item>

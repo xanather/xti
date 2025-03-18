@@ -58,5 +58,7 @@ private slots:
     void ui_on_shortcuts_below_reopen();
     void ui_on_move_active_above();
     void ui_on_move_active_below();
+    void ui_on_panic();
+    void ui_on_restart();
 };
 #endif // MAIN_WINDOW_H

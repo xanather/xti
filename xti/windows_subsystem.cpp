@@ -33,6 +33,7 @@
 /* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window) {
     // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
     // despite setting Qt::WindowDoesNotAcceptFocus at startup.
+    // TODO - validate this
     int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
     if (r == 0) {
         throw std::runtime_error("Failure on GetWindowLongPtr()");

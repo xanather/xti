@@ -11,7 +11,7 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 - It is not designed to work with a physical keyboard or other virtual keyboards. This program takes over control of the system for keyboard input.
 - Requires D20 thumb dexterity.
 
-## Installing
+## Building
 Supports either x64 or Arm64 computers.
 1. Install Qt open source with MSVC desktop feature.
 2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
@@ -22,6 +22,7 @@ Supports either x64 or Arm64 computers.
 ## Before Running
 1. Create a config file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
 2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
+3. It is recommended to force the system into portrait mode and prevent the Microsoft's touch keyboard from showing by itself using windows settings.
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.

@@ -26,6 +26,8 @@
 // 4. Project classes
 // 5. Forward decl
 
+#define VK_NEED_MORE_INFO -1
+
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only
 {

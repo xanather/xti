@@ -37,6 +37,7 @@
 #include <algorithm>
 // 4. Project classes
 #include "windows_subsystem.h"
+#include "key_mapping.h"
 
 main_window::main_window(QWidget *parent)
     : QMainWindow(parent)
@@ -288,9 +289,11 @@ main_window::main_window(QWidget *parent)
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
+    connect(ui->pushButton_panic, &QPushButton::clicked, this, &main_window::ui_on_panic);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
     windows_subsystem::initialize_force_cursor_visible();
+    key_mapping::initialize();
     QTimer::singleShot(0, this, &main_window::post_ctor);
 }
 
@@ -364,4 +367,12 @@ void main_window::ui_on_move_active_above() {
 
 void main_window::ui_on_move_active_below() {
     windows_subsystem::move_active_window(false, m_appDimensions);
+}
+
+void main_window::ui_on_panic() {
+    QApplication::quit();
+}
+
+void main_window::ui_on_restart() {
+    // TODO
 }
