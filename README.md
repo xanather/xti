@@ -9,11 +9,11 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 - Must run as administrator otherwise Windows kernel will deny access to certain functions.
 
 ## Installing
-Supports either x64 or Arm64 machines.
-1. Install Qt open source with MSVC desktop feature
-2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools)
-3. Install CMake
-4. Run build.ps1
+Supports either x64 or Arm64 computers.
+1. Install Qt open source with MSVC desktop feature.
+2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
+3. Install CMake.
+4. Run build.ps1.
 5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin.
 
 ## Before Running
