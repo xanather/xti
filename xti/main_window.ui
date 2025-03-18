@@ -1897,7 +1897,7 @@
              </size>
             </property>
             <property name="text">
-             <string>MOVE ABOVE</string>
+             <string>FORCE ABOVE</string>
             </property>
            </widget>
           </item>
@@ -2063,7 +2063,7 @@
              </size>
             </property>
             <property name="text">
-             <string>MOVE BELOW</string>
+             <string>FORCE BELOW</string>
             </property>
            </widget>
           </item>

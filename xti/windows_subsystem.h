@@ -1,4 +1,17 @@
+// xti keyboard
 // Copyright © Jordan Singh
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #ifndef WINDOWS_SUBSYSTEM_H
 #define WINDOWS_SUBSYSTEM_H
@@ -19,6 +32,11 @@ public:
     // public apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
     // see cpp file for more info.
     static void apply_keyboard_window_style(HWND window);
+
+public:
+    // public force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
+    // see cpp file for more info.
+    static void force_cursor_visible();
 
     // public apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
     // see cpp file for more info.

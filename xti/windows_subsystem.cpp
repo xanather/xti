@@ -1,4 +1,17 @@
+// xti keyboard
 // Copyright © Jordan Singh
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "windows_subsystem.h"
 
@@ -26,6 +39,30 @@
     r = ::SetWindowLongPtrW(window, GWL_EXSTYLE, r | WS_EX_NOACTIVATE | WS_EX_TOPMOST);
     if (r == 0) {
         throw std::runtime_error("Failure on SetWindowLongPtrW()");
+    }
+}
+
+// --- public force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
+// --------------------------------------------------------------------------------------------/
+/* public */ void windows_subsystem::force_cursor_visible() {
+    ::HKEY hKey;
+    wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
+    wchar_t valueName[] = L"EnableCursorSuppression";
+    uint32_t valueData = 0; // DWORD value - 0 = Force cursor to stay visible
+    int32_t r = ::RegOpenKeyExW(HKEY_LOCAL_MACHINE, subKey, 0, KEY_SET_VALUE, &hKey);
+    if (r != ERROR_SUCCESS)
+    {
+        throw std::runtime_error("Failure on RegOpenKeyExW()");
+    }
+    r = ::RegSetValueExW(hKey, valueName, 0, REG_DWORD, reinterpret_cast<BYTE*>(&valueData), sizeof(valueData));
+    if (r != ERROR_SUCCESS)
+    {
+        throw std::runtime_error("Failure on RegSetValueExW()");
+    }
+    r = ::RegCloseKey(hKey);
+    if (r != ERROR_SUCCESS)
+    {
+        throw std::runtime_error("Failure on RegCloseKey()");
     }
 }
 

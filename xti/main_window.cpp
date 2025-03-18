@@ -1,4 +1,17 @@
+// xti keyboard
 // Copyright © Jordan Singh
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "main_window.h"
 #include "./ui_main_window.h"
@@ -88,6 +101,22 @@ main_window::main_window(QWidget *parent)
         if (find == std::wstring::npos) {
             throw std::runtime_error("Bad config");
         }
+
+        // Replace / with native \ in windows paths.
+        std::wstring dirVal = dir->toString().toStdWString();
+        for (size_t i = 0; i < dirVal.size(); i++) {
+            if (dirVal[i] == '/') {
+                dirVal[i] = '\\';
+            }
+        }
+        *dir = QJsonValue(QString(dirVal));
+        std::wstring exeVal = exe->toString().toStdWString();
+        for (size_t i = 0; i < exeVal.size(); i++) {
+            if (exeVal[i] == '/') {
+                exeVal[i] = '\\';
+            }
+        }
+        *exe = QJsonValue(QString(exeVal));
     }
 
     // Collecting all buttons.
@@ -262,6 +291,7 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
+    windows_subsystem::force_cursor_visible();
 }
 
 main_window::~main_window()

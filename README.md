@@ -8,6 +8,7 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 - Don't change scaling or DPI of the system after starting.
 - The program expects only one primary screen attached (the tablet screen). Adding more monitors after starting will screw things up.
 - Must run as administrator otherwise Windows kernel will deny access to certain functions.
+- It is not designed to work with a physical keyboard or other virtual keyboards. This program takes over control of the system for keyboard input.
 
 ## Installing
 Supports either x64 or Arm64 computers.
@@ -22,3 +23,21 @@ Supports either x64 or Arm64 computers.
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.
+
+## License
+GNU General Public License 3.0
+
+```
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
