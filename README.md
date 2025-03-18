@@ -4,8 +4,9 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 + Has basic extensible JSON config.
 
 ## Known limitations
-- Don't change scaling or DPI of the system after starting
-- Must run as administrator otherwise Windows will deny access to certain functions
+- Don't change scaling or DPI of the system after starting.
+- The program expects only one primary screen attached (the tablet screen).
+- Must run as administrator otherwise Windows will deny access to certain functions.
 
 ## Installing
 Supports either x64 or Arm64 machines.
