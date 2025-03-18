@@ -1,5 +1,5 @@
 # Making Touch Input Great Again
-The pre-existing Windows virtual touch keyboard is terrible for typing on or other productivity reasons.
+The pre-existing Windows virtual touch keyboard is terrible for typing on for productivity.
 + Mainly designed for programmers.
 + Has basic extensible JSON config.
 
