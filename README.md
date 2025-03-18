@@ -20,6 +20,7 @@ Supports either x64 or Arm64 computers.
 
 ## Before Running
 1. Create a config file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
+2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.
