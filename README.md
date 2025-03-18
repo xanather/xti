@@ -14,7 +14,7 @@ Supports either x64 or Arm64 computers.
 2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
 3. Install CMake.
 4. Run build.ps1.
-5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin.
+5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin. Creating an official installer and registering to start at startup as Admin might come later if I get time.
 
 ## Before Running
 1. Create a config file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
