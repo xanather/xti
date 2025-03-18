@@ -37,8 +37,7 @@ private:
     void open_or_show_app(const QVariant& iObj);
 
 private slots:
-    void ui_on_control();
-    void ui_on_windows();
+    void ui_on_key_press();
     void ui_on_shortcuts_above_changed(int32_t index);
     void ui_on_shortcuts_above_reopen();
     void ui_on_shortcuts_below_changed(int32_t index);

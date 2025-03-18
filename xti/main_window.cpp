@@ -249,8 +249,9 @@ main_window::main_window(QWidget *parent)
     }
 
     // Hook buttons and controls.
-    connect(ui->pushButton_control, &QPushButton::clicked, this, &main_window::ui_on_control);
-    connect(ui->pushButton_windows, &QPushButton::clicked, this, &main_window::ui_on_windows);
+    for (size_t i = 0; i < m_buttonList.size(); i++) {
+        connect(m_buttonList[i], &QPushButton::clicked, this, &main_window::ui_on_key_press);
+    }
 
     connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
@@ -286,20 +287,21 @@ void main_window::open_or_show_app(const QVariant& iObj) {
     }
 }
 
-void main_window::ui_on_control() {
-    QPalette palette = ui->pushButton_control->palette();
-    palette.setColor(QPalette::Button, Qt::green);
-    ui->pushButton_control->setAutoFillBackground(true);
-    ui->pushButton_control->setPalette(palette);
-    ui->pushButton_windows->setPalette(QApplication::palette());
-}
+void main_window::ui_on_key_press() {
+    QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
+    QPalette palette = srcButton->palette();
+    palette.setColor(QPalette::Button, Qt::blue);
+    srcButton->setAutoFillBackground(true);
+    srcButton->setPalette(palette);
 
-void main_window::ui_on_windows() {
-    QPalette palette = ui->pushButton_windows->palette();
-    palette.setColor(QPalette::Button, Qt::green);
-    ui->pushButton_windows->setAutoFillBackground(true);
-    ui->pushButton_windows->setPalette(palette);
-    ui->pushButton_control->setPalette(QApplication::palette());
+    QPalette defaultPalette = QApplication::palette();
+    for (size_t i = 0; i < m_buttonList.size(); i++)
+    {
+        QPushButton* dstButton = m_buttonList[i];
+        if (srcButton != dstButton) {
+            dstButton->setPalette(defaultPalette);
+        }
+    }
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index) {
