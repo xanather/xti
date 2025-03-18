@@ -5,8 +5,8 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 
 ## Known limitations
 - Don't change scaling or DPI of the system after starting.
-- The program expects only one primary screen attached (the tablet screen).
-- Must run as administrator otherwise Windows will deny access to certain functions.
+- The program expects only one primary screen attached (the tablet screen). Adding more monitors after starting will screw things up.
+- Must run as administrator otherwise Windows kernel will deny access to certain functions.
 
 ## Installing
 Supports either x64 or Arm64 machines.
