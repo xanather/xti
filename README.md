@@ -10,7 +10,7 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 
 ## Installing
 Supports either x64 or Arm64 machines.
-1. Install Qt with desktop feature
+1. Install Qt open source with MSVC desktop feature
 2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools)
 3. Install CMake
 4. Run build.ps1
