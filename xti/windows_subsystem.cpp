@@ -161,8 +161,8 @@
     if (instance == nullptr) {
         throw std::runtime_error("Failure on ShellExecuteW()");
     }
-    // Wait 2 seconds for any other application initialization logic
-    ::Sleep(2000);
+    // Wait 500 ms for any other application initialization logic.
+    ::Sleep(500);
     size_t find = exePath.find_last_of('\\');
     if (find == std::wstring::npos) {
         throw std::runtime_error("exePath is not absolute");

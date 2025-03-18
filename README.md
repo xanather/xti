@@ -4,6 +4,10 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 + Has basic extensible JSON config.
 + Designed to work on with thumbs only in the middle of the tablet in portrait mode (like a big mobile phone).
 
+WORK IN PROGRESS:
+1. Need to figure out how to simulate certain key press combination.
+2. Moving cursor by using left and right key area's as a virtual touchpad.
+
 ## Known limitations
 - Don't change scaling or DPI of the system after starting.
 - The program expects only one primary screen attached (the tablet screen). Adding more monitors after starting will screw things up.

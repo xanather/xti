@@ -52,15 +52,10 @@ main_window::main_window(QWidget *parent)
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);
 
-    // Configure xti dimensions.
-    QScreen* screen = QApplication::primaryScreen();
-    if (screen == nullptr) {
-        throw std::runtime_error("Missing desktop screen");
-    }
-
     // Load app config. Assumes UTF-8 encoding.
     QFile configFile(QDir::homePath() + "/xti.json");
-    if (!configFile.open(QIODevice::ReadOnly)) {
+    if (!configFile.open(QIODevice::ReadOnly))
+    {
         throw std::runtime_error("No config file found");
     }
     QByteArray configData = configFile.readAll();
@@ -68,11 +63,13 @@ main_window::main_window(QWidget *parent)
     m_appConfig = QJsonDocument::fromJson(configData);
 
     // Validate config.
-    if (!m_appConfig.isArray()) {
+    if (!m_appConfig.isArray())
+    {
         throw std::runtime_error("Bad config");
     }
     QJsonArray configEntries = m_appConfig.array();
-    for (qsizetype i = 0; i < configEntries.size(); i++) {
+    for (qsizetype i = 0; i < configEntries.size(); i++)
+    {
         QJsonValueRef entry = configEntries[i];
         if (!entry.isObject())
         {
@@ -94,21 +91,26 @@ main_window::main_window(QWidget *parent)
         }
         std::wstring exePath = exe->toString().toStdWString();
         size_t find = exePath.find_last_of('\\');
-        if (find == std::wstring::npos) {
+        if (find == std::wstring::npos)
+        {
             throw std::runtime_error("Bad config");
         }
 
         // Replace / with native \ in windows paths.
         std::wstring dirVal = dir->toString().toStdWString();
-        for (size_t j = 0; j < dirVal.size(); j++) {
-            if (dirVal[j] == '/') {
+        for (size_t j = 0; j < dirVal.size(); j++)
+        {
+            if (dirVal[j] == '/')
+            {
                 dirVal[j] = '\\';
             }
         }
         *dir = QJsonValue(QString(dirVal));
         std::wstring exeVal = exe->toString().toStdWString();
-        for (size_t j = 0; j < exeVal.size(); j++) {
-            if (exeVal[j] == '/') {
+        for (size_t j = 0; j < exeVal.size(); j++)
+        {
+            if (exeVal[j] == '/')
+            {
                 exeVal[j] = '\\';
             }
         }
@@ -272,9 +274,12 @@ main_window::main_window(QWidget *parent)
     for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
     {
         QJsonObject obj = entry->toObject();
-        if (obj.find("above")->toBool()) {
+        if (obj.find("above")->toBool())
+        {
             ui->comboBox_shortcutsAbove->addItem(obj.find("display")->toString(), obj);
-        } else {
+        }
+        else
+        {
             ui->comboBox_shortcutsBelow->addItem(obj.find("display")->toString(), obj);
         }
     }
@@ -307,25 +312,31 @@ main_window::~main_window()
     delete ui;
 }
 
-void main_window::open_or_show_app(const QVariant& iObj) {
+void main_window::open_or_show_app(const QVariant& iObj)
+{
     QJsonObject obj = iObj.toJsonObject();
     std::wstring exePath = obj.find("exe")->toString().toStdWString();
     size_t find = exePath.find_last_of('\\');
     std::wstring exeOnly = exePath.substr(find + 1);
     std::wstring windowTitle = obj.find("title")->toString().toStdWString();
     bool isAbove = obj.find("above")->toBool();
-    if (windows_subsystem::is_process_running(exeOnly)) {
+    if (windows_subsystem::is_process_running(exeOnly))
+    {
         HWND window = windows_subsystem::get_window(exeOnly, windowTitle);
-        if (window != nullptr) {
+        if (window != nullptr)
+        {
             windows_subsystem::move_window(window, isAbove, m_appDimensions);
         }
-    } else {
+    }
+    else
+    {
         std::wstring workingDirectory = obj.find("dir")->toString().toStdWString();
         windows_subsystem::start_process(exePath, workingDirectory, isAbove, m_appDimensions);
     }
 }
 
-void main_window::ui_on_key_press() {
+void main_window::ui_on_key_press()
+{
     QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
     QPalette palette = srcButton->palette();
     palette.setColor(QPalette::Button, Qt::blue);
@@ -342,37 +353,45 @@ void main_window::ui_on_key_press() {
     }
 
     // Send off the key press
-    //srcButton->objectName();
+    // TODO - use key_mapping.
 }
 
-void main_window::ui_on_shortcuts_above_changed(int32_t index) {
+void main_window::ui_on_shortcuts_above_changed(int32_t index)
+{
     open_or_show_app(ui->comboBox_shortcutsAbove->itemData(index));
 }
 
-void main_window::ui_on_shortcuts_above_reopen() {
+void main_window::ui_on_shortcuts_above_reopen()
+{
     open_or_show_app(ui->comboBox_shortcutsAbove->currentData());
 }
 
-void main_window::ui_on_shortcuts_below_changed(int32_t index) {
+void main_window::ui_on_shortcuts_below_changed(int32_t index)
+{
     open_or_show_app(ui->comboBox_shortcutsBelow->itemData(index));
 }
 
-void main_window::ui_on_shortcuts_below_reopen() {
+void main_window::ui_on_shortcuts_below_reopen()
+{
     open_or_show_app(ui->comboBox_shortcutsBelow->currentData());
 }
 
-void main_window::ui_on_move_active_above() {
+void main_window::ui_on_move_active_above()
+{
     windows_subsystem::move_active_window(true, m_appDimensions);
 }
 
-void main_window::ui_on_move_active_below() {
+void main_window::ui_on_move_active_below()
+{
     windows_subsystem::move_active_window(false, m_appDimensions);
 }
 
-void main_window::ui_on_panic() {
+void main_window::ui_on_panic()
+{
     QApplication::quit();
 }
 
-void main_window::ui_on_restart() {
+void main_window::ui_on_restart()
+{
     // TODO
 }
