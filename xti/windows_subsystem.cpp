@@ -27,7 +27,6 @@
 #include <algorithm>
 // 4. Project classes
 
-
 // --- initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
 // ----- window: HWND of the Qt app.
 // --------------------------------------------------------------------------------------------/

@@ -13,6 +13,8 @@ set(PROJECT_SOURCES
         main_window.ui
         windows_subsystem.h
         windows_subsystem.cpp
+        key_mapping.h
+        key_mapping.cpp
         app_dimensions.h
 )
 set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/recrypt.rc")

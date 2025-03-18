@@ -14,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "main_window.h"
-#include "./ui_main_window.h"
+#include "ui_main_window.h"
 
 // 1. Qt framework headers
 #include <QApplication>
@@ -282,12 +282,10 @@ main_window::main_window(QWidget *parent)
     for (size_t i = 0; i < m_buttonList.size(); i++) {
         connect(m_buttonList[i], &QPushButton::clicked, this, &main_window::ui_on_key_press);
     }
-
     connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
     connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
-
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
 
@@ -339,6 +337,9 @@ void main_window::ui_on_key_press() {
             dstButton->setPalette(defaultPalette);
         }
     }
+
+    // Send off the key press
+    //srcButton->objectName();
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index) {
