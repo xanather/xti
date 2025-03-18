@@ -25,6 +25,7 @@ Supports either x64 or Arm64 computers.
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.
+It is recommended to run QT Creator as admin so when debugging xti will also run as admin.
 
 ## License
 GNU General Public License 3.0
