@@ -2,6 +2,7 @@
 The pre-existing Windows virtual touch keyboard is terrible for typing on for productivity.
 + Mainly designed for programmers.
 + Has basic extensible JSON config.
++ Designed to work on with thumbs only in the middle of the tablet in portrait mode (like a big mobile phone).
 
 ## Known limitations
 - Don't change scaling or DPI of the system after starting.
