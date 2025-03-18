@@ -6,6 +6,7 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 + Mainly designed for programmers.
 + Has basic extensible JSON config.
 + Designed to work on with thumbs only in the middle of the tablet in portrait mode (like a big mobile phone).
++ Brings the cursor back by using virtual keyboard area as a touchpad simultaneously.
 
 WORK IN PROGRESS:
 1. Need to figure out how to simulate certain key press combination.
