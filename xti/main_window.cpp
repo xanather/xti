@@ -30,8 +30,11 @@
 #include <QDir>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QTimer>
 // 2. System/OS headers
 // 3. C++ standard library headers
+#include <cctype>
+#include <algorithm>
 // 4. Project classes
 #include "windows_subsystem.h"
 
@@ -43,7 +46,7 @@ main_window::main_window(QWidget *parent)
 
     // Make window top-most with no border + make background black.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    windows_subsystem::apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
+    windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(0, 0, 0));
     setPalette(palette);
@@ -53,14 +56,6 @@ main_window::main_window(QWidget *parent)
     if (screen == nullptr) {
         throw std::runtime_error("Missing desktop screen");
     }
-
-    // TODO fix below
-    int32_t height = this->height();
-    setGeometry(0, screen->availableGeometry().height() / 2 - (height / 2), screen->availableGeometry().width(), height);
-    m_appDimensions.dimensionsAvailableScreenWidth = screen->availableGeometry().width();
-    m_appDimensions.dimensionsAboveYEnd = screen->availableGeometry().height() / 2 - (height / 2);
-    m_appDimensions.dimensionsBelowYStart = m_appDimensions.dimensionsAboveYEnd + height;
-    m_appDimensions.dimensionsBelowYEnd = screen->availableGeometry().height();
 
     // Load app config. Assumes UTF-8 encoding.
     QFile configFile(QDir::homePath() + "/xti.json");
@@ -76,14 +71,14 @@ main_window::main_window(QWidget *parent)
         throw std::runtime_error("Bad config");
     }
     QJsonArray configEntries = m_appConfig.array();
-    for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
-    {
-        if (!entry->isObject())
+    for (qsizetype i = 0; i < configEntries.size(); i++) {
+        QJsonValueRef entry = configEntries[i];
+        if (!entry.isObject())
         {
             throw std::runtime_error("Bad config");
         }
-        QJsonObject obj = entry->toObject();
-        QJsonObject::iterator display = obj.find("exe");
+        QJsonObject obj = entry.toObject();
+        QJsonObject::iterator display = obj.find("display");
         QJsonObject::iterator exe = obj.find("exe");
         QJsonObject::iterator dir = obj.find("dir");
         QJsonObject::iterator title = obj.find("title");
@@ -104,19 +99,25 @@ main_window::main_window(QWidget *parent)
 
         // Replace / with native \ in windows paths.
         std::wstring dirVal = dir->toString().toStdWString();
-        for (size_t i = 0; i < dirVal.size(); i++) {
-            if (dirVal[i] == '/') {
-                dirVal[i] = '\\';
+        for (size_t j = 0; j < dirVal.size(); j++) {
+            if (dirVal[j] == '/') {
+                dirVal[j] = '\\';
             }
         }
         *dir = QJsonValue(QString(dirVal));
         std::wstring exeVal = exe->toString().toStdWString();
-        for (size_t i = 0; i < exeVal.size(); i++) {
-            if (exeVal[i] == '/') {
-                exeVal[i] = '\\';
+        for (size_t j = 0; j < exeVal.size(); j++) {
+            if (exeVal[j] == '/') {
+                exeVal[j] = '\\';
             }
         }
         *exe = QJsonValue(QString(exeVal));
+
+        // Make display uppercase.
+        std::wstring displayStr = display->toString().toStdWString();
+        std::transform(displayStr.begin(), displayStr.end(), displayStr.begin(), ::toupper);
+        *display = QJsonValue(QString(displayStr));
+        configEntries[i] = obj;
     }
 
     // Collecting all buttons.
@@ -291,7 +292,13 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
-    windows_subsystem::force_cursor_visible();
+    windows_subsystem::initialize_force_cursor_visible();
+    QTimer::singleShot(0, this, &main_window::post_ctor);
+}
+
+void main_window::post_ctor() {
+    // Needs to be after the window has been constructed, otherwise certain resize values get ignored.
+    m_appDimensions = windows_subsystem::initialize_orientate_main_window(reinterpret_cast<HWND>(winId()));
 }
 
 main_window::~main_window()

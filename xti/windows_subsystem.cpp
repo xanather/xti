@@ -26,10 +26,10 @@
 // 4. Project classes
 
 
-// --- apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
+// --- initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
 // ----- window: HWND of the Qt app.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::apply_keyboard_window_style(HWND window) {
+/* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window) {
     // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
     // despite setting Qt::WindowDoesNotAcceptFocus at startup.
     int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
@@ -42,9 +42,9 @@
     }
 }
 
-// --- public force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
+// --- initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::force_cursor_visible() {
+/* public */ void windows_subsystem::initialize_force_cursor_visible() {
     ::HKEY hKey;
     wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
     wchar_t valueName[] = L"EnableCursorSuppression";
@@ -66,9 +66,41 @@
     }
 }
 
-// --- apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
+// --- initialize_orientate_main_window(): Moves the main QT window into position.
+// ----- window: HWND of the Qt app.
+// ------- returns: app dimensions to be used later on for re-positioning other windows.
+// ------------------------------------------------------------------------/
+/* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(HWND window) {
+    RECT size;
+    int32_t r = ::GetWindowRect(window, &size);
+    if (r == 0)
+    {
+        throw std::runtime_error("Failure on GetWindowRect()");
+    }
+    int32_t baseHeight = size.bottom - size.top;
+    r = ::SystemParametersInfoW(SPI_GETWORKAREA, 0, &size, 0);
+    if (r == 0)
+    {
+        throw std::runtime_error("Failure on SystemParametersInfoW()");
+    }
+    int32_t workingHeight = size.bottom;
+    int32_t workingWidth = size.right;
+    r = ::SetWindowPos(window, nullptr, 0, (workingHeight / 2) - (baseHeight / 2), workingWidth, baseHeight, 0);
+    if (r == 0)
+    {
+        throw std::runtime_error("Failure on SetWindowPos()");
+    }
+    app_dimensions out;
+    out.dimensionsAvailableScreenWidth = workingWidth;
+    out.dimensionsAboveYEnd = (workingHeight / 2) - (baseHeight / 2);
+    out.dimensionsBelowYStart = (workingHeight / 2) - (baseHeight / 2) + baseHeight;
+    out.dimensionsBelowYEnd = workingHeight;
+    return out;
+}
+
+// --- initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::apply_system_super_admin_privilege() {
+/* public */ void windows_subsystem::initialize_apply_system_super_admin_privilege() {
     // Even though we run the app as Admin modern windows kernel will not
     // grant certain privileges unless we ask for it directly.
     // Based on how the app currently operates and hooks into the OS

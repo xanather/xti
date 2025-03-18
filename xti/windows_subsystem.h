@@ -29,19 +29,28 @@
 class windows_subsystem // static members only
 {
 public:
-    // public apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
+    // USED AT APP STARTUP
+    // public initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
     // see cpp file for more info.
-    static void apply_keyboard_window_style(HWND window);
+    static void initialize_apply_keyboard_window_style(HWND window);
 
 public:
-    // public force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
+    // USED AT APP STARTUP
+    // public initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
     // see cpp file for more info.
-    static void force_cursor_visible();
+    static void initialize_force_cursor_visible();
 
-    // public apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
+    // USED AT APP STARTUP
+    // public initialize_orientate_main_window(): Moves the main QT window into position.
     // see cpp file for more info.
 public:
-    static void apply_system_super_admin_privilege();
+    static app_dimensions initialize_orientate_main_window(HWND window);
+
+    // USED AT APP STARTUP
+    // public initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
+    // see cpp file for more info.
+public:
+    static void initialize_apply_system_super_admin_privilege();
 
     // public move_active_window(): Moves the current active foreground window above or below the xti keyboard.
     // see cpp file for more info.

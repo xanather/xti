@@ -1,0 +1,16 @@
+[
+  {
+    "display": "Firefox",
+    "exe": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+    "dir": "C:\\Program Files\\Mozilla Firefox",
+    "title": "",
+    "above": true
+  },
+  {
+    "display": "Notepad",
+    "exe": "C:\\Windows\\System32\\notepad.exe",
+    "dir": "C:\\Windows\\System32",
+    "title": "",
+    "above": true
+  }
+]
