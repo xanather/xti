@@ -23,6 +23,8 @@
 // 3. C++ standard library headers
 #include <stdexcept>
 #include <memory>
+#include <cctype>
+#include <algorithm>
 // 4. Project classes
 
 
@@ -196,7 +198,9 @@
             continue; // skip kernel, the get_exe_name_from_process_id fails on 0.
         }
         std::wstring processNameRunning = get_exe_name_from_process_id(processesArray[i]);
-        if (processNameRunning == processName)
+        std::wstring processNameCopy = processName;
+        std::transform(processNameCopy.begin(), processNameCopy.end(), processNameCopy.begin(), ::toupper);
+        if (processNameRunning == processNameCopy)
         {
             return true;
         }
@@ -211,6 +215,7 @@
 // --------------------------------------------------------------------------------------------------------------------/
 /* public */ HWND windows_subsystem::get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains) {
     enumWindowProcExeName = runningExe;
+    std::transform(enumWindowProcExeName.begin(), enumWindowProcExeName.end(), enumWindowProcExeName.begin(), ::toupper);
     enumWindowProcTitleContains = requiredTitleContains;
     enumWindowProcHwndOut = nullptr;
     ::SetLastError(ERROR_SUCCESS);
@@ -319,7 +324,7 @@
 
 // --- get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
 // ----- processId: Native numerical identifier the kernel has assigned to the process.
-// ------- returns: the binary executable file name if found, or empty string if not found.
+// ------- returns: the UPPERCASE binary executable file name if found, or empty string if not found.
 // -------------------------------------------------------------------------------------------/
 /* private */ std::wstring windows_subsystem::get_exe_name_from_process_id(uint32_t processId) {
     ::HANDLE processHandle = ::OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, processId);
@@ -360,5 +365,7 @@
     {
         throw std::runtime_error("Failure on CloseHandle()");
     }
-    return processName;
+    std::wstring out = processName;
+    std::transform(out.begin(), out.end(), out.begin(), ::toupper);
+    return out;
 }
