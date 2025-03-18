@@ -38,7 +38,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_f11"] = VK_F11;
     translateSet[L"pushButton_f12"] = VK_F12;
     translateSet[L"pushButton_backspace"] = VK_BACK;
-    translateSet[L"pushButton_tilde"] = VK_NEED_MORE_INFO;
+    translateSet[L"pushButton_tilde"] = VK_OEM_3;
     translateSet[L"pushButton_exclamationMark"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_at"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_hash"] = VK_NEED_MORE_INFO;
@@ -49,16 +49,16 @@ void key_mapping::initialize()
     translateSet[L"pushButton_circumflex"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_ampersand"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_asterisk"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_leftRoundBracket"] = VK_OEM_4;
-    translateSet[L"pushButton_rightRoundBracket"] = VK_OEM_4;
+    translateSet[L"pushButton_leftRoundBracket"] = VK_NEED_MORE_INFO;
+    translateSet[L"pushButton_rightRoundBracket"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_minus"] = VK_SUBTRACT;
-    translateSet[L"pushButton_graveAccent"] = VK_NEED_MORE_INFO;
+    translateSet[L"pushButton_graveAccent"] = VK_OEM_3;
     translateSet[L"pushButton_num1"] = 0x31;
     translateSet[L"pushButton_num2"] = 0x32;
     translateSet[L"pushButton_num3"] = 0x33;
     translateSet[L"pushButton_num4"] = 0x34;
     translateSet[L"pushButton_num5"] = 0x35;
-    translateSet[L"pushButton_mute"] = VK_NUMPAD1;
+    translateSet[L"pushButton_mute"] = VK_VOLUME_MUTE;
     translateSet[L"pushButton_pause"] = VK_MEDIA_PLAY_PAUSE;
     translateSet[L"pushButton_num6"] = 0x36;
     translateSet[L"pushButton_num7"] = 0x37;
@@ -80,7 +80,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_O"] = 0x4F;
     translateSet[L"pushButton_P"] = 0x50;
     translateSet[L"pushButton_equals"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_doubleQuote"] = VK_NEED_MORE_INFO;
+    translateSet[L"pushButton_doubleQuote"] = VK_OEM_7;
     translateSet[L"pushButton_A"] = 0x41;
     translateSet[L"pushButton_S"] = 0x53;
     translateSet[L"pushButton_D"] = 0x44;
@@ -148,7 +148,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_m"] = 0x4D;
     translateSet[L"pushButton_slash"] = VK_OEM_2;
     translateSet[L"pushButton_questionMark"] = VK_OEM_2;
-    translateSet[L"pushButton_menu"] = VK_MENU; // TODO check this?
+    translateSet[L"pushButton_menu"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_capsLock"] = VK_CAPITAL;
     translateSet[L"pushButton_space"] = VK_SPACE;
     translateSet[L"pushButton_undo"] = VK_NEED_MORE_INFO;
