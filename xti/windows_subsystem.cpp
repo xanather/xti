@@ -75,6 +75,7 @@
 // ------- returns: app dimensions to be used later on for re-positioning other windows.
 // ------------------------------------------------------------------------/
 /* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(HWND window) {
+    // TODO - validate this actually gets correct middle working area in tablet mode mins the smaller hidden taskbar
     RECT size;
     int32_t r = ::GetWindowRect(window, &size);
     if (r == 0)
