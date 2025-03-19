@@ -368,6 +368,7 @@ void main_window::ui_on_key_press()
 
     // Long if else chain for handling all QPushButtons keys on the UI.
     bool toggleShift = false;
+    // PASS THROUGH PIPE
     if ((virtualKeyCode == VK_ESCAPE) ||
         (virtualKeyCode >= VK_F1 && virtualKeyCode <= VK_F12) ||
         (virtualKeyCode == VK_BACK) ||
@@ -389,10 +390,28 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = virtualKeyCode;
     }
+    // VK_OEM_2 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_2)
     {
         input.ki.wVk = VK_OEM_2;
         if (buttonName == L"pushButton_questionMark")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_4 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_4) {
+        input.ki.wVk = VK_OEM_4;
+        if (buttonName == L"pushButton_leftBraces")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_6 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_6)
+    {
+        input.ki.wVk = VK_OEM_6;
+        if (buttonName == L"pushButton_rightBraces")
         {
             toggleShift = true;
         }
