@@ -30,7 +30,8 @@
 // --- initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
 // ----- window: HWND of the Qt app.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window) {
+/* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window)
+{
     // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
     // despite setting Qt::WindowDoesNotAcceptFocus at startup.
     int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
@@ -47,7 +48,8 @@
 
 // --- initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_force_cursor_visible() {
+/* public */ void windows_subsystem::initialize_force_cursor_visible()
+{
     // TODO - validate this
     ::HKEY hKey;
     wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
@@ -74,7 +76,8 @@
 // ----- window: HWND of the Qt app.
 // ------- returns: app dimensions to be used later on for re-positioning other windows.
 // ------------------------------------------------------------------------/
-/* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(HWND window) {
+/* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(HWND window)
+{
     // TODO - validate this actually gets correct middle working area in tablet mode mins the smaller hidden taskbar
     RECT size;
     int32_t r = ::GetWindowRect(window, &size);
@@ -105,7 +108,8 @@
 
 // --- initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_apply_system_super_admin_privilege() {
+/* public */ void windows_subsystem::initialize_apply_system_super_admin_privilege()
+{
     // Even though we run the app as Admin modern windows kernel will not
     // grant certain privileges unless we ask for it directly.
     // Based on how the app currently operates and hooks into the OS
@@ -145,7 +149,8 @@
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
 // --------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::move_active_window(bool above, const app_dimensions& appDimensions) {
+/* public */ void windows_subsystem::move_active_window(bool above, const app_dimensions& appDimensions)
+{
     HWND window = ::GetForegroundWindow();
     if (window == nullptr) {
         return;
@@ -159,20 +164,24 @@
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions) {
+/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions)
+{
     HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
-    if (instance == nullptr) {
+    if (instance == nullptr)
+    {
         throw std::runtime_error("Failure on ShellExecuteW()");
     }
     // Wait 500 ms for any other application initialization logic.
     ::Sleep(500);
     size_t find = exePath.find_last_of('\\');
-    if (find == std::wstring::npos) {
+    if (find == std::wstring::npos)
+    {
         throw std::runtime_error("exePath is not absolute");
     }
     std::wstring exeOnly = exePath.substr(find + 1);
     HWND window = get_window(exeOnly, L"");
-    if (window == nullptr) {
+    if (window == nullptr)
+    {
         // Either application is reallly slow, or didnt open with an expected GUI window.
         return;
     }
@@ -182,7 +191,8 @@
 // --- is_process_running(): Determines if a process is running within the system.
 // ------- returns: true if found, false if not
 // ---------------------------------------------------------------------------------------/
-/* public */ bool windows_subsystem::is_process_running(const std::wstring& processName) {
+/* public */ bool windows_subsystem::is_process_running(const std::wstring& processName)
+{
     uint32_t processesArray[1024];
     uint32_t needed;
     int32_t r;
@@ -192,7 +202,8 @@
         throw std::runtime_error("Failure on EnumProcesses()");
     }
     uint32_t processCount = needed / sizeof(uint32_t);
-    if (processCount == 1024) {
+    if (processCount == 1024)
+    {
         throw std::runtime_error("Failure on EnumProcesses() -> overflow");
     }
     for (size_t i = 0; i < processCount; i++)
@@ -216,7 +227,8 @@
 // ----- requiredTitleContains: Text that the window title must contain, empty means any title (only match exe name).
 // ------- returns: the found HWND, or nulptr if not found.
 // --------------------------------------------------------------------------------------------------------------------/
-/* public */ HWND windows_subsystem::get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains) {
+/* public */ HWND windows_subsystem::get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains)
+{
     enumWindowProcExeName = runningExe;
     std::transform(enumWindowProcExeName.begin(), enumWindowProcExeName.end(), enumWindowProcExeName.begin(), ::toupper);
     enumWindowProcTitleContains = requiredTitleContains;
@@ -274,7 +286,8 @@
             return true;
         }
 
-        if (enumWindowProcTitleContains.empty()) {
+        if (enumWindowProcTitleContains.empty())
+        {
             // No need to check windowTitle here, just return the window we found.
             enumWindowProcHwndOut = window;
             return false;
@@ -331,7 +344,8 @@
 // -------------------------------------------------------------------------------------------/
 /* private */ std::wstring windows_subsystem::get_exe_name_from_process_id(uint32_t processId) {
     ::HANDLE processHandle = ::OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, processId);
-    if (processHandle == nullptr) {
+    if (processHandle == nullptr)
+    {
         if (::GetLastError() == ERROR_ACCESS_DENIED)
         {
             // system processes are off bounds, just skip them
@@ -344,7 +358,7 @@
     int32_t r = ::EnumProcessModulesEx(processHandle, &moduleHandle, sizeof(moduleHandle), reinterpret_cast<::DWORD*>(&needed), LIST_MODULES_DEFAULT);
     if (r == 0)
     {
-        uint32_t errorCode = GetLastError();
+        uint32_t errorCode = ::GetLastError();
         if (errorCode == ERROR_NOACCESS || errorCode == ERROR_PARTIAL_COPY)
         {
             // system processes are off bounds, just skip them

@@ -353,7 +353,38 @@ void main_window::ui_on_key_press()
     }
 
     // Send off the key press
-    // TODO - use key_mapping.
+    auto keyCode = key_mapping::translateSet.find(srcButton->objectName().toStdWString());
+    if (keyCode == key_mapping::translateSet.end())
+    {
+        throw std::runtime_error("Missing keyCode");
+    }
+    int32_t virtualKeyCode = keyCode->second;
+
+    // This is only place we call win32 API directly in this file, see windows_subsystem otherwise.
+    INPUT input = {};
+    input.type = INPUT_KEYBOARD;
+
+    // Long if else chain for handling all QPushButtons keys on the UI.
+    if (virtualKeyCode >= VK_F1 || virtualKeyCode <= VK_F12)
+    {
+        input.ki.wVk = virtualKeyCode;
+    }
+    else
+    {
+        throw std::runtime_error("Unhandled native SendInput translation");
+    }
+    input.ki.wVk = virtualKeyCode;
+    uint32_t r = ::SendInput(1, &input, sizeof(input));
+    if (r == 0)
+    {
+        throw std::runtime_error("SendInput() failure");
+    }
+    input.ki.dwFlags = KEYEVENTF_KEYUP;
+    r = ::SendInput(1, &input, sizeof(input));
+    if (r == 0)
+    {
+        throw std::runtime_error("SendInput() failure");
+    }
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index)

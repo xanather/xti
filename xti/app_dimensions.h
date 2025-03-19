@@ -8,7 +8,8 @@
 // 4. Project classes
 // 5. Forward decl
 
-struct app_dimensions {
+struct app_dimensions
+{
     int32_t dimensionsAvailableScreenWidth;
     int32_t dimensionsAboveYEnd;
     int32_t dimensionsBelowYStart;
