@@ -365,7 +365,14 @@ void main_window::ui_on_key_press()
     input.type = INPUT_KEYBOARD;
 
     // Long if else chain for handling all QPushButtons keys on the UI.
-    if (virtualKeyCode >= VK_F1 || virtualKeyCode <= VK_F12)
+    if ((virtualKeyCode == VK_ESCAPE) ||
+        (virtualKeyCode >= VK_F1 && virtualKeyCode <= VK_F12) ||
+        (virtualKeyCode == VK_BACK) ||
+        (virtualKeyCode >= 0x30 && virtualKeyCode <= 0x39) ||
+        (virtualKeyCode == VK_MEDIA_PLAY_PAUSE) ||
+        (virtualKeyCode == VK_VOLUME_MUTE) ||
+        (virtualKeyCode == VK_MEDIA_NEXT_TRACK) ||
+        (virtualKeyCode == VK_MEDIA_PREV_TRACK)) // 0-9 numbers.
     {
         input.ki.wVk = virtualKeyCode;
     }
