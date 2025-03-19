@@ -33,6 +33,7 @@
 #include <QTimer>
 // 2. System/OS headers
 // 3. C++ standard library headers
+#include <string>
 #include <cctype>
 #include <algorithm>
 // 4. Project classes
@@ -353,7 +354,8 @@ void main_window::ui_on_key_press()
     }
 
     // Send off the key press
-    auto keyCode = key_mapping::translateSet.find(srcButton->objectName().toStdWString());
+    std::wstring buttonName = srcButton->objectName().toStdWString();
+    auto keyCode = key_mapping::translateSet.find(buttonName);
     if (keyCode == key_mapping::translateSet.end())
     {
         throw std::runtime_error("Missing keyCode");
@@ -365,10 +367,11 @@ void main_window::ui_on_key_press()
     input.type = INPUT_KEYBOARD;
 
     // Long if else chain for handling all QPushButtons keys on the UI.
+    bool toggleShift = false;
     if ((virtualKeyCode == VK_ESCAPE) ||
         (virtualKeyCode >= VK_F1 && virtualKeyCode <= VK_F12) ||
         (virtualKeyCode == VK_BACK) ||
-        (virtualKeyCode >= 0x30 && virtualKeyCode <= 0x39) ||
+        (virtualKeyCode >= 0x30 && virtualKeyCode <= 0x39) || // 0-9 numbers.
         (virtualKeyCode == VK_MEDIA_PLAY_PAUSE) ||
         (virtualKeyCode == VK_VOLUME_MUTE) ||
         (virtualKeyCode == VK_MEDIA_NEXT_TRACK) ||
@@ -380,16 +383,35 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_UP) ||
         (virtualKeyCode == VK_DOWN) ||
         (virtualKeyCode == VK_LEFT) ||
-        (virtualKeyCode == VK_RIGHT)) // 0-9 numbers.
+        (virtualKeyCode == VK_RIGHT) ||
+        (virtualKeyCode == VK_DELETE) ||
+        (virtualKeyCode == VK_RETURN))
     {
         input.ki.wVk = virtualKeyCode;
+    }
+    else if (virtualKeyCode == VK_OEM_2)
+    {
+        input.ki.wVk = VK_OEM_2;
+        if (buttonName == L"pushButton_questionMark")
+        {
+            toggleShift = true;
+        }
     }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");
     }
+    uint32_t r;
+    if (toggleShift) {
+        input.ki.wVk = VK_LSHIFT;
+        r = ::SendInput(1, &input, sizeof(input));
+        if (r == 0)
+        {
+            throw std::runtime_error("SendInput() failure");
+        }
+    }
     input.ki.wVk = virtualKeyCode;
-    uint32_t r = ::SendInput(1, &input, sizeof(input));
+    r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
         throw std::runtime_error("SendInput() failure");
@@ -399,6 +421,14 @@ void main_window::ui_on_key_press()
     if (r == 0)
     {
         throw std::runtime_error("SendInput() failure");
+    }
+    if (toggleShift) {
+        input.ki.wVk = VK_LSHIFT;
+        r = ::SendInput(1, &input, sizeof(input));
+        if (r == 0)
+        {
+            throw std::runtime_error("SendInput() failure");
+        }
     }
 }
 

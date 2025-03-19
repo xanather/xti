@@ -1,4 +1,4 @@
-# First Proper Windows Virtual Keyboard
+# XTI Windows Virtual Keyboard
 
 ![screenshotv01.png](screenshotv01.png)
 
@@ -20,9 +20,9 @@ WORK IN PROGRESS:
 - Requires D20 thumb dexterity.
 
 ## Building
-Supports either x64 or Arm64 computers.
-1. Install Qt open source with MSVC desktop feature.
-2. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
+Supports either x64 or Arm64 computers running Windows 10 or Windows 11.
+1. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
+2. Install Qt open source with MSVC desktop feature.
 3. Install CMake.
 4. TODO (does not exist yet): Run build.ps1.
 5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin. Creating an official installer and registering to start at startup as Admin might come later if I get time. I recommend configuring the exe to run with Windows Scheduler as admin at startup to begin with.

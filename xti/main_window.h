@@ -23,7 +23,6 @@
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <vector>
-#include <string>
 #include <cstdint>
 // 4. Project classes
 #include "app_dimensions.h"
