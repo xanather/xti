@@ -160,9 +160,9 @@ void key_mapping::initialize()
     translateSet[L"pushButton_control"] = VK_LCONTROL;
     translateSet[L"pushButton_windows"] = VK_LWIN;
     translateSet[L"pushButton_alt"] = VK_LMENU;
-    translateSet[L"pushButton_copy"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_copy"] = VK_XTI_CUSTOM_COPY;
     translateSet[L"pushButton_cut"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_paste"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_paste"] = VK_XTI_CUSTOM_PASTE;
     translateSet[L"pushButton_fileFind"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_find"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_findAll"] = VK_NEED_MORE_INFO;

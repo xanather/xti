@@ -27,6 +27,8 @@
 // 5. Forward decl
 
 #define VK_NEED_MORE_INFO -1
+#define VK_XTI_CUSTOM_COPY -1000
+#define VK_XTI_CUSTOM_PASTE -1001
 
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only

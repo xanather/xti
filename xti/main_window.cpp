@@ -367,6 +367,7 @@ void main_window::ui_on_key_press()
     input.type = INPUT_KEYBOARD;
 
     // Long if else chain for handling all QPushButtons keys on the UI.
+    bool toggleControl = false;
     bool toggleShift = false;
     // PASS THROUGH PIPE
     if ((virtualKeyCode == VK_ESCAPE) ||
@@ -416,12 +417,34 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
+    // KEY COMBINATORS
+    else if (virtualKeyCode == VK_XTI_CUSTOM_COPY)
+    {
+        input.ki.wVk = 0x43; // C
+        toggleControl = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_PASTE)
+    {
+        input.ki.wVk = 0x56; // V
+        toggleControl = true;
+    }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");
     }
     uint32_t r;
-    if (toggleShift) {
+    uint16_t toSendVKC = input.ki.wVk;
+    if (toggleControl)
+    {
+        input.ki.wVk = VK_LCONTROL;
+        r = ::SendInput(1, &input, sizeof(input));
+        if (r == 0)
+        {
+            throw std::runtime_error("SendInput() failure");
+        }
+    }
+    if (toggleShift)
+    {
         input.ki.wVk = VK_LSHIFT;
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
@@ -429,7 +452,7 @@ void main_window::ui_on_key_press()
             throw std::runtime_error("SendInput() failure");
         }
     }
-    input.ki.wVk = virtualKeyCode;
+    input.ki.wVk = toSendVKC;
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
@@ -443,6 +466,15 @@ void main_window::ui_on_key_press()
     }
     if (toggleShift) {
         input.ki.wVk = VK_LSHIFT;
+        r = ::SendInput(1, &input, sizeof(input));
+        if (r == 0)
+        {
+            throw std::runtime_error("SendInput() failure");
+        }
+    }
+    if (toggleControl)
+    {
+        input.ki.wVk = VK_LCONTROL;
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
