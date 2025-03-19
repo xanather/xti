@@ -33,13 +33,14 @@
 /* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window) {
     // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
     // despite setting Qt::WindowDoesNotAcceptFocus at startup.
-    // TODO - validate this
     int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
-    if (r == 0) {
+    if (r == 0)
+    {
         throw std::runtime_error("Failure on GetWindowLongPtr()");
     }
     r = ::SetWindowLongPtrW(window, GWL_EXSTYLE, r | WS_EX_NOACTIVATE | WS_EX_TOPMOST);
-    if (r == 0) {
+    if (r == 0)
+    {
         throw std::runtime_error("Failure on SetWindowLongPtrW()");
     }
 }
@@ -47,6 +48,7 @@
 // --- initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
 // --------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::initialize_force_cursor_visible() {
+    // TODO - validate this
     ::HKEY hKey;
     wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
     wchar_t valueName[] = L"EnableCursorSuppression";
