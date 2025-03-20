@@ -46,11 +46,11 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_percent"] = VK_XTI_CUSTOM_PERCENT;
     /*HANDLED*/ translateSet[L"pushButton_next"] = VK_MEDIA_NEXT_TRACK;
     /*HANDLED*/ translateSet[L"pushButton_previous"] = VK_MEDIA_PREV_TRACK;
-    translateSet[L"pushButton_circumflex"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_ampersand"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_asterisk"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_leftRoundBracket"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_rightRoundBracket"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_circumflex"] = VK_XTI_CUSTOM_CIRCUMFLEX;
+    /*HANDLED*/ translateSet[L"pushButton_ampersand"] = VK_XTI_CUSTOM_AMPERSAND;
+    /*HANDLED*/ translateSet[L"pushButton_asterisk"] = VK_XTI_CUSTOM_ASTERISK;
+    /*HANDLED*/ translateSet[L"pushButton_leftRoundBracket"] = VK_XTI_CUSTOM_LEFT_ROUND_BRACKET;
+    /*HANDLED*/ translateSet[L"pushButton_rightRoundBracket"] = VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET;
     translateSet[L"pushButton_minus"] = VK_SUBTRACT;
     /*HANDLED*/ translateSet[L"pushButton_graveAccent"] = VK_OEM_3;
     /*HANDLED*/ translateSet[L"pushButton_num1"] = 0x31;

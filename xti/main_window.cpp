@@ -461,6 +461,31 @@ void main_window::ui_on_key_press()
         input.ki.wVk = 0x35; // 5
         toggleShift = true;
     }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_CIRCUMFLEX)
+    {
+        input.ki.wVk = 0x36; // 6
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_AMPERSAND)
+    {
+        input.ki.wVk = 0x37; // 7
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_ASTERISK)
+    {
+        input.ki.wVk = 0x38; // 8
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_LEFT_ROUND_BRACKET)
+    {
+        input.ki.wVk = 0x39; // 9
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET)
+    {
+        input.ki.wVk = 0x30; // 0
+        toggleShift = true;
+    }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");

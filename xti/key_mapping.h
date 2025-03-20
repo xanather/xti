@@ -35,6 +35,11 @@
 #define VK_XTI_CUSTOM_HASH -1004
 #define VK_XTI_CUSTOM_DOLLAR -1005
 #define VK_XTI_CUSTOM_PERCENT -1006
+#define VK_XTI_CUSTOM_CIRCUMFLEX -1007
+#define VK_XTI_CUSTOM_AMPERSAND -1008
+#define VK_XTI_CUSTOM_ASTERISK -1009
+#define VK_XTI_CUSTOM_LEFT_ROUND_BRACKET -1010
+#define VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET -1011
 
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only
