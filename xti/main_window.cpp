@@ -398,6 +398,15 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
+    // VK_OEM_1 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_1)
+    {
+        input.ki.wVk = VK_OEM_1;
+        if (buttonName == L"pushButton_colon")
+        {
+            toggleShift = true;
+        }
+    }
     // VK_OEM_2 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_2)
     {
@@ -421,6 +430,15 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = VK_OEM_4;
         if (buttonName == L"pushButton_leftBraces")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_4 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_5)
+    {
+        input.ki.wVk = VK_OEM_5;
+        if (buttonName == L"pushButton_verticalSlash")
         {
             toggleShift = true;
         }
