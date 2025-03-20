@@ -128,7 +128,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_d"] = 0x44;
     /*HANDLED*/ translateSet[L"pushButton_f"] = 0x46;
     /*HANDLED*/ translateSet[L"pushButton_g"] = 0x47;
-    translateSet[L"pushButton_printScreen"] = VK_SNAPSHOT;
+    /*HANDLED*/ translateSet[L"pushButton_printScreen"] = VK_SNAPSHOT;
     translateSet[L"pushButton_numLock"] = VK_NUMLOCK;
     /*HANDLED*/ translateSet[L"pushButton_h"] = 0x48;
     /*HANDLED*/ translateSet[L"pushButton_j"] = 0x4A;

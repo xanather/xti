@@ -385,7 +385,8 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_LEFT) ||
         (virtualKeyCode == VK_RIGHT) ||
         (virtualKeyCode == VK_DELETE) ||
-        (virtualKeyCode == VK_RETURN))
+        (virtualKeyCode == VK_RETURN) ||
+        (virtualKeyCode == VK_SNAPSHOT))
     {
         input.ki.wVk = virtualKeyCode;
     }
@@ -434,7 +435,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_4 EXTENSIONS
+    // VK_OEM_5 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_5)
     {
         input.ki.wVk = VK_OEM_5;
