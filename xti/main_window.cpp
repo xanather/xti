@@ -46,12 +46,10 @@ main_window::main_window(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Make window top-most with no border + make background black.
+    // Make window top-most with no border + make background translucent.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
-    QPalette palette;
-    palette.setColor(QPalette::Window, QColor(0, 0, 0));
-    setPalette(palette);
 
     // Load app config. Assumes UTF-8 encoding.
     QFile configFile(QDir::homePath() + "/xti.json");
@@ -400,8 +398,18 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
+    // VK_OEM_3 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_3)
+    {
+        input.ki.wVk = VK_OEM_3;
+        if (buttonName == L"pushButton_tilde")
+        {
+            toggleShift = true;
+        }
+    }
     // VK_OEM_4 EXTENSIONS
-    else if (virtualKeyCode == VK_OEM_4) {
+    else if (virtualKeyCode == VK_OEM_4)
+    {
         input.ki.wVk = VK_OEM_4;
         if (buttonName == L"pushButton_leftBraces")
         {
