@@ -446,6 +446,21 @@ void main_window::ui_on_key_press()
         input.ki.wVk = 0x32; // 2
         toggleShift = true;
     }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_HASH)
+    {
+        input.ki.wVk = 0x33; // 3
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_DOLLAR)
+    {
+        input.ki.wVk = 0x34; // 4
+        toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_PERCENT)
+    {
+        input.ki.wVk = 0x35; // 5
+        toggleShift = true;
+    }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");

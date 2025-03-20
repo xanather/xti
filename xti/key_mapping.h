@@ -32,6 +32,9 @@
 
 #define VK_XTI_CUSTOM_EXCLAMATION_MARK -1002
 #define VK_XTI_CUSTOM_AT -1003
+#define VK_XTI_CUSTOM_HASH -1004
+#define VK_XTI_CUSTOM_DOLLAR -1005
+#define VK_XTI_CUSTOM_PERCENT -1006
 
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only
