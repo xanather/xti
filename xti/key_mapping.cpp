@@ -79,7 +79,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_I"] = 0x49;
     translateSet[L"pushButton_O"] = 0x4F;
     translateSet[L"pushButton_P"] = 0x50;
-    translateSet[L"pushButton_equals"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_equals"] = VK_OEM_PLUS;
     /*HANDLED*/ translateSet[L"pushButton_doubleQuote"] = VK_OEM_7;
     translateSet[L"pushButton_A"] = 0x41;
     translateSet[L"pushButton_S"] = 0x53;
@@ -93,7 +93,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_K"] = 0x4B;
     translateSet[L"pushButton_L"] = 0x4C;
     /*HANDLED*/ translateSet[L"pushButton_leftSquareBracket"] = VK_OEM_4;
-    translateSet[L"pushButton_plus"] = VK_ADD;
+    /*HANDLED*/ translateSet[L"pushButton_plus"] = VK_OEM_PLUS;
     translateSet[L"pushButton_semicolon"] = VK_OEM_1;
     translateSet[L"pushButton_Z"] = 0x5A;
     translateSet[L"pushButton_X"] = 0x58;

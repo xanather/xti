@@ -443,6 +443,15 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
+    // VK_OEM_PLUS EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_PLUS)
+    {
+        input.ki.wVk = VK_OEM_PLUS;
+        if (buttonName == L"pushButton_plus")
+        {
+            toggleShift = true;
+        }
+    }
     // KEY COMBINATORS
     else if (virtualKeyCode == VK_XTI_CUSTOM_COPY)
     {
