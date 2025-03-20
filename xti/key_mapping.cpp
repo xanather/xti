@@ -51,7 +51,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_asterisk"] = VK_XTI_CUSTOM_ASTERISK;
     /*HANDLED*/ translateSet[L"pushButton_leftRoundBracket"] = VK_XTI_CUSTOM_LEFT_ROUND_BRACKET;
     /*HANDLED*/ translateSet[L"pushButton_rightRoundBracket"] = VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET;
-    /*HANDLED*/ translateSet[L"pushButton_minus"] = VK_SUBTRACT;
+    /*HANDLED*/ translateSet[L"pushButton_minus"] = VK_OEM_MINUS;
     /*HANDLED*/ translateSet[L"pushButton_graveAccent"] = VK_OEM_3;
     /*HANDLED*/ translateSet[L"pushButton_num1"] = 0x31;
     /*HANDLED*/ translateSet[L"pushButton_num2"] = 0x32;
@@ -65,8 +65,8 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_num8"] = 0x38;
     /*HANDLED*/ translateSet[L"pushButton_num9"] = 0x39;
     /*HANDLED*/ translateSet[L"pushButton_num0"] = 0x30;
-    translateSet[L"pushButton_underscore"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_singleQuote"] = VK_OEM_7;
+    /*HANDLED*/ translateSet[L"pushButton_underscore"] = VK_OEM_MINUS;
+    /*HANDLED*/ translateSet[L"pushButton_singleQuote"] = VK_OEM_7;
     translateSet[L"pushButton_Q"] = 0x51;
     translateSet[L"pushButton_W"] = 0x57;
     translateSet[L"pushButton_E"] = 0x45;
@@ -80,7 +80,7 @@ void key_mapping::initialize()
     translateSet[L"pushButton_O"] = 0x4F;
     translateSet[L"pushButton_P"] = 0x50;
     translateSet[L"pushButton_equals"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_doubleQuote"] = VK_OEM_7;
+    /*HANDLED*/ translateSet[L"pushButton_doubleQuote"] = VK_OEM_7;
     translateSet[L"pushButton_A"] = 0x41;
     translateSet[L"pushButton_S"] = 0x53;
     translateSet[L"pushButton_D"] = 0x44;

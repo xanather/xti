@@ -385,8 +385,7 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_LEFT) ||
         (virtualKeyCode == VK_RIGHT) ||
         (virtualKeyCode == VK_DELETE) ||
-        (virtualKeyCode == VK_RETURN) ||
-        (virtualKeyCode == VK_SUBTRACT))
+        (virtualKeyCode == VK_RETURN))
     {
         input.ki.wVk = virtualKeyCode;
     }
@@ -422,6 +421,24 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = VK_OEM_6;
         if (buttonName == L"pushButton_rightBraces")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_7 EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_7)
+    {
+        input.ki.wVk = VK_OEM_7;
+        if (buttonName == L"pushButton_doubleQuote")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_MINUS EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_MINUS)
+    {
+        input.ki.wVk = VK_OEM_MINUS;
+        if (buttonName == L"pushButton_underscore")
         {
             toggleShift = true;
         }
