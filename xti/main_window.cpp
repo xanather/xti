@@ -389,6 +389,15 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = virtualKeyCode;
     }
+    // ALPHABET
+    else if (virtualKeyCode >= 0x41 && virtualKeyCode <= 0x5A)
+    {
+        input.ki.wVk = virtualKeyCode;
+        if (buttonName[11] == ::toupper(buttonName[11]))
+        {
+            toggleShift = true;
+        }
+    }
     // VK_OEM_2 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_2)
     {
