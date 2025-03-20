@@ -385,7 +385,8 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_LEFT) ||
         (virtualKeyCode == VK_RIGHT) ||
         (virtualKeyCode == VK_DELETE) ||
-        (virtualKeyCode == VK_RETURN))
+        (virtualKeyCode == VK_RETURN) ||
+        (virtualKeyCode == VK_SUBTRACT))
     {
         input.ki.wVk = virtualKeyCode;
     }

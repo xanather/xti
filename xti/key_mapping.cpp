@@ -51,7 +51,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_asterisk"] = VK_XTI_CUSTOM_ASTERISK;
     /*HANDLED*/ translateSet[L"pushButton_leftRoundBracket"] = VK_XTI_CUSTOM_LEFT_ROUND_BRACKET;
     /*HANDLED*/ translateSet[L"pushButton_rightRoundBracket"] = VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET;
-    translateSet[L"pushButton_minus"] = VK_SUBTRACT;
+    /*HANDLED*/ translateSet[L"pushButton_minus"] = VK_SUBTRACT;
     /*HANDLED*/ translateSet[L"pushButton_graveAccent"] = VK_OEM_3;
     /*HANDLED*/ translateSet[L"pushButton_num1"] = 0x31;
     /*HANDLED*/ translateSet[L"pushButton_num2"] = 0x32;
