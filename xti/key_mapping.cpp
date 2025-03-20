@@ -39,8 +39,8 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_f12"] = VK_F12;
     /*HANDLED*/ translateSet[L"pushButton_backspace"] = VK_BACK;
     /*HANDLED*/ translateSet[L"pushButton_tilde"] = VK_OEM_3;
-    translateSet[L"pushButton_exclamationMark"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_at"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_exclamationMark"] = VK_XTI_CUSTOM_EXCLAMATION_MARK;
+    /*HANDLED*/ translateSet[L"pushButton_at"] = VK_XTI_CUSTOM_AT;
     translateSet[L"pushButton_hash"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_dollar"] = VK_NEED_MORE_INFO;
     translateSet[L"pushButton_percent"] = VK_NEED_MORE_INFO;
