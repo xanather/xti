@@ -151,8 +151,8 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_menu"] = VK_APPS;
     translateSet[L"pushButton_capsLock"] = VK_CAPITAL;
     /*HANDLED*/ translateSet[L"pushButton_space"] = VK_SPACE;
-    translateSet[L"pushButton_undo"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_redo"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_undo"] = VK_XTI_CUSTOM_UNDO;
+    /*HANDLED*/ translateSet[L"pushButton_redo"] = VK_XTI_CUSTOM_REDO;
     /*HANDLED*/ translateSet[L"pushButton_up"] = VK_UP;
     /*HANDLED*/ translateSet[L"pushButton_down"] = VK_DOWN;
     /*HANDLED*/ translateSet[L"pushButton_left"] = VK_LEFT;

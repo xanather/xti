@@ -587,6 +587,16 @@ void main_window::ui_on_key_press()
         input.ki.wVk = 0x58; // X
         toggleControl = true;
     }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_UNDO)
+    {
+        input.ki.wVk = 0x5A; // Z
+        toggleControl = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_REDO)
+    {
+        input.ki.wVk = 0x59; // Y
+        toggleControl = true;
+    }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");

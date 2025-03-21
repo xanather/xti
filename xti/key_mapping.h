@@ -45,6 +45,8 @@
 #define VK_XTI_CUSTOM_FIND -2005
 #define VK_XTI_CUSTOM_FIND_ALL -2006
 #define VK_XTI_CUSTOM_CUT -2007
+#define VK_XTI_CUSTOM_UNDO -2008
+#define VK_XTI_CUSTOM_REDO -2009
 
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only
