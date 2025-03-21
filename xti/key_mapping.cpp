@@ -101,7 +101,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_V"] = 0x56;
     /*HANDLED*/ translateSet[L"pushButton_B"] = 0x42;
     /*HANDLED*/ translateSet[L"pushButton_tab"] = VK_TAB;
-    translateSet[L"pushButton_break"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_break"] = VK_PAUSE;
     /*HANDLED*/ translateSet[L"pushButton_N"] = 0x4E;
     /*HANDLED*/ translateSet[L"pushButton_M"] = 0x4D;
     /*HANDLED*/ translateSet[L"pushButton_lessThan"] = VK_OEM_COMMA;

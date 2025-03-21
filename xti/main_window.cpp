@@ -392,7 +392,8 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_END) ||
         (virtualKeyCode == VK_TAB) ||
         (virtualKeyCode == VK_APPS) ||
-        (virtualKeyCode == VK_INSERT))
+        (virtualKeyCode == VK_INSERT) ||
+        (virtualKeyCode == VK_PAUSE))
     {
         input.ki.wVk = virtualKeyCode;
     }
