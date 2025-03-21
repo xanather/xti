@@ -378,7 +378,6 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_MEDIA_PREV_TRACK) ||
         (virtualKeyCode == VK_VOLUME_UP) ||
         (virtualKeyCode == VK_VOLUME_DOWN) ||
-        (virtualKeyCode == VK_OEM_PERIOD) ||
         (virtualKeyCode == VK_SPACE) ||
         (virtualKeyCode == VK_UP) ||
         (virtualKeyCode == VK_DOWN) ||
@@ -481,6 +480,24 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = VK_OEM_PLUS;
         if (buttonName == L"pushButton_plus")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_PERIOD EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_PERIOD)
+    {
+        input.ki.wVk = VK_OEM_PERIOD;
+        if (buttonName == L"pushButton_greaterThan")
+        {
+            toggleShift = true;
+        }
+    }
+    // VK_OEM_COMMA EXTENSIONS
+    else if (virtualKeyCode == VK_OEM_COMMA)
+    {
+        input.ki.wVk = VK_OEM_COMMA;
+        if (buttonName == L"pushButton_lessThan")
         {
             toggleShift = true;
         }

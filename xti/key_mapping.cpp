@@ -104,8 +104,8 @@ void key_mapping::initialize()
     translateSet[L"pushButton_break"] = VK_NEED_MORE_INFO;
     /*HANDLED*/ translateSet[L"pushButton_N"] = 0x4E;
     /*HANDLED*/ translateSet[L"pushButton_M"] = 0x4D;
-    translateSet[L"pushButton_lessThan"] = VK_OEM_102;
-    translateSet[L"pushButton_greaterThan"] = VK_OEM_102;
+    /*HANDLED*/ translateSet[L"pushButton_lessThan"] = VK_OEM_COMMA;
+    /*HANDLED*/ translateSet[L"pushButton_greaterThan"] = VK_OEM_PERIOD;
     /*HANDLED*/ translateSet[L"pushButton_rightSquareBracket"] = VK_OEM_6;
     /*HANDLED*/ translateSet[L"pushButton_backslash"] = VK_OEM_5;
     /*HANDLED*/ translateSet[L"pushButton_colon"] = VK_OEM_1;
@@ -122,7 +122,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_o"] = 0x4F;
     /*HANDLED*/ translateSet[L"pushButton_p"] = 0x50;
     /*HANDLED*/ translateSet[L"pushButton_leftBraces"] = VK_OEM_4;
-    translateSet[L"pushButton_comma"] = VK_OEM_COMMA;
+    /*HANDLED*/ translateSet[L"pushButton_comma"] = VK_OEM_COMMA;
     /*HANDLED*/ translateSet[L"pushButton_a"] = 0x41;
     /*HANDLED*/ translateSet[L"pushButton_s"] = 0x53;
     /*HANDLED*/ translateSet[L"pushButton_d"] = 0x44;
