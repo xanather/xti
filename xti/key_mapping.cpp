@@ -72,8 +72,8 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_E"] = 0x45;
     /*HANDLED*/ translateSet[L"pushButton_R"] = 0x52;
     /*HANDLED*/ translateSet[L"pushButton_T"] = 0x54;
-    translateSet[L"pushButton_pageUp"] = VK_PRIOR;
-    translateSet[L"pushButton_pageDown"] = VK_NEXT;
+    /*HANDLED*/ translateSet[L"pushButton_pageUp"] = VK_PRIOR;
+    /*HANDLED*/ translateSet[L"pushButton_pageDown"] = VK_NEXT;
     /*HANDLED*/ translateSet[L"pushButton_Y"] = 0x59;
     /*HANDLED*/ translateSet[L"pushButton_U"] = 0x55;
     /*HANDLED*/ translateSet[L"pushButton_I"] = 0x49;
@@ -86,8 +86,8 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_D"] = 0x44;
     /*HANDLED*/ translateSet[L"pushButton_F"] = 0x46;
     /*HANDLED*/ translateSet[L"pushButton_G"] = 0x47;
-    translateSet[L"pushButton_home"] = VK_HOME;
-    translateSet[L"pushButton_end"] = VK_END;
+    /*HANDLED*/ translateSet[L"pushButton_home"] = VK_HOME;
+    /*HANDLED*/ translateSet[L"pushButton_end"] = VK_END;
     /*HANDLED*/ translateSet[L"pushButton_H"] = 0x48;
     /*HANDLED*/ translateSet[L"pushButton_J"] = 0x4A;
     /*HANDLED*/ translateSet[L"pushButton_K"] = 0x4B;
@@ -100,7 +100,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_C"] = 0x43;
     /*HANDLED*/ translateSet[L"pushButton_V"] = 0x56;
     /*HANDLED*/ translateSet[L"pushButton_B"] = 0x42;
-    translateSet[L"pushButton_tab"] = VK_TAB;
+    /*HANDLED*/ translateSet[L"pushButton_tab"] = VK_TAB;
     translateSet[L"pushButton_break"] = VK_NEED_MORE_INFO;
     /*HANDLED*/ translateSet[L"pushButton_N"] = 0x4E;
     /*HANDLED*/ translateSet[L"pushButton_M"] = 0x4D;

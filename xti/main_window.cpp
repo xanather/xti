@@ -386,7 +386,12 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_RIGHT) ||
         (virtualKeyCode == VK_DELETE) ||
         (virtualKeyCode == VK_RETURN) ||
-        (virtualKeyCode == VK_SNAPSHOT))
+        (virtualKeyCode == VK_SNAPSHOT) ||
+        (virtualKeyCode == VK_PRIOR) ||
+        (virtualKeyCode == VK_NEXT) ||
+        (virtualKeyCode == VK_HOME) ||
+        (virtualKeyCode == VK_END) ||
+        (virtualKeyCode == VK_TAB))
     {
         input.ki.wVk = virtualKeyCode;
     }
