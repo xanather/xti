@@ -582,6 +582,11 @@ void main_window::ui_on_key_press()
         toggleShift = true;
         toggleControl = true;
     }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_CUT)
+    {
+        input.ki.wVk = 0x58; // X
+        toggleControl = true;
+    }
     else
     {
         throw std::runtime_error("Unhandled native SendInput translation");
