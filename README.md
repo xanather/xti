@@ -20,7 +20,7 @@ WORK IN PROGRESS:
 - Requires D20 thumb dexterity.
 
 ## Building
-Supports either x64 or Arm64 computers running Windows 10 or Windows 11.
+Supports either x64 or Arm64 computers running Windows 11.
 1. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
 2. Install Qt open source with MSVC desktop feature.
 3. Install CMake.
@@ -30,7 +30,15 @@ Supports either x64 or Arm64 computers running Windows 10 or Windows 11.
 ## Before Running
 1. Create a config file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
 2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
-3. It is recommended to force the system into portrait mode and prevent the Microsoft's touch keyboard from showing by itself using windows settings.
+3. Before running its recommended to make these changes:
+   1. Bottom right of screen -> press battery/sound/wifi icon -> force rotation lock in portrait mode.
+   2. Settings app -> time & language -> typing -> touch keyboard -> show the touch keyboard -> set as never.
+   3. Disable 'tablet optimized' sizes of buttons and spacing: from elevated command prompt run the `reg add` command further below.
+   4. (Optional): Settings app -> personalization -> taskbar -> system tray icons -> touch keyboard -> always show. Use this in emergency situation where you still need the old windows virtual keyboard.
+```
+reg add "HKLM\System\CurrentControlSet\Control\PriorityControl" /v ConvertibilityEnabled /t REG_DWORD /d 0
+```
+
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.
