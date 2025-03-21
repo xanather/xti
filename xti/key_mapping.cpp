@@ -148,7 +148,7 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_m"] = 0x4D;
     /*HANDLED*/ translateSet[L"pushButton_slash"] = VK_OEM_2;
     /*HANDLED*/ translateSet[L"pushButton_questionMark"] = VK_OEM_2;
-    translateSet[L"pushButton_menu"] = VK_NEED_MORE_INFO;
+    /*HANDLED*/ translateSet[L"pushButton_menu"] = VK_APPS;
     translateSet[L"pushButton_capsLock"] = VK_CAPITAL;
     /*HANDLED*/ translateSet[L"pushButton_space"] = VK_SPACE;
     translateSet[L"pushButton_undo"] = VK_NEED_MORE_INFO;
@@ -163,10 +163,10 @@ void key_mapping::initialize()
     /*HANDLED*/ translateSet[L"pushButton_copy"] = VK_XTI_CUSTOM_COPY;
     translateSet[L"pushButton_cut"] = VK_NEED_MORE_INFO;
     /*HANDLED*/ translateSet[L"pushButton_paste"] = VK_XTI_CUSTOM_PASTE;
-    translateSet[L"pushButton_fileFind"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_find"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_findAll"] = VK_NEED_MORE_INFO;
-    translateSet[L"pushButton_insert"] = VK_INSERT;
+    /*HANDLED*/ translateSet[L"pushButton_fileFind"] = VK_XTI_CUSTOM_FIND_FILE;
+    /*HANDLED*/ translateSet[L"pushButton_find"] = VK_XTI_CUSTOM_FIND;
+    /*HANDLED*/ translateSet[L"pushButton_findAll"] = VK_XTI_CUSTOM_FIND_ALL;
+    /*HANDLED*/ translateSet[L"pushButton_insert"] = VK_INSERT;
     /*HANDLED*/ translateSet[L"pushButton_delete"] = VK_DELETE;
     /*HANDLED*/ translateSet[L"pushButton_enter"] = VK_RETURN;
 }

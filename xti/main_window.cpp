@@ -390,7 +390,9 @@ void main_window::ui_on_key_press()
         (virtualKeyCode == VK_NEXT) ||
         (virtualKeyCode == VK_HOME) ||
         (virtualKeyCode == VK_END) ||
-        (virtualKeyCode == VK_TAB))
+        (virtualKeyCode == VK_TAB) ||
+        (virtualKeyCode == VK_APPS) ||
+        (virtualKeyCode == VK_INSERT))
     {
         input.ki.wVk = virtualKeyCode;
     }
@@ -562,6 +564,23 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = 0x30; // 0
         toggleShift = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_FIND_FILE)
+    {
+        input.ki.wVk = 0x4E; // N
+        toggleShift = true;
+        toggleControl = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_FIND)
+    {
+        input.ki.wVk = 0x46; // F
+        toggleControl = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_FIND_ALL)
+    {
+        input.ki.wVk = 0x46; // F
+        toggleShift = true;
+        toggleControl = true;
     }
     else
     {

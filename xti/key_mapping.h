@@ -27,8 +27,6 @@
 // 5. Forward decl
 
 #define VK_NEED_MORE_INFO -1
-#define VK_XTI_CUSTOM_COPY -1000
-#define VK_XTI_CUSTOM_PASTE -1001
 
 #define VK_XTI_CUSTOM_EXCLAMATION_MARK -1002
 #define VK_XTI_CUSTOM_AT -1003
@@ -40,6 +38,12 @@
 #define VK_XTI_CUSTOM_ASTERISK -1009
 #define VK_XTI_CUSTOM_LEFT_ROUND_BRACKET -1010
 #define VK_XTI_CUSTOM_RIGHT_ROUND_BRACKET -1011
+
+#define VK_XTI_CUSTOM_COPY -2002
+#define VK_XTI_CUSTOM_PASTE -2003
+#define VK_XTI_CUSTOM_FIND_FILE -2004
+#define VK_XTI_CUSTOM_FIND -2005
+#define VK_XTI_CUSTOM_FIND_ALL -2006
 
 // Maps push buttons on the main_window.ui to virtual key codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 class key_mapping  // static members only
