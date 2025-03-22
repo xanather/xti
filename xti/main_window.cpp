@@ -37,6 +37,7 @@
 #include <string>
 #include <cctype>
 #include <algorithm>
+#include <iostream>
 // 4. Project classes
 #include "windows_subsystem.h"
 #include "key_mapping.h"
@@ -350,7 +351,7 @@ void main_window::open_or_show_app(const QVariant& iObj)
 
 bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
     MSG* msg = reinterpret_cast<MSG*>(message);
-    qDebug() << msg->message; // TODO debugging - remove this
+    std::cout << std::to_string(msg->message).c_str();
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
