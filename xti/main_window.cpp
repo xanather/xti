@@ -32,7 +32,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTimer>
-#include <QDebug>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -55,6 +54,7 @@ main_window::main_window(QWidget *parent)
     // Make window top-most with no border + make background translucent.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_AcceptTouchEvents);
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
 
     // Load app config. Assumes UTF-8 encoding.
@@ -352,7 +352,6 @@ void main_window::open_or_show_app(const QVariant& iObj)
 
 bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
     MSG* msg = reinterpret_cast<MSG*>(message);
-    qDebug() << msg->message;
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
