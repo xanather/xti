@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef APP_DIMENSIONS_H
-#define APP_DIMENSIONS_H
+#ifndef ERROR_REPORTER_H
+#define ERROR_REPORTER_H
 
 // 1. Qt framework headers
 // 2. System/OS headers
@@ -23,12 +23,10 @@
 // 4. Project classes
 // 5. Forward decl
 
-struct app_dimensions
+class error_reporter // static members only
 {
-    int32_t dimensionsAvailableScreenWidth;
-    int32_t dimensionsAboveYEnd;
-    int32_t dimensionsBelowYStart;
-    int32_t dimensionsBelowYEnd;
+public:
+    static void halt(const char* file, int32_t line, const char* message);
 };
 
-#endif // APP_DIMENSIONS_H
+#endif // ERROR_REPORTER_H

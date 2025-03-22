@@ -26,23 +26,24 @@
 #include <cctype>
 #include <algorithm>
 // 4. Project classes
+#include "error_reporter.h"
 
 // --- initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
 // ----- window: HWND of the Qt app.
 // --------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window)
 {
-    // If the main app window does not call this function, then the keyboard can still take foreground focus away from others
-    // despite setting Qt::WindowDoesNotAcceptFocus at startup.
+    // If the main app window does not call this function, then the keyboard can still take foreground
+    // focus away from others despite when setting Qt::WindowDoesNotAcceptFocus at startup.
     int64_t r = ::GetWindowLongPtrW(window, GWL_EXSTYLE);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on GetWindowLongPtr()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowLongPtr() failure.");
     }
     r = ::SetWindowLongPtrW(window, GWL_EXSTYLE, r | WS_EX_NOACTIVATE | WS_EX_TOPMOST);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on SetWindowLongPtrW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SetWindowLongPtrW() failure.");
     }
 }
 
@@ -58,17 +59,17 @@
     int32_t r = ::RegOpenKeyExW(HKEY_LOCAL_MACHINE, subKey, 0, KEY_SET_VALUE, &hKey);
     if (r != ERROR_SUCCESS)
     {
-        throw std::runtime_error("Failure on RegOpenKeyExW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::RegOpenKeyExW() failure.");
     }
     r = ::RegSetValueExW(hKey, valueName, 0, REG_DWORD, reinterpret_cast<BYTE*>(&valueData), sizeof(valueData));
     if (r != ERROR_SUCCESS)
     {
-        throw std::runtime_error("Failure on RegSetValueExW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::RegSetValueExW() failure.");
     }
     r = ::RegCloseKey(hKey);
     if (r != ERROR_SUCCESS)
     {
-        throw std::runtime_error("Failure on RegCloseKey()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::RegCloseKey() failure.");
     }
 }
 
@@ -82,20 +83,20 @@
     int32_t r = ::GetWindowRect(window, &size);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on GetWindowRect()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowRect() failure.");
     }
     int32_t baseHeight = size.bottom - size.top;
     r = ::SystemParametersInfoW(SPI_GETWORKAREA, 0, &size, 0);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on SystemParametersInfoW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SystemParametersInfoW() failure.");
     }
     int32_t workingHeight = size.bottom;
     int32_t workingWidth = size.right;
     r = ::SetWindowPos(window, nullptr, 0, (workingHeight / 2) - (baseHeight / 2), workingWidth, baseHeight, 0);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on SetWindowPos()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
     }
     app_dimensions out;
     out.dimensionsAvailableScreenWidth = workingWidth;
@@ -117,14 +118,14 @@
     int32_t r = ::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &processTokenHandle);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on OpenProcessToken()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::OpenProcessToken() failure.");
     }
 
     ::LUID privilegeId;
     r = ::LookupPrivilegeValueW(nullptr, SE_DEBUG_NAME /* Apply for everything */, &privilegeId);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on LookupPrivilegeValueW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::LookupPrivilegeValueW() failure.");
     }
 
     ::TOKEN_PRIVILEGES tokenPrivilegesRequest;
@@ -134,13 +135,13 @@
     r = ::AdjustTokenPrivileges(processTokenHandle, false, &tokenPrivilegesRequest, sizeof(TOKEN_PRIVILEGES), nullptr, nullptr);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on LookupPrivilegeValueW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
     }
     // edge case: need to check GetLastError to ensure not ERROR_NOT_ALL_ASSIGNED
     uint32_t errorCode = ::GetLastError();
     if (errorCode != ERROR_SUCCESS)
     {
-        throw std::runtime_error("Failure on LookupPrivilegeValueW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
     }
 }
 
@@ -168,14 +169,14 @@
     HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
     if (instance == nullptr)
     {
-        throw std::runtime_error("Failure on ShellExecuteW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::ShellExecuteW() failure.");
     }
     // Wait 500 ms for any other application initialization logic.
     ::Sleep(500);
     size_t find = exePath.find_last_of('\\');
     if (find == std::wstring::npos)
     {
-        throw std::runtime_error("exePath is not absolute");
+        error_reporter::halt(__FILE__, __LINE__, "An exe path in xti.json is not absolute.");
     }
     std::wstring exeOnly = exePath.substr(find + 1);
     HWND window = get_window(exeOnly, L"");
@@ -198,12 +199,12 @@
     r = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
     if (r == 0)
     {
-        throw std::runtime_error("Failure on EnumProcesses()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumProcesses() failure.");
     }
     uint32_t processCount = needed / sizeof(uint32_t);
     if (processCount == 1024)
     {
-        throw std::runtime_error("Failure on EnumProcesses() -> overflow");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumProcesses() overflow.");
     }
     for (size_t i = 0; i < processCount; i++)
     {
@@ -237,7 +238,7 @@
     uint32_t errCode =  ::GetLastError();
     if (errCode != ERROR_SUCCESS)
     {
-        throw std::runtime_error("Failure on EnumDesktopWindows()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumDesktopWindows() failure.");
     }
     return enumWindowProcHwndOut;
 }
@@ -251,7 +252,7 @@
     int32_t r = ::GetWindowThreadProcessId(window, reinterpret_cast<::DWORD*>(&processId));
     if (r == 0)
     {
-        throw std::runtime_error("Failure on GetWindowThreadProcessId()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowThreadProcessId() failure.");
     }
     std::wstring exeName = get_exe_name_from_process_id(processId);
     if (enumWindowProcExeName == exeName)
@@ -268,7 +269,7 @@
         uint32_t errCode = ::GetLastError();
         if (errCode != ERROR_SUCCESS)
         {
-            throw std::runtime_error("Failure on GetWindowTextLengthW()");
+            error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowTextLengthW() failure.");
         }
         std::unique_ptr<wchar_t[]> windowTitle = std::make_unique<wchar_t[]>(windowTitleLength + 1);
         ::SetLastError(ERROR_SUCCESS);
@@ -278,7 +279,7 @@
             errCode = ::GetLastError();
             if (errCode != ERROR_SUCCESS)
             {
-                throw std::runtime_error("Failure on GetWindowTextW()");
+                error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowTextW() failure.");
             }
             // We skip windows with no text or any other reason
             // that prevents us from getting the title when LastError was not set.
@@ -312,13 +313,13 @@
     int32_t r = ::GetWindowRect(window, &currDimensions);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on GetWindowRect()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowRect() failure.");
     }
     RECT adjDimensions;
     r = ::DwmGetWindowAttribute(window, DWMWA_EXTENDED_FRAME_BOUNDS, &adjDimensions, sizeof(RECT));
     if (r != S_OK)
     {
-        throw std::runtime_error("Failure on DwmGetWindowAttribute()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::DwmGetWindowAttribute() failure.");
     }
     int32_t xAdjustment = currDimensions.left - adjDimensions.left;
     int32_t yAdjustment = currDimensions.top - adjDimensions.top;
@@ -333,7 +334,7 @@
     r = ::SetWindowPos(window, HWND_TOP, newX, newY, newWidth, newHeight, SWP_SHOWWINDOW);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on SetWindowPos()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
     }
 }
 
@@ -350,7 +351,7 @@
             // system processes are off bounds, just skip them
             return L"";
         }
-        throw std::runtime_error("Failure on OpenProcess()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::OpenProcess() failure.");
     }
     ::HMODULE moduleHandle;
     uint32_t needed;
@@ -364,24 +365,32 @@
             r = ::CloseHandle(processHandle);
             if (r == 0)
             {
-                throw std::runtime_error("Failure on CloseHandle()");
+                error_reporter::halt(__FILE__, __LINE__, "Win32::CloseHandle() failure.");
             }
             return L"";
         }
-        throw std::runtime_error("Failure on EnumProcessModulesEx()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumProcessModulesEx() failure.");
     }
     wchar_t processName[MAX_PATH];
     r = ::GetModuleBaseNameW(processHandle, moduleHandle, processName, sizeof(processName) / sizeof(wchar_t));
     if (r == 0)
     {
-        throw std::runtime_error("Failure on GetModuleBaseNameW()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetModuleBaseNameW() failure.");
     }
     r = ::CloseHandle(processHandle);
     if (r == 0)
     {
-        throw std::runtime_error("Failure on CloseHandle()");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::CloseHandle() failure.");
     }
     std::wstring out = processName;
     std::transform(out.begin(), out.end(), out.begin(), ::toupper);
     return out;
+}
+
+// --- show_exception_to_user(): Shows a message box with given error message.
+// -------------------------------------------------------------------------------------------/
+/* public */ void windows_subsystem::show_exception_to_user(const std::wstring& error)
+{
+    // no checking return value here, program is beyond saving at this point - just show the error.
+    ::MessageBoxW(nullptr, error.c_str(), L"XTI Runtime Exception", MB_OK);
 }

@@ -28,7 +28,7 @@ Supports either x64 or Arm64 computers running Windows 11.
 5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin. Creating an official installer and registering to start at startup as Admin might come later if I get time. I recommend configuring the exe to run with Windows Scheduler as admin at startup to begin with.
 
 ## Before Running
-1. Create a config file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
+1. Create a config text file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
 2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
 3. Before running its recommended to make these changes:
    1. Bottom right of screen -> press battery/sound/wifi icon -> force rotation lock in portrait mode.

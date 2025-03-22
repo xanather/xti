@@ -39,6 +39,9 @@
 // 4. Project classes
 #include "windows_subsystem.h"
 #include "key_mapping.h"
+#include "error_reporter.h"
+
+const char configError[] = "Invalid XTI config at ~/xti.json. Read the README.md.";
 
 main_window::main_window(QWidget *parent)
     : QMainWindow(parent)
@@ -55,7 +58,7 @@ main_window::main_window(QWidget *parent)
     QFile configFile(QDir::homePath() + "/xti.json");
     if (!configFile.open(QIODevice::ReadOnly))
     {
-        throw std::runtime_error("No config file found");
+        error_reporter::halt(__FILE__, __LINE__, configError);
     }
     QByteArray configData = configFile.readAll();
     configFile.close();
@@ -64,7 +67,7 @@ main_window::main_window(QWidget *parent)
     // Validate config.
     if (!m_appConfig.isArray())
     {
-        throw std::runtime_error("Bad config");
+        error_reporter::halt(__FILE__, __LINE__, configError);
     }
     QJsonArray configEntries = m_appConfig.array();
     for (qsizetype i = 0; i < configEntries.size(); i++)
@@ -72,27 +75,28 @@ main_window::main_window(QWidget *parent)
         QJsonValueRef entry = configEntries[i];
         if (!entry.isObject())
         {
-            throw std::runtime_error("Bad config");
+            error_reporter::halt(__FILE__, __LINE__, configError);
         }
         QJsonObject obj = entry.toObject();
         QJsonObject::iterator display = obj.find("display");
         QJsonObject::iterator exe = obj.find("exe");
         QJsonObject::iterator dir = obj.find("dir");
         QJsonObject::iterator title = obj.find("title");
+        QJsonObject::iterator params = obj.find("params");
         QJsonObject::iterator above = obj.find("above");
-        if (display == obj.end() || exe == obj.end() || dir == obj.end() || title == obj.end() || above == obj.end())
+        if (display == obj.end() || exe == obj.end() || dir == obj.end() || title == obj.end() || params == obj.end() || above == obj.end())
         {
-            throw std::runtime_error("Bad config");
+            error_reporter::halt(__FILE__, __LINE__, configError);
         }
-        if (!display->isString() || !exe->isString() || !dir->isString() || !title->isString() || !above->isBool())
+        if (!display->isString() || !exe->isString() || !dir->isString() || !title->isString() || !params->isString() || !above->isBool())
         {
-            throw std::runtime_error("Bad config");
+            error_reporter::halt(__FILE__, __LINE__, configError);
         }
         std::wstring exePath = exe->toString().toStdWString();
         size_t find = exePath.find_last_of('\\');
         if (find == std::wstring::npos)
         {
-            throw std::runtime_error("Bad config");
+            error_reporter::halt(__FILE__, __LINE__, configError);
         }
 
         // Replace / with native \ in windows paths.
@@ -356,7 +360,7 @@ void main_window::ui_on_key_press()
     auto keyCode = key_mapping::translateSet.find(buttonName);
     if (keyCode == key_mapping::translateSet.end())
     {
-        throw std::runtime_error("Missing keyCode");
+        error_reporter::halt(__FILE__, __LINE__, "Missing key_mapping entry for pushButton.");
     }
     int32_t virtualKeyCode = keyCode->second;
 
@@ -600,7 +604,7 @@ void main_window::ui_on_key_press()
     }
     else
     {
-        throw std::runtime_error("Unhandled native SendInput translation");
+        error_reporter::halt(__FILE__, __LINE__, "Missing key_mapping to virtual key translation for pushButton.");
     }
     uint32_t r;
     uint16_t toSendVKC = input.ki.wVk;
@@ -610,7 +614,7 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            throw std::runtime_error("SendInput() failure");
+            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     if (toggleShift)
@@ -619,27 +623,27 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            throw std::runtime_error("SendInput() failure");
+            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     input.ki.wVk = toSendVKC;
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
-        throw std::runtime_error("SendInput() failure");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
     input.ki.dwFlags = KEYEVENTF_KEYUP;
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
-        throw std::runtime_error("SendInput() failure");
+        error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
     if (toggleShift) {
         input.ki.wVk = VK_LSHIFT;
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            throw std::runtime_error("SendInput() failure");
+            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     if (toggleControl)
@@ -648,7 +652,7 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            throw std::runtime_error("SendInput() failure");
+            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
 }

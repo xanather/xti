@@ -86,6 +86,11 @@ public:
     // see cpp file for more info.
 private:
     static std::wstring get_exe_name_from_process_id(uint32_t processId);
+
+public:
+    // public show_exception_to_user(): Shows a message box with given error message.
+    // see cpp file for more info.
+    static void show_exception_to_user(const std::wstring& error);
 };
 
 #endif // WINDOWS_SUBSYSTEM_H

@@ -13,22 +13,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef APP_DIMENSIONS_H
-#define APP_DIMENSIONS_H
+#include "error_reporter.h"
 
 // 1. Qt framework headers
+#include <QString>
+#include <string>
+#include <stdexcept>
 // 2. System/OS headers
 // 3. C++ standard library headers
-#include <cstdint>
 // 4. Project classes
-// 5. Forward decl
+#include "windows_subsystem.h"
 
-struct app_dimensions
+void error_reporter::halt(const char* file, int32_t line, const char* message)
 {
-    int32_t dimensionsAvailableScreenWidth;
-    int32_t dimensionsAboveYEnd;
-    int32_t dimensionsBelowYStart;
-    int32_t dimensionsBelowYEnd;
-};
-
-#endif // APP_DIMENSIONS_H
+    std::string fullMessage = file;
+    fullMessage.push_back('@');
+    fullMessage.append(std::to_string(line));
+    fullMessage.append(": ");
+    fullMessage.append(message);
+    std::wstring msg = QString(message).toStdWString();
+    windows_subsystem::show_exception_to_user(msg);
+    throw std::runtime_error(fullMessage);
+}
