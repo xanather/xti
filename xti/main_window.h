@@ -39,7 +39,7 @@ class main_window : public QMainWindow
 
 public:
     main_window(QWidget *parent);
-    ~main_window();
+    virtual ~main_window();
 
 private:
     std::vector<QPushButton*> m_buttonList;
@@ -47,6 +47,9 @@ private:
     QJsonDocument m_appConfig;
     Ui::main_window *ui;
     void open_or_show_app(const QVariant& iObj);
+
+protected:
+    virtual bool nativeEvent(const QByteArray &eventType, void* message, qintptr* result) override;
 
 private slots:
     void post_ctor();

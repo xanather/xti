@@ -348,6 +348,12 @@ void main_window::open_or_show_app(const QVariant& iObj)
     windows_subsystem::start_process(startExePath, startParams, startWorkingDir, checkExeName, checkTitleName, isAbove, m_appDimensions);
 }
 
+bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
+    MSG* msg = reinterpret_cast<MSG*>(message);
+    qDebug() << msg->message; // TODO debugging - remove this
+    return QMainWindow::nativeEvent(eventType, message, result);
+}
+
 void main_window::ui_on_key_press()
 {
     QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
