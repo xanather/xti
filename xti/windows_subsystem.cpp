@@ -243,9 +243,7 @@
     uint32_t errCode =  ::GetLastError();
     if (errCode != ERROR_SUCCESS)
     {
-        // TODO - revert back
-        std::string t = std::string("Win32::EnumDesktopWindows() failure.") + std::to_string(errCode);
-        error_reporter::halt(__FILE__, __LINE__, t.c_str());
+        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumDesktopWindows() failure.");
     }
     return enumWindowProcHwndOut;
 }
@@ -272,6 +270,7 @@
             return true;
         }
 
+        ::SetLastError(ERROR_SUCCESS);
         int32_t windowTitleLength = ::GetWindowTextLengthW(window);
         // error response only available with GetLastError rather than return of GetWindowTextLengthW here.
         uint32_t errCode = ::GetLastError();
@@ -289,8 +288,10 @@
             {
                 error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowTextW() failure.");
             }
-            // We skip windows with no text or any other reason
-            // that prevents us from getting the title when LastError was not set.
+            // We skip windows with no text or any other reason that prevents us
+            // from getting the title when LastError was not set. Usually its due to one of two senarios:
+            // 1. The window hasn't finished initalizing.
+            // 2. its a privileged window that really shouldn't be iterated on.
             ::SetLastError(ERROR_SUCCESS);
             return true;
         }
