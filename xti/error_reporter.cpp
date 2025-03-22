@@ -31,7 +31,7 @@ void error_reporter::halt(const char* file, int32_t line, const char* message)
     fullMessage.append(std::to_string(line));
     fullMessage.append(": ");
     fullMessage.append(message);
-    std::wstring msg = QString(message).toStdWString();
-    windows_subsystem::show_exception_to_user(msg);
+    std::wstring userMsg = QString::fromStdString(fullMessage).toStdWString();
+    windows_subsystem::show_exception_to_user(userMsg);
     throw std::runtime_error(fullMessage);
 }
