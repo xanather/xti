@@ -32,6 +32,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTimer>
+#include <QDebug>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -352,6 +353,7 @@ void main_window::open_or_show_app(const QVariant& iObj)
 
 bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
     MSG* msg = reinterpret_cast<MSG*>(message);
+    qDebug() << msg->message;
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
