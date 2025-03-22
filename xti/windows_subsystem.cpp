@@ -243,6 +243,7 @@
     uint32_t errCode =  ::GetLastError();
     if (errCode != ERROR_SUCCESS)
     {
+        // TODO - revert back
         std::string t = std::string("Win32::EnumDesktopWindows() failure.") + std::to_string(errCode);
         error_reporter::halt(__FILE__, __LINE__, t.c_str());
     }
@@ -267,6 +268,7 @@
         r = ::IsWindowVisible(window);
         if (r == 0)
         {
+            ::SetLastError(ERROR_SUCCESS);
             return true;
         }
 
@@ -289,6 +291,7 @@
             }
             // We skip windows with no text or any other reason
             // that prevents us from getting the title when LastError was not set.
+            ::SetLastError(ERROR_SUCCESS);
             return true;
         }
 
@@ -296,6 +299,7 @@
         {
             // No need to check windowTitle here, just return the window we found.
             enumWindowProcHwndOut = window;
+            ::SetLastError(ERROR_SUCCESS);
             return false;
         }
 
@@ -304,9 +308,11 @@
         if (find != std::wstring::npos)
         {
             enumWindowProcHwndOut = window;
+            ::SetLastError(ERROR_SUCCESS);
             return false;
         }
     }
+    ::SetLastError(ERROR_SUCCESS);
     return true;
 }
 
