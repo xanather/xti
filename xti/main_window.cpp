@@ -18,6 +18,7 @@
 
 // 1. Qt framework headers
 #include <QApplication>
+#include <QProcess>
 #include <QPushButton>
 #include <QScreen>
 #include <QPalette>
@@ -306,6 +307,7 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
     connect(ui->pushButton_panic, &QPushButton::clicked, this, &main_window::ui_on_panic);
+    connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
 
     // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
     windows_subsystem::initialize_force_cursor_visible();
@@ -697,10 +699,16 @@ void main_window::ui_on_move_active_below()
 
 void main_window::ui_on_panic()
 {
-    QApplication::quit();
+    qApp->quit();
 }
 
 void main_window::ui_on_restart()
 {
-    // TODO
+    // restarting at same location should be OK.
+    // nothing conflicts with system running two at once for short period.
+    // this won't work when debugging.
+    qApp->quit();
+    QString program = qApp->arguments()[0];
+    QStringList arguments = qApp->arguments().mid(1);
+    QProcess::startDetached(program, arguments);
 }
