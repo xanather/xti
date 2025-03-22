@@ -288,7 +288,8 @@ main_window::main_window(QWidget *parent)
     }
 
     // Hook buttons and controls.
-    for (size_t i = 0; i < m_buttonList.size(); i++) {
+    for (size_t i = 0; i < m_buttonList.size(); i++)
+    {
         connect(m_buttonList[i], &QPushButton::clicked, this, &main_window::ui_on_key_press);
     }
     connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);

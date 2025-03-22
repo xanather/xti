@@ -21,7 +21,6 @@
 #include <shellapi.h>
 #include <dwmapi.h>
 // 3. C++ standard library headers
-#include <stdexcept>
 #include <memory>
 #include <cctype>
 #include <algorithm>
@@ -152,7 +151,8 @@
 /* public */ void windows_subsystem::move_active_window(bool above, const app_dimensions& appDimensions)
 {
     HWND window = ::GetForegroundWindow();
-    if (window == nullptr) {
+    if (window == nullptr)
+    {
         return;
     }
     move_window(window, above, appDimensions);
@@ -208,7 +208,8 @@
     }
     for (size_t i = 0; i < processCount; i++)
     {
-        if (processesArray[i] == 0) {
+        if (processesArray[i] == 0)
+        {
             continue; // skip kernel, the get_exe_name_from_process_id fails on 0.
         }
         std::wstring processNameRunning = get_exe_name_from_process_id(processesArray[i]);
@@ -305,10 +306,11 @@
 }
 
 // --- move_window(): moves a window either above, or below the xti keyboard.
-// ----- window: The window to move
+// ----- window: The window to move.
 // ----- above: True if move above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
-/* public */ void windows_subsystem::move_window(HWND window, bool above, const app_dimensions& dimensions) {
+/* public */ void windows_subsystem::move_window(HWND window, bool above, const app_dimensions& dimensions)
+{
     RECT currDimensions;
     int32_t r = ::GetWindowRect(window, &currDimensions);
     if (r == 0)
@@ -391,6 +393,6 @@
 // -------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::show_exception_to_user(const std::wstring& error)
 {
-    // no checking return value here, program is beyond saving at this point - just show the error.
+    // no checking return value here, program is beyond saving at this point - just try show the error.
     ::MessageBoxW(nullptr, error.c_str(), L"XTI Runtime Exception", MB_OK);
 }

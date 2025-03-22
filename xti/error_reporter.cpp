@@ -17,9 +17,9 @@
 
 // 1. Qt framework headers
 #include <QString>
+// 2. System/OS headers
 #include <string>
 #include <stdexcept>
-// 2. System/OS headers
 // 3. C++ standard library headers
 // 4. Project classes
 #include "windows_subsystem.h"
