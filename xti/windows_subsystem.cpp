@@ -243,7 +243,8 @@
     uint32_t errCode =  ::GetLastError();
     if (errCode != ERROR_SUCCESS)
     {
-        error_reporter::halt(__FILE__, __LINE__, "Win32::EnumDesktopWindows() failure.");
+        std::string t = std::string("Win32::EnumDesktopWindows() failure.") + std::to_string(errCode);
+        error_reporter::halt(__FILE__, __LINE__, t.c_str());
     }
     return enumWindowProcHwndOut;
 }
