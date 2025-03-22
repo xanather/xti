@@ -78,51 +78,58 @@ main_window::main_window(QWidget *parent)
             error_reporter::halt(__FILE__, __LINE__, configError);
         }
         QJsonObject obj = entry.toObject();
-        QJsonObject::iterator display = obj.find("display");
-        QJsonObject::iterator exe = obj.find("exe");
-        QJsonObject::iterator dir = obj.find("dir");
-        QJsonObject::iterator title = obj.find("title");
-        QJsonObject::iterator params = obj.find("params");
+        QJsonObject::iterator displayName = obj.find("displayName");
+        QJsonObject::iterator startExePath = obj.find("startExePath");
+        QJsonObject::iterator startParams = obj.find("startParams");
+        QJsonObject::iterator startWorkingDir = obj.find("startWorkingDir");
+        QJsonObject::iterator checkExeName = obj.find("checkExeName");
+        QJsonObject::iterator checkTitleName = obj.find("checkTitleName");
         QJsonObject::iterator above = obj.find("above");
-        if (display == obj.end() || exe == obj.end() || dir == obj.end() || title == obj.end() || params == obj.end() || above == obj.end())
+        if (displayName == obj.end() ||
+            startExePath == obj.end() ||
+            startParams == obj.end() ||
+            startWorkingDir == obj.end() ||
+            checkExeName == obj.end() ||
+            checkTitleName == obj.end() ||
+            above == obj.end())
         {
             error_reporter::halt(__FILE__, __LINE__, configError);
         }
-        if (!display->isString() || !exe->isString() || !dir->isString() || !title->isString() || !params->isString() || !above->isBool())
-        {
-            error_reporter::halt(__FILE__, __LINE__, configError);
-        }
-        std::wstring exePath = exe->toString().toStdWString();
-        size_t find = exePath.find_last_of('\\');
-        if (find == std::wstring::npos)
+        if (!displayName->isString() ||
+            !startExePath->isString() ||
+            !startParams->isString() ||
+            !startWorkingDir->isString() ||
+            !checkExeName->isString() ||
+            !checkTitleName->isString() ||
+            !above->isBool())
         {
             error_reporter::halt(__FILE__, __LINE__, configError);
         }
 
         // Replace / with native \ in windows paths.
-        std::wstring dirVal = dir->toString().toStdWString();
-        for (size_t j = 0; j < dirVal.size(); j++)
+        std::wstring startExePathVal = startExePath->toString().toStdWString();
+        for (size_t j = 0; j < startExePathVal.size(); j++)
         {
-            if (dirVal[j] == '/')
+            if (startExePathVal[j] == '/')
             {
-                dirVal[j] = '\\';
+                startExePathVal[j] = '\\';
             }
         }
-        *dir = QJsonValue(QString(dirVal));
-        std::wstring exeVal = exe->toString().toStdWString();
-        for (size_t j = 0; j < exeVal.size(); j++)
+        *startExePath = QJsonValue(QString(startExePathVal));
+        std::wstring startWorkingDirVal = startWorkingDir->toString().toStdWString();
+        for (size_t j = 0; j < startWorkingDirVal.size(); j++)
         {
-            if (exeVal[j] == '/')
+            if (startWorkingDirVal[j] == '/')
             {
-                exeVal[j] = '\\';
+                startWorkingDirVal[j] = '\\';
             }
         }
-        *exe = QJsonValue(QString(exeVal));
+        *startWorkingDir = QJsonValue(QString(startWorkingDirVal));
 
         // Make display uppercase.
-        std::wstring displayStr = display->toString().toStdWString();
+        std::wstring displayStr = displayName->toString().toStdWString();
         std::transform(displayStr.begin(), displayStr.end(), displayStr.begin(), ::toupper);
-        *display = QJsonValue(QString(displayStr));
+        *displayName = QJsonValue(QString(displayStr));
         configEntries[i] = obj;
     }
 
@@ -279,11 +286,11 @@ main_window::main_window(QWidget *parent)
         QJsonObject obj = entry->toObject();
         if (obj.find("above")->toBool())
         {
-            ui->comboBox_shortcutsAbove->addItem(obj.find("display")->toString(), obj);
+            ui->comboBox_shortcutsAbove->addItem(obj.find("displayName")->toString(), obj);
         }
         else
         {
-            ui->comboBox_shortcutsBelow->addItem(obj.find("display")->toString(), obj);
+            ui->comboBox_shortcutsBelow->addItem(obj.find("displayName")->toString(), obj);
         }
     }
 
@@ -319,24 +326,24 @@ main_window::~main_window()
 void main_window::open_or_show_app(const QVariant& iObj)
 {
     QJsonObject obj = iObj.toJsonObject();
-    std::wstring exePath = obj.find("exe")->toString().toStdWString();
-    size_t find = exePath.find_last_of('\\');
-    std::wstring exeOnly = exePath.substr(find + 1);
-    std::wstring windowTitle = obj.find("title")->toString().toStdWString();
+    std::wstring checkExeName = obj.find("checkExeName")->toString().toStdWString();
+    std::wstring checkTitleName = obj.find("checkTitleName")->toString().toStdWString();
     bool isAbove = obj.find("above")->toBool();
-    if (windows_subsystem::is_process_running(exeOnly))
+    if (windows_subsystem::is_process_running(checkExeName))
     {
-        HWND window = windows_subsystem::get_window(exeOnly, windowTitle);
+        HWND window = windows_subsystem::get_window(checkExeName, checkTitleName);
         if (window != nullptr)
         {
             windows_subsystem::move_window(window, isAbove, m_appDimensions);
+            return;
         }
     }
-    else
-    {
-        std::wstring workingDirectory = obj.find("dir")->toString().toStdWString();
-        windows_subsystem::start_process(exePath, workingDirectory, isAbove, m_appDimensions);
-    }
+
+    // Not found, start it.
+    std::wstring startExePath = obj.find("startExePath")->toString().toStdWString();
+    std::wstring startParams = obj.find("startParams")->toString().toStdWString();
+    std::wstring startWorkingDir = obj.find("startWorkingDir")->toString().toStdWString();
+    windows_subsystem::start_process(startExePath, startParams, startWorkingDir, checkExeName, checkTitleName, isAbove, m_appDimensions);
 }
 
 void main_window::ui_on_key_press()

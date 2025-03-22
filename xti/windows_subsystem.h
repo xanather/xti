@@ -60,7 +60,8 @@ public:
     // public start_process(): Starts a new process and positioning either above or below the xti keyboard.
     // see cpp file for more info.
 public:
-    static void start_process(const std::wstring& path, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions);
+    static void start_process(const std::wstring& path, const std::wstring& params, const std::wstring& workingDirectory,
+    const std::wstring& expectedExeName, const std::wstring& expectedTitleName, bool above, const app_dimensions& appDimensions);
 
     // public is_process_running(): Determines if a process is running within the system.
     // see cpp file for more info.

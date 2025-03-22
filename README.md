@@ -9,8 +9,8 @@ The pre-existing Windows virtual touch keyboard is terrible for typing on for pr
 + Brings the cursor back by using virtual keyboard area as a touchpad simultaneously.
 
 WORK IN PROGRESS:
-1. Need to figure out how to simulate certain key press combination.
-2. Moving cursor by using left and right key area's as a virtual touchpad.
+1. Moving cursor by using left and right key area's as a virtual touchpad.
+2. Modifier keys support.
 
 ## Known limitations
 - Don't change scaling or DPI of the system after starting.
@@ -29,6 +29,12 @@ Supports either x64 or Arm64 computers running Windows 11.
 
 ## Before Running
 1. Create a config text file in user profile directory at ~/xti.json. See example-xti.json at root of repository for example usage.
+   1. `displayName`: Text to show for dropdown in UI.
+   2. `startExePath`: The executable or file to open if `checkExeName` and `checkTitleName` was not found.
+   3. `startParams`: The parameters to pass to open if `checkExeName` and `checkTitleName` was not found. Leave empty if not needed.
+   4. `startWorkingDir`: The working directory to use when opening.
+   5. `checkExeName`: Used to determine if this entry is already running and brings it to the foreground.
+   5. `checkTitleName`: Used to determine if this entry is already running and brings it to the foreground. The process specified in `checkExeName` must have at-least one window with `checkTitleName` text contained inside it.
 2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
 3. Before running its recommended to make these changes:
    1. Bottom right of screen -> press battery/sound/wifi icon -> force rotation lock in portrait mode.
@@ -38,7 +44,6 @@ Supports either x64 or Arm64 computers running Windows 11.
 ```
 reg add "HKLM\System\CurrentControlSet\Control\PriorityControl" /v ConvertibilityEnabled /t REG_DWORD /d 0
 ```
-
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.

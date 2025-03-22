@@ -164,28 +164,32 @@
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& workingDirectory, bool above, const app_dimensions& appDimensions)
+/* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& params, const std::wstring& workingDirectory,
+                                                   const std::wstring& expectedExeName, const std::wstring& expectedTitleName, bool above, const app_dimensions& appDimensions)
 {
-    HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), nullptr, workingDirectory.c_str(), SW_SHOWNORMAL);
+    HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), params.empty() ? nullptr : params.c_str(), workingDirectory.c_str(), SW_SHOWNORMAL);
     if (instance == nullptr)
     {
         error_reporter::halt(__FILE__, __LINE__, "Win32::ShellExecuteW() failure.");
     }
     // Wait 500 ms for any other application initialization logic.
     ::Sleep(500);
-    size_t find = exePath.find_last_of('\\');
-    if (find == std::wstring::npos)
+    HWND window;
+    if (!expectedTitleName.empty())
     {
-        error_reporter::halt(__FILE__, __LINE__, "An exe path in xti.json is not absolute.");
+        window = get_window(expectedExeName, expectedTitleName);
+        if (window != nullptr)
+        {
+            move_window(window, above, appDimensions);
+            return;
+        }
     }
-    std::wstring exeOnly = exePath.substr(find + 1);
-    HWND window = get_window(exeOnly, L"");
-    if (window == nullptr)
+    // Try without title name.
+    window = get_window(expectedExeName, L"");
+    if (window != nullptr)
     {
-        // Either application is reallly slow, or didnt open with an expected GUI window.
-        return;
+        move_window(window, above, appDimensions);
     }
-    move_window(window, above, appDimensions);
 }
 
 // --- is_process_running(): Determines if a process is running within the system.

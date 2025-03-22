@@ -1,16 +1,20 @@
 [
   {
-    "display": "Firefox",
-    "exe": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
-    "dir": "C:\\Program Files\\Mozilla Firefox",
-    "title": "",
+    "displayName": "Firefox",
+    "startExePath": "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+    "startParams": "",
+    "startWorkingDir": "C:\\Program Files\\Mozilla Firefox",
+    "checkExeName": "firefox.exe",
+    "checkTitleName": "",
     "above": true
   },
   {
-    "display": "Notepad",
-    "exe": "C:\\Windows\\System32\\notepad.exe",
-    "dir": "C:\\Windows\\System32",
-    "title": "",
-    "above": true
+    "displayName": "recrypt_gateway",
+    "startExePath": "powershell.exe",
+    "startParams": "-File \"C:\\Code\\scripts\\v-open.ps1\" \"recrypt_gateway\"",
+    "startWorkingDir": "C:\\Code\\scripts",
+    "checkExeName": "idea64.exe",
+    "checkTitleName": "recrypt_gateway",
+    "above": false
   }
 ]

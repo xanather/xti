@@ -1830,7 +1830,7 @@
              </size>
             </property>
             <property name="text">
-             <string>↑ REOPEN ↑</string>
+             <string>REOPEN</string>
             </property>
            </widget>
           </item>
@@ -1897,7 +1897,7 @@
              </size>
             </property>
             <property name="text">
-             <string>↑ WINDOW UP ↑</string>
+             <string>WND UP</string>
             </property>
            </widget>
           </item>
@@ -2003,7 +2003,7 @@
              </size>
             </property>
             <property name="text">
-             <string>↓ REOPEN ↓</string>
+             <string>REOPEN</string>
             </property>
            </widget>
           </item>
@@ -2073,7 +2073,7 @@
              </size>
             </property>
             <property name="text">
-             <string>↓ WINDOW DN ↓</string>
+             <string>WND DN</string>
             </property>
            </widget>
           </item>
