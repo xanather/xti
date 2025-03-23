@@ -1097,6 +1097,7 @@ bool main_window::event(QEvent* event) {
                         error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
                     }
                     m_cursorIsMoving = true;
+                    qDebug() << "m_cursorIsMoving = true";
                     m_cursorStartPosition.setX(startPos.x);
                     m_cursorStartPosition.setY(startPos.y);
                 }
@@ -1110,6 +1111,7 @@ bool main_window::event(QEvent* event) {
         if (event->type() == QEvent::TouchEnd)
         {
             m_cursorIsMoving = false;
+            qDebug() << "m_cursorIsMoving = false";
         }
     }
     if (event->type() == QEvent::TouchBegin)
