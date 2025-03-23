@@ -1082,6 +1082,8 @@ void main_window::update_modifier_colors()
 
 bool main_window::event(QEvent* event)
 {
+    // TODO fix cursor not showing in tablet mode, annoying!
+    // TODO fix pressing keys after cursor move occurred but touch landed on same original key afterwards.
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd)
@@ -1128,8 +1130,6 @@ bool main_window::event(QEvent* event)
                 {
                     error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                 }
-                r = ::ShowCursor(TRUE);
-                qDebug() << r;
             }
         }
         if (event->type() == QEvent::TouchEnd)
