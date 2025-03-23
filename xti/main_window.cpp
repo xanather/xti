@@ -1116,13 +1116,17 @@ bool main_window::event(QEvent* event)
                         m_cursorMoveTimerDelay->setSingleShot(true);
                         connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
                     }
-                    m_cursorMoveTimerDelay->start(1000);
+                    m_cursorMoveTimerDelay->start(100);
                 }
             }
             if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
             {
                 QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                qDebug() << diff;
+                int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()), m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                if (r == 0)
+                {
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                }
             }
         }
         if (event->type() == QEvent::TouchEnd)
