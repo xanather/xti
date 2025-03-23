@@ -18,7 +18,6 @@
 
 // 1. Qt framework headers
 // 2. System/OS headers
-#include <Windows.h>
 // 3. C++ standard library headers
 #include <cstdint>
 #include <string>

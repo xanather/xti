@@ -19,7 +19,6 @@
 // 1. Qt framework headers
 #include <QMainWindow>
 #include <QJsonDocument>
-#include <QVariant>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <vector>
@@ -30,6 +29,7 @@
 // 5. Forward decl
 class QWidget;
 class QPushButton;
+class QVariant;
 namespace Ui {
 class main_window;
 }
@@ -54,7 +54,7 @@ private:
 
     QTimer* m_activeKeyColorTimer = nullptr;
 
-    Ui::main_window *ui;
+    Ui::main_window* ui;
     void open_or_show_app(const QVariant& shortcutConfig);
 
     // Virtual keyboard functions
@@ -79,7 +79,5 @@ private slots:
     void ui_on_move_active_below();
     void ui_on_panic();
     void ui_on_restart();
-
-private:
 };
 #endif // MAIN_WINDOW_H

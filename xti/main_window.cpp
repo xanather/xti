@@ -31,6 +31,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTimer>
+#include <QVariant>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
