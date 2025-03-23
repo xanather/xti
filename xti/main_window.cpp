@@ -1082,8 +1082,8 @@ bool main_window::event(QEvent* event) {
         {
             if (!m_cursorIsMoving && event->type() == QEvent::TouchBegin && touch->id() == 0)
             {
-                QPushButton* topLeftKey = m_keyButtonList[0];
-                QPushButton* bottomRightKey = m_keyButtonList[m_keyButtonList.size() - 1];
+                QPushButton* topLeftKey = m_keyButtonLeftList[0];
+                QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonList.size() - 1];
                 qDebug() << "topLeftKey" << topLeftKey->pos() << "position" << touch->position() << "bottomRightKey" << bottomRightKey->pos();
                 if (topLeftKey->pos().x() <= touch->position().x() &&
                     topLeftKey->pos().y() <= touch->position().y() &&
@@ -1097,6 +1097,7 @@ bool main_window::event(QEvent* event) {
                         error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
                     }
                     m_cursorIsMoving = true;
+                    qDebug() << "m_cursorIsMoving = true;";
                     m_cursorStartPosition.setX(startPos.x);
                     m_cursorStartPosition.setY(startPos.y);
                 }
@@ -1109,6 +1110,7 @@ bool main_window::event(QEvent* event) {
         }
         if (event->type() == QEvent::TouchEnd)
         {
+            qDebug() << "m_cursorIsMoving = true;";
             m_cursorIsMoving = false;
         }
     }
