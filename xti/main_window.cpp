@@ -487,6 +487,8 @@ void main_window::ui_on_post_ctor() {
     m_keyModifiers = windows_subsystem::get_key_modifiers();
     update_modifier_colors();
 
+    ::ShowCursor(true);
+
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &main_window::ui_on_state_refresher_loop);
     timer->start(3000);
