@@ -1075,6 +1075,9 @@ bool main_window::event(QEvent* event) {
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd) {
         qDebug() << "touchEvent!" << event->type();
+    }
+    if (event->type() == QEvent::TouchBegin)
+    {
         return true;
     }
     return QMainWindow::event(event);
