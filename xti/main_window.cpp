@@ -458,9 +458,9 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
 
     // STEP 9: Final system setup.
-    // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
+    // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
+    // windows_subsystem::initialize_force_cursor_visible(); --- not needed at this time.  see cpp definition in file for more info.
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
-    windows_subsystem::initialize_force_cursor_visible();
     key_mapping::initialize();
     // continue at post_ctor after win32 message pump has had the opportunity to process above changes.
     QTimer::singleShot(0, this, &main_window::ui_on_post_ctor);
@@ -565,7 +565,7 @@ void main_window::ui_on_key_press()
     int32_t virtualKeyCode = keyCode->second;
 
     // This is only place we call win32 API directly in this file, see windows_subsystem otherwise.
-    INPUT input = {};
+    ::INPUT input = {};
     input.type = INPUT_KEYBOARD;
     int32_t r;
 

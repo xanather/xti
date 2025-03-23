@@ -33,7 +33,7 @@ public:
     // USED AT APP STARTUP
     // public initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
     // see cpp file for more info.
-    static void initialize_apply_keyboard_window_style(HWND window);
+    static void initialize_apply_keyboard_window_style(::HWND window);
 
 public:
     // USED AT APP STARTUP
@@ -45,7 +45,7 @@ public:
     // public initialize_orientate_main_window(): Moves the main QT window into position.
     // see cpp file for more info.
 public:
-    static app_dimensions initialize_orientate_main_window(HWND window);
+    static app_dimensions initialize_orientate_main_window(::HWND window);
 
     // USED AT APP STARTUP
     // public initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
@@ -72,17 +72,17 @@ public:
     // public get_window(): Get a window based on specific underlying exe name and title.
     // see cpp file for more info.
 public:
-    static HWND get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains /* empty means no requirement*/);
+    static ::HWND get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains /* empty means no requirement*/);
 private:
-    static thread_local std::wstring enumWindowProcExeName;
+    static thread_local std::wstring enumWindowProcExeNameUpper;
     static thread_local std::wstring enumWindowProcTitleContains;
-    static thread_local HWND enumWindowProcHwndOut;
-    static int32_t __stdcall enum_window_proc(HWND window, int64_t param);
+    static thread_local ::HWND enumWindowProcHwndOut;
+    static int32_t __stdcall enum_window_proc(::HWND window, int64_t param);
 
     // public move_window(): moves a window either above, or below the xti keyboard.
     // see cpp file for more info.
 public:
-    static void move_window(HWND window, bool above, const app_dimensions& dimensions);
+    static void move_window(::HWND window, bool above, const app_dimensions& dimensions);
 
     // private get_exe_name_from_process_id(): get the executable file name (without directory) for a given process ID.
     // see cpp file for more info.

@@ -30,7 +30,7 @@
 // --- initialize_apply_keyboard_window_style(): Tells windows to apply for keyboard native window styling.
 // ----- window: HWND of the Qt app.
 // --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_apply_keyboard_window_style(HWND window)
+/* public */ void windows_subsystem::initialize_apply_keyboard_window_style(::HWND window)
 {
     // If the main app window does not call this function, then the keyboard can still take foreground
     // focus away from others despite when setting Qt::WindowDoesNotAcceptFocus at startup.
@@ -50,7 +50,6 @@
 // --------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::initialize_force_cursor_visible()
 {
-    // TODO - validate this
     ::HKEY hKey;
     wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
     wchar_t valueName[] = L"EnableCursorSuppression";
@@ -76,9 +75,9 @@
 // ----- window: HWND of the Qt app.
 // ------- returns: app dimensions to be used later on for re-positioning other windows.
 // ------------------------------------------------------------------------/
-/* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(HWND window)
+/* public */ app_dimensions windows_subsystem::initialize_orientate_main_window(::HWND window)
 {
-    RECT size;
+    ::RECT size;
     int32_t r = ::GetWindowRect(window, &size);
     if (r == 0)
     {
@@ -106,27 +105,25 @@
 }
 
 // --- initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
-// --------------------------------------------------------------------------------------------/
+// --------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::initialize_apply_system_super_admin_privilege()
 {
     // Even though we run the app as Admin modern windows kernel will not
     // grant certain privileges unless we ask for it directly.
     // Based on how the app currently operates and hooks into the OS
     // this is not needed at this time or called at startup. This was really only used for debugging.
-    HANDLE processTokenHandle;
+    ::HANDLE processTokenHandle;
     int32_t r = ::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &processTokenHandle);
     if (r == 0)
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::OpenProcessToken() failure.");
     }
-
     ::LUID privilegeId;
     r = ::LookupPrivilegeValueW(nullptr, SE_DEBUG_NAME /* Apply for everything */, &privilegeId);
     if (r == 0)
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::LookupPrivilegeValueW() failure.");
     }
-
     ::TOKEN_PRIVILEGES tokenPrivilegesRequest;
     tokenPrivilegesRequest.PrivilegeCount = 1;
     tokenPrivilegesRequest.Privileges[0].Luid = privilegeId;
@@ -137,8 +134,8 @@
         error_reporter::stop(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
     }
     // edge case: need to check GetLastError to ensure not ERROR_NOT_ALL_ASSIGNED
-    uint32_t errorCode = ::GetLastError();
-    if (errorCode != ERROR_SUCCESS)
+    uint32_t errCode = ::GetLastError();
+    if (errCode != ERROR_SUCCESS)
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
     }
@@ -150,7 +147,7 @@
 // --------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::move_active_window(bool above, const app_dimensions& appDimensions)
 {
-    HWND window = ::GetForegroundWindow();
+    ::HWND window = ::GetForegroundWindow();
     if (window == nullptr)
     {
         return;
@@ -159,22 +156,25 @@
 }
 
 // --- start_process(): Starts a new process and positioning either above or below the xti keyboard.
-// ----- exePath: absolute file path of the executable
-// ----- workingDirectory: absolute working directory to run it under
+// ----- exePath: absolute file path of the executable.
+// ----- params: Additional parameter string to pass at startup.
+// ----- workingDirectory: absolute working directory to run it under.
+// ----- expectedExeName: The running executable name that this function should eventually produce.
+// ----- expectedTitleName: The running window title name that this function should eventually produce. Empty for any.
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::start_process(const std::wstring& exePath, const std::wstring& params, const std::wstring& workingDirectory,
                                                    const std::wstring& expectedExeName, const std::wstring& expectedTitleName, bool above, const app_dimensions& appDimensions)
 {
-    HINSTANCE instance = ::ShellExecuteW(nullptr, L"open", exePath.c_str(), params.empty() ? nullptr : params.c_str(), workingDirectory.c_str(), SW_SHOWNORMAL);
-    if (instance == nullptr)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::ShellExecuteW() failure.");
-    }
-    // Wait 500 ms for any other application initialization logic.
+    // Intentionally don't check the return value of ShellExecuteW.
+    // User may have bad config, don't crash the app if we failed to open the process.
+    ::ShellExecuteW(nullptr, L"open", exePath.c_str(),
+                                           params.empty() ? nullptr : params.c_str(), workingDirectory.c_str(), SW_SHOWNORMAL);
+    // Wait 500 ms for any application initialization logic before attempting to re-organize windows.
     ::Sleep(500);
-    HWND window;
+    ::HWND window;
+    // Try with title name first.
     if (!expectedTitleName.empty())
     {
         window = get_window(expectedExeName, expectedTitleName);
@@ -193,6 +193,7 @@
 }
 
 // --- is_process_running(): Determines if a process is running within the system.
+// ----- processName: The process name to check. Not case sensitive.
 // ------- returns: true if found, false if not
 // ---------------------------------------------------------------------------------------/
 /* public */ bool windows_subsystem::is_process_running(const std::wstring& processName)
@@ -210,16 +211,16 @@
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::EnumProcesses() overflow.");
     }
+    std::wstring processNameUpper = processName;
+    std::transform(processNameUpper.begin(), processNameUpper.end(), processNameUpper.begin(), ::toupper);
     for (size_t i = 0; i < processCount; i++)
     {
         if (processesArray[i] == 0)
         {
             continue; // skip kernel, the get_exe_name_from_process_id fails on 0.
         }
-        std::wstring processNameRunning = get_exe_name_from_process_id(processesArray[i]);
-        std::wstring processNameCopy = processName;
-        std::transform(processNameCopy.begin(), processNameCopy.end(), processNameCopy.begin(), ::toupper);
-        if (processNameRunning == processNameCopy)
+        std::wstring processNameUpperRunning = get_exe_name_from_process_id(processesArray[i]);
+        if (processNameUpperRunning == processNameUpper)
         {
             return true;
         }
@@ -228,18 +229,19 @@
 }
 
 // --- get_window(): Get a window based on specific underlying exe name and title.
-// ----- runningExe: exe name (with extension).
+// ----- runningExe: exe name (with extension). Not case sensitive.
 // ----- requiredTitleContains: Text that the window title must contain, empty means any title (only match exe name).
 // ------- returns: the found HWND, or nulptr if not found.
 // --------------------------------------------------------------------------------------------------------------------/
-/* public */ HWND windows_subsystem::get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains)
+/* public */ ::HWND windows_subsystem::get_window(const std::wstring& runningExe, const std::wstring& requiredTitleContains)
 {
-    enumWindowProcExeName = runningExe;
-    std::transform(enumWindowProcExeName.begin(), enumWindowProcExeName.end(), enumWindowProcExeName.begin(), ::toupper);
+    enumWindowProcExeNameUpper = runningExe;
+    std::transform(enumWindowProcExeNameUpper.begin(), enumWindowProcExeNameUpper.end(), enumWindowProcExeNameUpper.begin(), ::toupper);
     enumWindowProcTitleContains = requiredTitleContains;
     enumWindowProcHwndOut = nullptr;
     ::SetLastError(ERROR_SUCCESS);
-    ::EnumDesktopWindows(nullptr, enum_window_proc, 0); // throwing away return value here, can return 0 once enumeration stops.
+    // Throwing away return value here, can return 0 if the enumeration stops early. Rely on GetLastError instead as documentation suggests.
+    ::EnumDesktopWindows(nullptr, enum_window_proc, 0);
     uint32_t errCode =  ::GetLastError();
     if (errCode != ERROR_SUCCESS)
     {
@@ -248,19 +250,21 @@
     return enumWindowProcHwndOut;
 }
 
-/* private */ thread_local std::wstring windows_subsystem::enumWindowProcExeName;
+/* private */ thread_local std::wstring windows_subsystem::enumWindowProcExeNameUpper;
 /* private */ thread_local std::wstring windows_subsystem::enumWindowProcTitleContains;
-/* private */ thread_local HWND windows_subsystem::enumWindowProcHwndOut;
-/* private */ int32_t __stdcall windows_subsystem::enum_window_proc(HWND window, [[maybe_unused]] int64_t param)
+/* private */ thread_local ::HWND windows_subsystem::enumWindowProcHwndOut;
+/* private */ int32_t __stdcall windows_subsystem::enum_window_proc(::HWND window, [[maybe_unused]] int64_t param)
 {
+    // In this function we set SetLastError after every return intentionally. See EnumDesktopWindows documentation.
     uint32_t processId;
-    int32_t r = ::GetWindowThreadProcessId(window, reinterpret_cast<::DWORD*>(&processId));
-    if (r == 0)
+    int32_t r;
+    uint32_t rDword = ::GetWindowThreadProcessId(window, reinterpret_cast<::DWORD*>(&processId));
+    if (rDword == 0)
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::GetWindowThreadProcessId() failure.");
     }
-    std::wstring exeName = get_exe_name_from_process_id(processId);
-    if (enumWindowProcExeName == exeName)
+    std::wstring exeNameUpper = get_exe_name_from_process_id(processId);
+    if (enumWindowProcExeNameUpper == exeNameUpper)
     {
         // We skip windows that are not visible.
         r = ::IsWindowVisible(window);
@@ -270,7 +274,7 @@
             return true;
         }
 
-        ::SetLastError(ERROR_SUCCESS);
+        ::SetLastError(ERROR_SUCCESS); // GetWindowTextLengthW needs SetLastError set first.
         int32_t windowTitleLength = ::GetWindowTextLengthW(window);
         // error response only available with GetLastError rather than return of GetWindowTextLengthW here.
         uint32_t errCode = ::GetLastError();
@@ -321,7 +325,7 @@
 // ----- window: The window to move.
 // ----- above: True if move above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
-/* public */ void windows_subsystem::move_window(HWND window, bool above, const app_dimensions& dimensions)
+/* public */ void windows_subsystem::move_window(::HWND window, bool above, const app_dimensions& dimensions)
 {
     RECT currDimensions;
     int32_t r = ::GetWindowRect(window, &currDimensions);
@@ -335,6 +339,7 @@
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::DwmGetWindowAttribute() failure.");
     }
+
     int32_t xAdjustment = currDimensions.left - adjDimensions.left;
     int32_t yAdjustment = currDimensions.top - adjDimensions.top;
     int32_t widthAdjustment = (currDimensions.right - currDimensions.left) - (adjDimensions.right - adjDimensions.left);
@@ -372,8 +377,8 @@
     int32_t r = ::EnumProcessModulesEx(processHandle, &moduleHandle, sizeof(moduleHandle), reinterpret_cast<::DWORD*>(&needed), LIST_MODULES_DEFAULT);
     if (r == 0)
     {
-        uint32_t errorCode = ::GetLastError();
-        if (errorCode == ERROR_NOACCESS || errorCode == ERROR_PARTIAL_COPY)
+        uint32_t errCode = ::GetLastError();
+        if (errCode == ERROR_NOACCESS || errCode == ERROR_PARTIAL_COPY)
         {
             // system processes are off bounds, just skip them
             r = ::CloseHandle(processHandle);
@@ -411,7 +416,7 @@
 }
 
 // --- get_key_modifiers(): Gets the current active key modifiers on the system.
-// ------- returns: All key modifier states
+// ------- returns: All key modifier states.
 // ---------------------------------------------------------------/
 /* public */ key_modifiers windows_subsystem::get_key_modifiers()
 {
@@ -434,7 +439,7 @@
     {
         return L"";
     }
-    ::SetLastError(ERROR_SUCCESS);
+    ::SetLastError(ERROR_SUCCESS); // GetWindowTextLengthW needs SetLastError set first.
     int32_t windowTitleLength = ::GetWindowTextLengthW(window);
     // error response only available with GetLastError rather than return of GetWindowTextLengthW here.
     uint32_t errCode = ::GetLastError();
