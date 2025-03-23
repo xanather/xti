@@ -524,6 +524,10 @@ void main_window::open_or_show_app(const QVariant& shortcutConfig)
 
 void main_window::ui_on_key_press()
 {
+    if (m_cursorIsMoving)
+    {
+        return;
+    }
     QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
     bool modChanged = false;
     bool modOn = false;
@@ -1078,7 +1082,8 @@ bool main_window::event(QEvent* event) {
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd) {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
-        for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin(); touch != touchEvent->points().end(); ++touch)
+        for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
+             touch != touchEvent->points().end(); ++touch)
         {
             if (!m_cursorIsMoving && event->type() == QEvent::TouchBegin && touch->id() == 0)
             {
@@ -1096,12 +1101,18 @@ bool main_window::event(QEvent* event) {
                         error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
                     }
                     m_cursorIsMoving = true;
-                    qDebug() << "m_cursorIsMoving = true";
                     m_cursorStartPosition.setX(startPos.x);
                     m_cursorStartPosition.setY(startPos.y);
+                    for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
+                    {
+                        QPushButton* button = m_keyButtonLeftList[i];
+                        QPalette palette = button->palette();
+                        palette.setColor(QPalette::Button, Qt::blue);
+                        button->setPalette(palette);
+                    }
                 }
             }
-            if (m_cursorIsMoving)
+            if (m_cursorIsMoving && touch->id() == 0)
             {
                 QPointF diff = touch->globalPosition() - touch->globalPressPosition();
                 qDebug() << diff;
@@ -1109,8 +1120,16 @@ bool main_window::event(QEvent* event) {
         }
         if (event->type() == QEvent::TouchEnd)
         {
+            if (m_cursorIsMoving)
+            {
+                QPalette defaultPalette = QApplication::palette();
+                for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
+                {
+                    QPushButton* button = m_keyButtonLeftList[i];
+                    button->setPalette(defaultPalette);
+                }
+            }
             m_cursorIsMoving = false;
-            qDebug() << "m_cursorIsMoving = false";
         }
     }
     if (event->type() == QEvent::TouchBegin)
