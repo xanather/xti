@@ -24,6 +24,7 @@
 #include <cstdint>
 // 4. Project classes
 #include "app_dimensions.h"
+#include "key_modifiers.h"
 // 5. Forward decl
 
 class windows_subsystem // static members only
@@ -92,6 +93,11 @@ public:
     // public show_exception_to_user(): Shows a message box with given error message.
     // see cpp file for more info.
     static void show_exception_to_user(const std::wstring& error);
+
+public:
+    // public get_key_modifiers(): Gets the current active key modifiers on the system.
+    // see cpp file for more info.
+    static key_modifiers get_key_modifiers();
 };
 
 #endif // WINDOWS_SUBSYSTEM_H

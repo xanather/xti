@@ -402,9 +402,27 @@
 }
 
 // --- show_exception_to_user(): Shows a message box with given error message.
+// ----- error: The message to show.
 // -------------------------------------------------------------------------------------------/
 /* public */ void windows_subsystem::show_exception_to_user(const std::wstring& error)
 {
     // no checking return value here, program is beyond saving at this point - just try show the error.
     ::MessageBoxW(nullptr, error.c_str(), L"XTI Runtime Exception", MB_OK);
+}
+
+
+// --- get_key_modifiers(): Gets the current active key modifiers on the system.
+// ------- returns: All key modifier states
+// -----------------------------------------/
+/* public */ key_modifiers windows_subsystem::get_key_modifiers()
+{
+    key_modifiers modifiers;
+    modifiers.capsLock = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+    modifiers.scrollLock = (::GetKeyState(VK_SCROLL) & 0x0001) != 0;
+    modifiers.numLock = (::GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
+    modifiers.control = false;
+    modifiers.shift = false;
+    modifiers.alt = false;
+    modifiers.windows = false;
+    return modifiers;
 }

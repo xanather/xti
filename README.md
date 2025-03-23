@@ -34,7 +34,7 @@ Supports either x64 or Arm64 computers running Windows 11.
    3. `startParams`: The parameters to pass to open if `checkExeName` and `checkTitleName` was not found. Leave empty if not needed.
    4. `startWorkingDir`: The working directory to use when opening.
    5. `checkExeName`: Used to determine if this entry is already running and brings it to the foreground.
-   5. `checkTitleName`: Used to determine if this entry is already running and brings it to the foreground. The process specified in `checkExeName` must have at-least one window with `checkTitleName` text contained inside it.
+   5. `checkTitleName`: Used to determine if this entry is already running and brings it to the foreground. The process specified in `checkExeName` must have at-least one window with `checkTitleName` text contained inside it. Leave empty for any title name.
 2. If the cursor does not become visible while in tablet mode after starting for first time you may need to restart machine for registry changes to take effect.
 3. Before running its recommended to make these changes:
    1. Bottom right of screen -> press battery/sound/wifi icon -> force rotation lock in portrait mode.
@@ -44,6 +44,8 @@ Supports either x64 or Arm64 computers running Windows 11.
 ```
 reg add "HKLM\System\CurrentControlSet\Control\PriorityControl" /v ConvertibilityEnabled /t REG_DWORD /d 0
 ```
+
+Restart computer after making above changes.
 
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.

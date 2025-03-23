@@ -18,6 +18,7 @@ set(PROJECT_SOURCES
         error_reporter.h
         error_reporter.cpp
         app_dimensions.h
+        key_modifiers.h
 )
 set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/recrypt.rc")
 qt_add_executable(xti

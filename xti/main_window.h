@@ -26,6 +26,7 @@
 #include <cstdint>
 // 4. Project classes
 #include "app_dimensions.h"
+#include "key_modifiers.h"
 // 5. Forward decl
 class QWidget;
 class QPushButton;
@@ -42,11 +43,15 @@ public:
     virtual ~main_window();
 
 private:
-    std::vector<QPushButton*> m_buttonList;
+    std::vector<QPushButton*> m_keyButtonList;
+    std::vector<QPushButton*> m_keyButtonLeftList;
+    std::vector<QPushButton*> m_keyButtonRightList;
     app_dimensions m_appDimensions;
+    key_modifiers m_keyModifiers;
     QJsonDocument m_appConfig;
     Ui::main_window *ui;
     void open_or_show_app(const QVariant& iObj);
+    void update_modifier_colors(bool withShiftControlAltWindows);
 
 protected:
     virtual bool nativeEvent(const QByteArray &eventType, void* message, qintptr* result) override;
