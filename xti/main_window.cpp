@@ -496,7 +496,10 @@ void main_window::ui_on_state_refresher_loop()
 {
     ui->label_activeWindow->setText(QString::fromStdWString(windows_subsystem::get_focus_window_name()));
     m_keyModifiers = windows_subsystem::get_key_modifiers();
-    update_modifier_colors();
+    if (!m_cursorIsMoving)
+    {
+        update_modifier_colors();
+    }
 }
 
 void main_window::open_or_show_app(const QVariant& shortcutConfig)
@@ -1128,6 +1131,7 @@ bool main_window::event(QEvent* event) {
                     QPushButton* button = m_keyButtonLeftList[i];
                     button->setPalette(defaultPalette);
                 }
+                update_modifier_colors();
             }
             m_cursorIsMoving = false;
         }
