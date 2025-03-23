@@ -364,80 +364,80 @@ main_window::main_window(QWidget *parent)
     m_keyButtonLeftList.push_back(ui->pushButton_paste);
 
     // STEP 6: Collecting all keyboard push buttons (right side).
-    m_keyButtonRightList.push_back(ui->pushButton_f7);
-    m_keyButtonRightList.push_back(ui->pushButton_f8);
-    m_keyButtonRightList.push_back(ui->pushButton_f9);
-    m_keyButtonRightList.push_back(ui->pushButton_f10);
-    m_keyButtonRightList.push_back(ui->pushButton_f11);
-    m_keyButtonRightList.push_back(ui->pushButton_f12);
-    m_keyButtonRightList.push_back(ui->pushButton_backspace);
-    m_keyButtonRightList.push_back(ui->pushButton_previous);
-    m_keyButtonRightList.push_back(ui->pushButton_circumflex);
-    m_keyButtonRightList.push_back(ui->pushButton_ampersand);
-    m_keyButtonRightList.push_back(ui->pushButton_asterisk);
-    m_keyButtonRightList.push_back(ui->pushButton_leftRoundBracket);
-    m_keyButtonRightList.push_back(ui->pushButton_rightRoundBracket);
-    m_keyButtonRightList.push_back(ui->pushButton_minus);
-    m_keyButtonRightList.push_back(ui->pushButton_pause);
-    m_keyButtonRightList.push_back(ui->pushButton_num6);
-    m_keyButtonRightList.push_back(ui->pushButton_num7);
-    m_keyButtonRightList.push_back(ui->pushButton_num8);
-    m_keyButtonRightList.push_back(ui->pushButton_num9);
-    m_keyButtonRightList.push_back(ui->pushButton_num0);
-    m_keyButtonRightList.push_back(ui->pushButton_underscore);
-    m_keyButtonRightList.push_back(ui->pushButton_pageDown);
-    m_keyButtonRightList.push_back(ui->pushButton_Y);
-    m_keyButtonRightList.push_back(ui->pushButton_U);
-    m_keyButtonRightList.push_back(ui->pushButton_I);
-    m_keyButtonRightList.push_back(ui->pushButton_O);
-    m_keyButtonRightList.push_back(ui->pushButton_P);
-    m_keyButtonRightList.push_back(ui->pushButton_equals);
-    m_keyButtonRightList.push_back(ui->pushButton_end);
-    m_keyButtonRightList.push_back(ui->pushButton_H);
-    m_keyButtonRightList.push_back(ui->pushButton_J);
-    m_keyButtonRightList.push_back(ui->pushButton_K);
-    m_keyButtonRightList.push_back(ui->pushButton_L);
-    m_keyButtonRightList.push_back(ui->pushButton_leftSquareBracket);
-    m_keyButtonRightList.push_back(ui->pushButton_plus);
-    m_keyButtonRightList.push_back(ui->pushButton_break);
-    m_keyButtonRightList.push_back(ui->pushButton_N);
-    m_keyButtonRightList.push_back(ui->pushButton_M);
-    m_keyButtonRightList.push_back(ui->pushButton_lessThan);
-    m_keyButtonRightList.push_back(ui->pushButton_greaterThan);
-    m_keyButtonRightList.push_back(ui->pushButton_rightSquareBracket);
-    m_keyButtonRightList.push_back(ui->pushButton_backslash);
-    m_keyButtonRightList.push_back(ui->pushButton_volumeDown);
-    m_keyButtonRightList.push_back(ui->pushButton_y);
-    m_keyButtonRightList.push_back(ui->pushButton_u);
-    m_keyButtonRightList.push_back(ui->pushButton_i);
-    m_keyButtonRightList.push_back(ui->pushButton_o);
-    m_keyButtonRightList.push_back(ui->pushButton_p);
-    m_keyButtonRightList.push_back(ui->pushButton_leftBraces);
-    m_keyButtonRightList.push_back(ui->pushButton_numLock);
-    m_keyButtonRightList.push_back(ui->pushButton_h);
-    m_keyButtonRightList.push_back(ui->pushButton_j);
-    m_keyButtonRightList.push_back(ui->pushButton_k);
-    m_keyButtonRightList.push_back(ui->pushButton_l);
-    m_keyButtonRightList.push_back(ui->pushButton_verticalSlash);
-    m_keyButtonRightList.push_back(ui->pushButton_rightBraces);
-    m_keyButtonRightList.push_back(ui->pushButton_scrollLock);
-    m_keyButtonRightList.push_back(ui->pushButton_n);
-    m_keyButtonRightList.push_back(ui->pushButton_m);
-    m_keyButtonRightList.push_back(ui->pushButton_slash);
-    m_keyButtonRightList.push_back(ui->pushButton_questionMark);
-    m_keyButtonRightList.push_back(ui->pushButton_menu);
-    m_keyButtonRightList.push_back(ui->pushButton_capsLock);
-    m_keyButtonRightList.push_back(ui->pushButton_redo);
-    m_keyButtonRightList.push_back(ui->pushButton_up);
-    m_keyButtonRightList.push_back(ui->pushButton_down);
-    m_keyButtonRightList.push_back(ui->pushButton_left);
-    m_keyButtonRightList.push_back(ui->pushButton_right);
-    m_keyButtonRightList.push_back(ui->pushButton_fileFind);
-    m_keyButtonRightList.push_back(ui->pushButton_find);
-    m_keyButtonRightList.push_back(ui->pushButton_findAll);
-    m_keyButtonRightList.push_back(ui->pushButton_insert);
-    m_keyButtonRightList.push_back(ui->pushButton_delete);
-    m_keyButtonRightList.push_back(ui->pushButton_enter);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f7);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f8);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f9);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f10);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f11);
+    m_keyButtonRightTopList.push_back(ui->pushButton_f12);
+    m_keyButtonRightTopList.push_back(ui->pushButton_backspace);
+    m_keyButtonRightTopList.push_back(ui->pushButton_previous);
+    m_keyButtonRightTopList.push_back(ui->pushButton_circumflex);
+    m_keyButtonRightTopList.push_back(ui->pushButton_ampersand);
+    m_keyButtonRightTopList.push_back(ui->pushButton_asterisk);
+    m_keyButtonRightTopList.push_back(ui->pushButton_leftRoundBracket);
+    m_keyButtonRightTopList.push_back(ui->pushButton_rightRoundBracket);
+    m_keyButtonRightTopList.push_back(ui->pushButton_minus);
+    m_keyButtonRightTopList.push_back(ui->pushButton_pause);
+    m_keyButtonRightTopList.push_back(ui->pushButton_num6);
+    m_keyButtonRightTopList.push_back(ui->pushButton_num7);
+    m_keyButtonRightTopList.push_back(ui->pushButton_num8);
+    m_keyButtonRightTopList.push_back(ui->pushButton_num9);
+    m_keyButtonRightTopList.push_back(ui->pushButton_num0);
+    m_keyButtonRightTopList.push_back(ui->pushButton_underscore);
+    m_keyButtonRightTopList.push_back(ui->pushButton_pageDown);
+    m_keyButtonRightTopList.push_back(ui->pushButton_Y);
+    m_keyButtonRightTopList.push_back(ui->pushButton_U);
+    m_keyButtonRightTopList.push_back(ui->pushButton_I);
+    m_keyButtonRightTopList.push_back(ui->pushButton_O);
+    m_keyButtonRightTopList.push_back(ui->pushButton_P);
+    m_keyButtonRightTopList.push_back(ui->pushButton_equals);
+    m_keyButtonRightTopList.push_back(ui->pushButton_end);
+    m_keyButtonRightTopList.push_back(ui->pushButton_H);
+    m_keyButtonRightTopList.push_back(ui->pushButton_J);
+    m_keyButtonRightTopList.push_back(ui->pushButton_K);
+    m_keyButtonRightTopList.push_back(ui->pushButton_L);
+    m_keyButtonRightTopList.push_back(ui->pushButton_leftSquareBracket);
+    m_keyButtonRightTopList.push_back(ui->pushButton_plus);
+    m_keyButtonRightTopList.push_back(ui->pushButton_break);
+    m_keyButtonRightTopList.push_back(ui->pushButton_N);
+    m_keyButtonRightTopList.push_back(ui->pushButton_M);
+    m_keyButtonRightTopList.push_back(ui->pushButton_lessThan);
+    m_keyButtonRightTopList.push_back(ui->pushButton_greaterThan);
+    m_keyButtonRightTopList.push_back(ui->pushButton_rightSquareBracket);
+    m_keyButtonRightTopList.push_back(ui->pushButton_backslash);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_volumeDown);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_y);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_u);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_i);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_o);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_p);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_leftBraces);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_numLock);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_h);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_j);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_k);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_l);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_verticalSlash);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_rightBraces);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_scrollLock);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_n);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_m);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_slash);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_questionMark);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_menu);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_capsLock);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_redo);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_up);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_down);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_left);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_right);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_fileFind);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_find);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_findAll);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_insert);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_delete);
+    m_keyButtonRightBottomList.push_back(ui->pushButton_enter);
 
     // STEP 7: Inserting configured shortcuts.
     for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
@@ -1080,8 +1080,33 @@ bool main_window::event(QEvent* event) {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin(); touch != touchEvent->points().end(); ++touch)
         {
-
-            qDebug() << touch->id() << " grab: " << touch->globalPressPosition().toPoint() << ", point:" << touch->globalPosition().toPoint();
+            if (!m_cursorIsMoving && event->type() == QEvent::TouchBegin && touch->id() == 0)
+            {
+                QPushButton* topLeftKey = m_keyButtonList[0];
+                QPushButton* bottomRightKey = m_keyButtonList[m_keyButtonList.size() - 1];
+                if (topLeftKey->pos().x() <= touch->position().x() && topLeftKey->pos().y() <= touch->position().y() &&
+                    bottomRightKey->pos().x() + bottomRightKey->width() > touch->position().x() && bottomRightKey->pos().y() + bottomRightKey->height() > touch->position().y())
+                {
+                    POINT startPos;
+                    int32_t r = ::GetCursorPos(&startPos);
+                    if (r == 0)
+                    {
+                        error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
+                    }
+                    m_cursorIsMoving = true;
+                    m_cursorStartPosition.setX(startPos.x);
+                    m_cursorStartPosition.setY(startPos.y);
+                }
+            }
+            if (m_cursorIsMoving)
+            {
+                QPoint diff = touch->position().toPoint() - touch->globalPressPosition().toPoint();
+                qDebug() << diff;
+            }
+        }
+        if (event->type() == QEvent::TouchEnd)
+        {
+            m_cursorIsMoving = false;
         }
     }
     if (event->type() == QEvent::TouchBegin)

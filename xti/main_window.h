@@ -19,6 +19,7 @@
 // 1. Qt framework headers
 #include <QMainWindow>
 #include <QJsonDocument>
+#include <QPoint>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <vector>
@@ -46,7 +47,8 @@ public:
 private:
     std::vector<QPushButton*> m_keyButtonList;
     std::vector<QPushButton*> m_keyButtonLeftList;
-    std::vector<QPushButton*> m_keyButtonRightList;
+    std::vector<QPushButton*> m_keyButtonRightTopList;
+    std::vector<QPushButton*> m_keyButtonRightBottomList;
 
     QJsonDocument m_appConfig;
 
@@ -72,6 +74,8 @@ private:
 
     // Virtual touchpad functions
 protected:
+    bool m_cursorIsMoving = false;
+    QPoint m_cursorStartPosition;
     virtual bool event(QEvent* ev) override;
 
     // Opening apps, and other utility functions.
