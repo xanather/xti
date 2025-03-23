@@ -514,7 +514,7 @@ bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintpt
 void main_window::ui_on_key_press()
 {
     QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
-    bool changeModifierColors = false;
+    bool modChanged = false;
     bool modOn = false;
     // Key press back color changes -> Key modifiers and locks.
     if (srcButton == ui->pushButton_shift ||
@@ -525,7 +525,7 @@ void main_window::ui_on_key_press()
         srcButton == ui->pushButton_numLock ||
         srcButton == ui->pushButton_capsLock)
     {
-        changeModifierColors = true;
+        modChanged = true;
     }
     // Everything else
     else
@@ -857,7 +857,7 @@ void main_window::ui_on_key_press()
         {
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
-        post_key_press(srcButton, changeModifierColors, !currentlyDown);
+        post_key_press(srcButton, modChanged, !currentlyDown);
         return;
     }
     else
@@ -933,12 +933,12 @@ void main_window::ui_on_key_press()
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
-    post_key_press(srcButton, changeModifierColors, modOn);
+    post_key_press(srcButton, modChanged, modOn);
 }
 
-void main_window::post_key_press(QPushButton* srcButton, bool changeModifierColors, bool modOn)
+void main_window::post_key_press(QPushButton* srcButton, bool modChanged, bool modOn)
 {
-    if (changeModifierColors)
+    if (modChanged)
     {
         m_keyModifiers = windows_subsystem::get_key_modifiers();
         update_modifier_colors();

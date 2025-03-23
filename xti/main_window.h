@@ -60,7 +60,7 @@ protected:
 private slots:
     void post_ctor();
     void ui_on_key_press();
-    void post_key_press(QPushButton* srcButton, bool changeModifierColors, bool modOn);
+    void post_key_press(QPushButton* srcButton, bool modChanged, bool modOn);
     void on_key_press_fade();
     void ui_on_shortcuts_above_changed(int32_t index);
     void ui_on_shortcuts_above_reopen();
