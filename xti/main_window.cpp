@@ -515,6 +515,7 @@ void main_window::ui_on_key_press()
 {
     QPushButton* srcButton = qobject_cast<QPushButton*>(sender());
     bool changeModifierColors = false;
+    bool modOn = false;
     // Key press back color changes -> Key modifiers and locks.
     if (srcButton == ui->pushButton_shift ||
         srcButton == ui->pushButton_control ||
@@ -805,6 +806,17 @@ void main_window::ui_on_key_press()
              virtualKeyCode == VK_SCROLL ||
              virtualKeyCode == VK_NUMLOCK)
     {
+        switch (virtualKeyCode) {
+        case VK_CAPITAL:
+            modOn = !m_keyModifiers.capsLock;
+            break;
+        case VK_SCROLL:
+            modOn = !m_keyModifiers.scrollLock;
+            break;
+        case VK_NUMLOCK:
+            modOn = !m_keyModifiers.numLock;
+            break;
+        }
         input.ki.wVk = virtualKeyCode;
     }
     // MODIFIERS
@@ -845,7 +857,7 @@ void main_window::ui_on_key_press()
         {
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
-        post_key_press(srcButton, changeModifierColors);
+        post_key_press(srcButton, changeModifierColors, !currentlyDown);
         return;
     }
     else
@@ -921,16 +933,30 @@ void main_window::ui_on_key_press()
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
-    post_key_press(srcButton, changeModifierColors);
+    post_key_press(srcButton, changeModifierColors, modOn);
 }
 
-void main_window::post_key_press(QPushButton* srcButton, bool changeModifierColors)
+void main_window::post_key_press(QPushButton* srcButton, bool changeModifierColors, bool modOn)
 {
     if (changeModifierColors)
     {
+        m_keyModifiers = windows_subsystem::get_key_modifiers();
         update_modifier_colors();
     }
-    ui->label_activeKey->setText(srcButton->text());
+    if (srcButton == ui->pushButton_shift ||
+        srcButton == ui->pushButton_control ||
+        srcButton == ui->pushButton_windows ||
+        srcButton == ui->pushButton_alt ||
+        srcButton == ui->pushButton_scrollLock ||
+        srcButton == ui->pushButton_numLock ||
+        srcButton == ui->pushButton_capsLock)
+    {
+        ui->label_activeKey->setText(srcButton->text() + QString(modOn ? L" ON" : L" OFF"));
+    }
+    else
+    {
+        ui->label_activeKey->setText(srcButton->text());
+    }
     QPalette palette = ui->label_activeKey->palette();
     palette.setColor(QPalette::WindowText, Qt::cyan);
     ui->label_activeKey->setPalette(palette);
@@ -956,7 +982,6 @@ void main_window::on_key_press_fade()
 
 void main_window::update_modifier_colors()
 {
-    m_keyModifiers = windows_subsystem::get_key_modifiers();
     QPalette defaultPalette = QApplication::palette();
     if (m_keyModifiers.shift)
     {
