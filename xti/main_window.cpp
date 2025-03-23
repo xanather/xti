@@ -32,6 +32,7 @@
 #include <QJsonObject>
 #include <QTimer>
 #include <QVariant>
+#include <QEvent>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -280,6 +281,11 @@ main_window::main_window(QWidget *parent)
     m_keyButtonList.push_back(ui->pushButton_insert);
     m_keyButtonList.push_back(ui->pushButton_delete);
     m_keyButtonList.push_back(ui->pushButton_enter);
+    for (size_t i = 0; i < m_keyButtonList.size(); i++)
+    {
+        // Prevent button corners being able to be pushed-through to desktop.
+        m_keyButtonList[i]->setAutoFillBackground(true);
+    }
 
     // STEP 5: Collecting all keyboard push buttons (left side).
     m_keyButtonLeftList.push_back(ui->pushButton_escape);
@@ -1062,6 +1068,15 @@ void main_window::update_modifier_colors()
     {
         ui->pushButton_scrollLock->setPalette(defaultPalette);
     }
+}
+
+bool main_window::event(QEvent* event) {
+    if (event->type() == QEvent::TouchBegin ||
+        event->type() == QEvent::TouchUpdate ||
+        event->type() == QEvent::TouchEnd) {
+        qDebug() << "touchEvent!";
+    }
+    return QMainWindow::event(event);
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index)

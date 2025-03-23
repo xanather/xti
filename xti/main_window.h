@@ -30,6 +30,7 @@
 class QWidget;
 class QPushButton;
 class QVariant;
+class QEvent;
 namespace Ui {
 class main_window;
 }
@@ -40,7 +41,7 @@ class main_window : public QMainWindow
 
 public:
     main_window(QWidget *parent);
-    ~main_window();
+    virtual ~main_window();
 
 private:
     std::vector<QPushButton*> m_keyButtonList;
@@ -68,6 +69,10 @@ private slots:
     void ui_on_key_press_fade();
 private:
     void update_modifier_colors();
+
+    // Virtual touchpad functions
+protected:
+    virtual bool event(QEvent* ev) override;
 
     // Opening apps, and other utility functions.
 private slots:
