@@ -33,6 +33,7 @@
 #include <QTimer>
 #include <QVariant>
 #include <QEvent>
+#include <QTouchEvent>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -1074,7 +1075,8 @@ bool main_window::event(QEvent* event) {
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd) {
-        qDebug() << "touchEvent!" << event->type();
+        QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
+        qDebug() << touchEvent->points();
     }
     if (event->type() == QEvent::TouchBegin)
     {
