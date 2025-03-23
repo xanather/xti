@@ -60,7 +60,7 @@ private:
     Ui::main_window* ui;
     void open_or_show_app(const QVariant& shortcutConfig);
 
-    // Virtual keyboard functions
+    // SECTION: Virtual keyboard functions.
 private slots:
     void ui_on_post_ctor();
     void ui_on_state_refresher_loop();
@@ -72,13 +72,17 @@ private slots:
 private:
     void update_modifier_colors();
 
-    // Virtual touchpad functions
+    // SECTION: Virtual touchpad functions.
 protected:
     bool m_cursorIsMoving = false;
+    bool m_cursorIsHooked = false;
     QPoint m_cursorStartPosition;
+    QTimer* m_cursorMoveTimerDelay = nullptr;
     virtual bool event(QEvent* ev) override;
+private slots:
+    void ui_on_cursor_move_ready();
 
-    // Opening apps, and other utility functions.
+    // SECTION: Opening apps, and other utility functions.
 private slots:
     void ui_on_shortcuts_above_changed(int32_t index);
     void ui_on_shortcuts_above_reopen();

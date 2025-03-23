@@ -1080,10 +1080,12 @@ void main_window::update_modifier_colors()
     }
 }
 
-bool main_window::event(QEvent* event) {
+bool main_window::event(QEvent* event)
+{
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
-        event->type() == QEvent::TouchEnd) {
+        event->type() == QEvent::TouchEnd)
+    {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
@@ -1097,7 +1099,7 @@ bool main_window::event(QEvent* event) {
                     bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
                     bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
                 {
-                    POINT startPos;
+                    ::POINT startPos;
                     int32_t r = ::GetCursorPos(&startPos);
                     if (r == 0)
                     {
@@ -1106,16 +1108,18 @@ bool main_window::event(QEvent* event) {
                     m_cursorIsMoving = true;
                     m_cursorStartPosition.setX(startPos.x);
                     m_cursorStartPosition.setY(startPos.y);
-                    for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
+                    // There needs to be some delay before we actually start moving the cursor
+                    // otherwise normal touch key presses can move the cursor slightly.
+                    if (m_cursorMoveTimerDelay == nullptr)
                     {
-                        QPushButton* button = m_keyButtonLeftList[i];
-                        QPalette palette = button->palette();
-                        palette.setColor(QPalette::Button, Qt::blue);
-                        button->setPalette(palette);
+                        m_cursorMoveTimerDelay = new QTimer(this);
+                        m_cursorMoveTimerDelay->setSingleShot(true);
+                        connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
                     }
+                    m_cursorMoveTimerDelay->start(1000);
                 }
             }
-            if (m_cursorIsMoving && touch->id() == 0)
+            if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
             {
                 QPointF diff = touch->globalPosition() - touch->globalPressPosition();
                 qDebug() << diff;
@@ -1123,7 +1127,7 @@ bool main_window::event(QEvent* event) {
         }
         if (event->type() == QEvent::TouchEnd)
         {
-            if (m_cursorIsMoving)
+            if (m_cursorIsHooked)
             {
                 QPalette defaultPalette = QApplication::palette();
                 for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
@@ -1132,8 +1136,13 @@ bool main_window::event(QEvent* event) {
                     button->setPalette(defaultPalette);
                 }
                 update_modifier_colors();
+                m_cursorIsHooked = false;
             }
-            m_cursorIsMoving = false;
+            if (m_cursorIsMoving)
+            {
+                m_cursorMoveTimerDelay->stop();
+                m_cursorIsMoving = false;
+            }
         }
     }
     if (event->type() == QEvent::TouchBegin)
@@ -1141,6 +1150,18 @@ bool main_window::event(QEvent* event) {
         return true;
     }
     return QMainWindow::event(event);
+}
+
+void main_window::ui_on_cursor_move_ready()
+{
+    m_cursorIsHooked = true;
+    for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
+    {
+        QPushButton* button = m_keyButtonLeftList[i];
+        QPalette palette = button->palette();
+        palette.setColor(QPalette::Button, Qt::blue);
+        button->setPalette(palette);
+    }
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index)
