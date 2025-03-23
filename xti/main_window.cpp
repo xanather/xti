@@ -1110,7 +1110,7 @@ bool main_window::event(QEvent* event) {
         }
         if (event->type() == QEvent::TouchEnd)
         {
-            qDebug() << "m_cursorIsMoving = true;";
+            qDebug() << "m_cursorIsMoving = false;";
             m_cursorIsMoving = false;
         }
     }
