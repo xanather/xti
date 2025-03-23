@@ -285,6 +285,7 @@ main_window::main_window(QWidget *parent)
     {
         // Prevent button corners being able to be pushed-through to desktop.
         m_keyButtonList[i]->setAutoFillBackground(true);
+        m_keyButtonList[i]->setAttribute(Qt::WA_AcceptTouchEvents);
     }
 
     // STEP 5: Collecting all keyboard push buttons (left side).
