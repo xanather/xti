@@ -1097,20 +1097,18 @@ bool main_window::event(QEvent* event) {
                         error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
                     }
                     m_cursorIsMoving = true;
-                    qDebug() << "m_cursorIsMoving = true;";
                     m_cursorStartPosition.setX(startPos.x);
                     m_cursorStartPosition.setY(startPos.y);
                 }
             }
             if (m_cursorIsMoving)
             {
-                //QPoint diff = touch->globalPosition().toPoint() - touch->globalPressPosition().toPoint();
-                //qDebug() << diff;
+                QPoint diff = touch->globalPosition().toPoint() - touch->globalPressPosition().toPoint();
+                qDebug() << diff;
             }
         }
         if (event->type() == QEvent::TouchEnd)
         {
-            qDebug() << "m_cursorIsMoving = false;";
             m_cursorIsMoving = false;
         }
     }
