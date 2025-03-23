@@ -33,7 +33,9 @@
 #include <QTimer>
 #include <QVariant>
 #include <QEvent>
+#include <QList>
 #include <QTouchEvent>
+#include <QEventPoint>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -1076,7 +1078,10 @@ bool main_window::event(QEvent* event) {
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd) {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
-        qDebug() << touchEvent->points();
+        for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin(); touch != touchEvent->points().end(); ++touch)
+        {
+            qDebug() << "grab: " << touch->globalGrabPosition().toPoint() << ", point:" << touch->globalPosition().toPoint();
+        }
     }
     if (event->type() == QEvent::TouchBegin)
     {
