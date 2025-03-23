@@ -1084,8 +1084,11 @@ bool main_window::event(QEvent* event) {
             {
                 QPushButton* topLeftKey = m_keyButtonList[0];
                 QPushButton* bottomRightKey = m_keyButtonList[m_keyButtonList.size() - 1];
-                if (topLeftKey->pos().x() <= touch->position().x() && topLeftKey->pos().y() <= touch->position().y() &&
-                    bottomRightKey->pos().x() + bottomRightKey->width() > touch->position().x() && bottomRightKey->pos().y() + bottomRightKey->height() > touch->position().y())
+                qDebug() << "topLeftKey" << topLeftKey->pos() << "position" << touch->position() << "bottomRightKey" << bottomRightKey->pos();
+                if (topLeftKey->pos().x() <= touch->position().x() &&
+                    topLeftKey->pos().y() <= touch->position().y() &&
+                    bottomRightKey->pos().x() + bottomRightKey->width() > touch->position().x() &&
+                    bottomRightKey->pos().y() + bottomRightKey->height() > touch->position().y())
                 {
                     POINT startPos;
                     int32_t r = ::GetCursorPos(&startPos);
@@ -1100,8 +1103,8 @@ bool main_window::event(QEvent* event) {
             }
             if (m_cursorIsMoving)
             {
-                QPoint diff = touch->position().toPoint() - touch->globalPressPosition().toPoint();
-                qDebug() << diff;
+                //QPoint diff = touch->globalPosition().toPoint() - touch->globalPressPosition().toPoint();
+                //qDebug() << diff;
             }
         }
         if (event->type() == QEvent::TouchEnd)
