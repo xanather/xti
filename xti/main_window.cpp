@@ -487,8 +487,6 @@ void main_window::ui_on_post_ctor() {
     m_keyModifiers = windows_subsystem::get_key_modifiers();
     update_modifier_colors();
 
-    ::ShowCursor(true);
-
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &main_window::ui_on_state_refresher_loop);
     timer->start(3000);
@@ -1118,7 +1116,7 @@ bool main_window::event(QEvent* event)
                         m_cursorMoveTimerDelay->setSingleShot(true);
                         connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
                     }
-                    m_cursorMoveTimerDelay->start(100);
+                    m_cursorMoveTimerDelay->start(50);
                 }
             }
             if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
@@ -1130,6 +1128,8 @@ bool main_window::event(QEvent* event)
                 {
                     error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                 }
+                r = ::ShowCursor(TRUE);
+                qDebug() << r;
             }
         }
         if (event->type() == QEvent::TouchEnd)
