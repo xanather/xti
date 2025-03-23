@@ -24,7 +24,7 @@
 // 4. Project classes
 #include "windows_subsystem.h"
 
-void error_reporter::halt(const char* file, int32_t line, const char* message)
+void error_reporter::stop(const char* file, int32_t line, const char* message)
 {
     std::string fullMessage = file;
     fullMessage.push_back('@');

@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     int32_t r = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (r != S_OK)
     {
-        error_reporter::halt(__FILE__, __LINE__, "Win32::CoInitializeEx() failure.");
+        error_reporter::stop(__FILE__, __LINE__, "Win32::CoInitializeEx() failure.");
     }
     QApplication a(argc, argv);
     a.setStyle("fusion");

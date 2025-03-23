@@ -40,28 +40,37 @@ class main_window : public QMainWindow
 
 public:
     main_window(QWidget *parent);
-    virtual ~main_window();
+    ~main_window();
 
 private:
     std::vector<QPushButton*> m_keyButtonList;
     std::vector<QPushButton*> m_keyButtonLeftList;
     std::vector<QPushButton*> m_keyButtonRightList;
+
+    QJsonDocument m_appConfig;
+
     app_dimensions m_appDimensions;
     key_modifiers m_keyModifiers;
-    QTimer* activeKeyColorTimer = nullptr;
-    QJsonDocument m_appConfig;
+
+    QTimer* m_activeKeyColorTimer = nullptr;
+
     Ui::main_window *ui;
-    void open_or_show_app(const QVariant& iObj);
+    void open_or_show_app(const QVariant& shortcutConfig);
+
+    // Virtual keyboard functions
+private slots:
+    void ui_on_post_ctor();
+    void ui_on_state_refresher_loop();
+    void ui_on_key_press();
+private:
+    void post_key_press(QPushButton* srcButton, bool modChanged, bool modOn);
+private slots:
+    void ui_on_key_press_fade();
+private:
     void update_modifier_colors();
 
-protected:
-    virtual bool nativeEvent(const QByteArray &eventType, void* message, qintptr* result) override;
-
+    // Opening apps, and other utility functions.
 private slots:
-    void post_ctor();
-    void ui_on_key_press();
-    void post_key_press(QPushButton* srcButton, bool modChanged, bool modOn);
-    void on_key_press_fade();
     void ui_on_shortcuts_above_changed(int32_t index);
     void ui_on_shortcuts_above_reopen();
     void ui_on_shortcuts_below_changed(int32_t index);
@@ -70,6 +79,7 @@ private slots:
     void ui_on_move_active_below();
     void ui_on_panic();
     void ui_on_restart();
-    void three_second_state_refresher();
+
+private:
 };
 #endif // MAIN_WINDOW_H

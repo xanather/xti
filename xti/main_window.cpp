@@ -20,7 +20,6 @@
 #include <QApplication>
 #include <QProcess>
 #include <QPushButton>
-#include <QScreen>
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
@@ -32,7 +31,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTimer>
-#include <QDebug>
 // 2. System/OS headers
 // 3. C++ standard library headers
 #include <string>
@@ -51,26 +49,25 @@ main_window::main_window(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Make window top-most with no border + make background translucent.
+    // STEP 1: Make window top-most with no border + make background translucent.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_AcceptTouchEvents);
-    windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
 
-    // Load app config. Assumes UTF-8 encoding.
+    // STEP 2: Load app config. Assumes UTF-8 encoding.
     QFile configFile(QDir::homePath() + "/xti.json");
     if (!configFile.open(QIODevice::ReadOnly))
     {
-        error_reporter::halt(__FILE__, __LINE__, configError);
+        error_reporter::stop(__FILE__, __LINE__, configError);
     }
     QByteArray configData = configFile.readAll();
     configFile.close();
     m_appConfig = QJsonDocument::fromJson(configData);
 
-    // Validate config.
+    // STEP 3: Validate config so we can trust it later.
     if (!m_appConfig.isArray())
     {
-        error_reporter::halt(__FILE__, __LINE__, configError);
+        error_reporter::stop(__FILE__, __LINE__, configError);
     }
     QJsonArray configEntries = m_appConfig.array();
     for (qsizetype i = 0; i < configEntries.size(); i++)
@@ -78,7 +75,7 @@ main_window::main_window(QWidget *parent)
         QJsonValueRef entry = configEntries[i];
         if (!entry.isObject())
         {
-            error_reporter::halt(__FILE__, __LINE__, configError);
+            error_reporter::stop(__FILE__, __LINE__, configError);
         }
         QJsonObject obj = entry.toObject();
         QJsonObject::iterator displayName = obj.find("displayName");
@@ -96,7 +93,7 @@ main_window::main_window(QWidget *parent)
             checkTitleName == obj.end() ||
             above == obj.end())
         {
-            error_reporter::halt(__FILE__, __LINE__, configError);
+            error_reporter::stop(__FILE__, __LINE__, configError);
         }
         if (!displayName->isString() ||
             !startExePath->isString() ||
@@ -106,7 +103,7 @@ main_window::main_window(QWidget *parent)
             !checkTitleName->isString() ||
             !above->isBool())
         {
-            error_reporter::halt(__FILE__, __LINE__, configError);
+            error_reporter::stop(__FILE__, __LINE__, configError);
         }
 
         // Replace / with native \ in windows paths.
@@ -129,14 +126,14 @@ main_window::main_window(QWidget *parent)
         }
         *startWorkingDir = QJsonValue(QString(startWorkingDirVal));
 
-        // Make display uppercase.
-        std::wstring displayStr = displayName->toString().toStdWString();
-        std::transform(displayStr.begin(), displayStr.end(), displayStr.begin(), ::toupper);
-        *displayName = QJsonValue(QString(displayStr));
+        // Make display names uppercase.
+        std::wstring displayNameVal = displayName->toString().toStdWString();
+        std::transform(displayNameVal.begin(), displayNameVal.end(), displayNameVal.begin(), ::toupper);
+        *displayName = QJsonValue(QString(displayNameVal));
         configEntries[i] = obj;
     }
 
-    // Collecting all keyboard push buttons.
+    // STEP 4: Collecting all keyboard push buttons.
     m_keyButtonList.push_back(ui->pushButton_escape);
     m_keyButtonList.push_back(ui->pushButton_f1);
     m_keyButtonList.push_back(ui->pushButton_f2);
@@ -283,7 +280,7 @@ main_window::main_window(QWidget *parent)
     m_keyButtonList.push_back(ui->pushButton_delete);
     m_keyButtonList.push_back(ui->pushButton_enter);
 
-    // Collecting all keyboard push buttons (left side).
+    // STEP 5: Collecting all keyboard push buttons (left side).
     m_keyButtonLeftList.push_back(ui->pushButton_escape);
     m_keyButtonLeftList.push_back(ui->pushButton_f1);
     m_keyButtonLeftList.push_back(ui->pushButton_f2);
@@ -356,7 +353,7 @@ main_window::main_window(QWidget *parent)
     m_keyButtonLeftList.push_back(ui->pushButton_cut);
     m_keyButtonLeftList.push_back(ui->pushButton_paste);
 
-    // Collecting all keyboard push buttons (right side).
+    // STEP 6: Collecting all keyboard push buttons (right side).
     m_keyButtonRightList.push_back(ui->pushButton_f7);
     m_keyButtonRightList.push_back(ui->pushButton_f8);
     m_keyButtonRightList.push_back(ui->pushButton_f9);
@@ -432,7 +429,7 @@ main_window::main_window(QWidget *parent)
     m_keyButtonRightList.push_back(ui->pushButton_delete);
     m_keyButtonRightList.push_back(ui->pushButton_enter);
 
-    // Inserting shortcuts.
+    // STEP 7: Inserting configured shortcuts.
     for (QJsonArray::iterator entry = configEntries.begin(); entry != configEntries.end(); ++entry)
     {
         QJsonObject obj = entry->toObject();
@@ -446,7 +443,7 @@ main_window::main_window(QWidget *parent)
         }
     }
 
-    // Hook buttons and controls.
+    // STEP 8: Hook QT buttons and controls.
     for (size_t i = 0; i < m_keyButtonList.size(); i++)
     {
         connect(m_keyButtonList[i], &QPushButton::clicked, this, &main_window::ui_on_key_press);
@@ -460,21 +457,13 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_panic, &QPushButton::clicked, this, &main_window::ui_on_panic);
     connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
 
-    // windows_subsystem::apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
+    // STEP 9: Final system setup.
+    // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info
+    windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
     windows_subsystem::initialize_force_cursor_visible();
     key_mapping::initialize();
-    QTimer::singleShot(0, this, &main_window::post_ctor);
-}
-
-void main_window::post_ctor() {
-    // Needs to be after the window has been constructed, otherwise certain resize values get ignored.
-    m_appDimensions = windows_subsystem::initialize_orientate_main_window(reinterpret_cast<HWND>(winId()));
-    m_keyModifiers = windows_subsystem::get_key_modifiers();
-    update_modifier_colors();
-
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &main_window::three_second_state_refresher);
-    timer->start(3000);
+    // continue at post_ctor after win32 message pump has had the opportunity to process above changes.
+    QTimer::singleShot(0, this, &main_window::ui_on_post_ctor);
 }
 
 main_window::~main_window()
@@ -482,12 +471,30 @@ main_window::~main_window()
     delete ui;
 }
 
-void main_window::open_or_show_app(const QVariant& iObj)
+void main_window::ui_on_post_ctor() {
+    // Needs to be after the window has been constructed, otherwise certain resize values get ignored.
+    m_appDimensions = windows_subsystem::initialize_orientate_main_window(reinterpret_cast<HWND>(winId()));
+    m_keyModifiers = windows_subsystem::get_key_modifiers();
+    update_modifier_colors();
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &main_window::ui_on_state_refresher_loop);
+    timer->start(3000);
+}
+
+void main_window::ui_on_state_refresher_loop()
 {
-    QJsonObject obj = iObj.toJsonObject();
-    std::wstring checkExeName = obj.find("checkExeName")->toString().toStdWString();
-    std::wstring checkTitleName = obj.find("checkTitleName")->toString().toStdWString();
-    bool isAbove = obj.find("above")->toBool();
+    ui->label_activeWindow->setText(QString::fromStdWString(windows_subsystem::get_focus_window_name()));
+    m_keyModifiers = windows_subsystem::get_key_modifiers();
+    update_modifier_colors();
+}
+
+void main_window::open_or_show_app(const QVariant& shortcutConfig)
+{
+    QJsonObject jsonObj = shortcutConfig.toJsonObject();
+    std::wstring checkExeName = jsonObj.find("checkExeName")->toString().toStdWString();
+    std::wstring checkTitleName = jsonObj.find("checkTitleName")->toString().toStdWString();
+    bool isAbove = jsonObj.find("above")->toBool();
     if (windows_subsystem::is_process_running(checkExeName))
     {
         HWND window = windows_subsystem::get_window(checkExeName, checkTitleName);
@@ -499,16 +506,10 @@ void main_window::open_or_show_app(const QVariant& iObj)
     }
 
     // Not found, start it.
-    std::wstring startExePath = obj.find("startExePath")->toString().toStdWString();
-    std::wstring startParams = obj.find("startParams")->toString().toStdWString();
-    std::wstring startWorkingDir = obj.find("startWorkingDir")->toString().toStdWString();
+    std::wstring startExePath = jsonObj.find("startExePath")->toString().toStdWString();
+    std::wstring startParams = jsonObj.find("startParams")->toString().toStdWString();
+    std::wstring startWorkingDir = jsonObj.find("startWorkingDir")->toString().toStdWString();
     windows_subsystem::start_process(startExePath, startParams, startWorkingDir, checkExeName, checkTitleName, isAbove, m_appDimensions);
-}
-
-bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
-    //MSG* msg = reinterpret_cast<MSG*>(message);
-    //qDebug() << msg->message;
-    return QMainWindow::nativeEvent(eventType, message, result);
 }
 
 void main_window::ui_on_key_press()
@@ -554,23 +555,24 @@ void main_window::ui_on_key_press()
         }
     }
 
-    // Send off the key press
+    // Send off the key press.
     std::wstring buttonName = srcButton->objectName().toStdWString();
     auto keyCode = key_mapping::translateSet.find(buttonName);
     if (keyCode == key_mapping::translateSet.end())
     {
-        error_reporter::halt(__FILE__, __LINE__, "Missing key_mapping entry for pushButton.");
+        error_reporter::stop(__FILE__, __LINE__, "Missing key_mapping entry for pushButton.");
     }
     int32_t virtualKeyCode = keyCode->second;
 
     // This is only place we call win32 API directly in this file, see windows_subsystem otherwise.
     INPUT input = {};
     input.type = INPUT_KEYBOARD;
+    int32_t r;
 
-    // Long if else chain for handling all QPushButtons keys on the UI.
+    // Long if else chain for handling all QPushButton keyboard keys on the UI.
     bool toggleControl = false;
     bool toggleShift = false;
-    // PASS THROUGH PIPE
+    // CHAIN 1: PASS THROUGH PIPE
     if ((virtualKeyCode == VK_ESCAPE) ||
         (virtualKeyCode >= VK_F1 && virtualKeyCode <= VK_F12) ||
         (virtualKeyCode == VK_BACK) ||
@@ -600,7 +602,7 @@ void main_window::ui_on_key_press()
     {
         input.ki.wVk = virtualKeyCode;
     }
-    // ALPHABET
+    // CHAIN 2: ALPHABET
     else if (virtualKeyCode >= 0x41 && virtualKeyCode <= 0x5A)
     {
         input.ki.wVk = virtualKeyCode;
@@ -609,7 +611,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_1 EXTENSIONS
+    // CHAIN 3: VK_OEM_1 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_1)
     {
         input.ki.wVk = VK_OEM_1;
@@ -618,7 +620,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_2 EXTENSIONS
+    // CHAIN 4: VK_OEM_2 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_2)
     {
         input.ki.wVk = VK_OEM_2;
@@ -627,7 +629,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_3 EXTENSIONS
+    // CHAIN 5: VK_OEM_3 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_3)
     {
         input.ki.wVk = VK_OEM_3;
@@ -636,7 +638,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_4 EXTENSIONS
+    // CHAIN 6: VK_OEM_4 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_4)
     {
         input.ki.wVk = VK_OEM_4;
@@ -645,7 +647,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_5 EXTENSIONS
+    // CHAIN 7: VK_OEM_5 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_5)
     {
         input.ki.wVk = VK_OEM_5;
@@ -654,7 +656,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_6 EXTENSIONS
+    // CHAIN 8: VK_OEM_6 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_6)
     {
         input.ki.wVk = VK_OEM_6;
@@ -663,7 +665,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_7 EXTENSIONS
+    // CHAIN 9: VK_OEM_7 EXTENSIONS
     else if (virtualKeyCode == VK_OEM_7)
     {
         input.ki.wVk = VK_OEM_7;
@@ -672,7 +674,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_MINUS EXTENSIONS
+    // CHAIN 10: VK_OEM_MINUS EXTENSIONS
     else if (virtualKeyCode == VK_OEM_MINUS)
     {
         input.ki.wVk = VK_OEM_MINUS;
@@ -681,7 +683,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_PLUS EXTENSIONS
+    // CHAIN 11: VK_OEM_PLUS EXTENSIONS
     else if (virtualKeyCode == VK_OEM_PLUS)
     {
         input.ki.wVk = VK_OEM_PLUS;
@@ -690,7 +692,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_PERIOD EXTENSIONS
+    // CHAIN 12: VK_OEM_PERIOD EXTENSIONS
     else if (virtualKeyCode == VK_OEM_PERIOD)
     {
         input.ki.wVk = VK_OEM_PERIOD;
@@ -699,7 +701,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // VK_OEM_COMMA EXTENSIONS
+    // CHAIN 13: VK_OEM_COMMA EXTENSIONS
     else if (virtualKeyCode == VK_OEM_COMMA)
     {
         input.ki.wVk = VK_OEM_COMMA;
@@ -708,17 +710,7 @@ void main_window::ui_on_key_press()
             toggleShift = true;
         }
     }
-    // KEY COMBINATORS
-    else if (virtualKeyCode == VK_XTI_CUSTOM_COPY)
-    {
-        input.ki.wVk = 0x43; // C
-        toggleControl = true;
-    }
-    else if (virtualKeyCode == VK_XTI_CUSTOM_PASTE)
-    {
-        input.ki.wVk = 0x56; // V
-        toggleControl = true;
-    }
+    // CHAIN 14: NUMBERS SHIFT
     else if (virtualKeyCode == VK_XTI_CUSTOM_EXCLAMATION_MARK)
     {
         input.ki.wVk = 0x31; // 1
@@ -769,6 +761,17 @@ void main_window::ui_on_key_press()
         input.ki.wVk = 0x30; // 0
         toggleShift = true;
     }
+    // CHAIN 15: CUSTOM KEY COMBINATORS
+    else if (virtualKeyCode == VK_XTI_CUSTOM_COPY)
+    {
+        input.ki.wVk = 0x43; // C
+        toggleControl = true;
+    }
+    else if (virtualKeyCode == VK_XTI_CUSTOM_PASTE)
+    {
+        input.ki.wVk = 0x56; // V
+        toggleControl = true;
+    }
     else if (virtualKeyCode == VK_XTI_CUSTOM_FIND_FILE)
     {
         input.ki.wVk = 0x4E; // N
@@ -801,7 +804,7 @@ void main_window::ui_on_key_press()
         input.ki.wVk = 0x59; // Y
         toggleControl = true;
     }
-    // LOCKS
+    // CHAIN 16: KEY LOCKS
     else if (virtualKeyCode == VK_CAPITAL ||
              virtualKeyCode == VK_SCROLL ||
              virtualKeyCode == VK_NUMLOCK)
@@ -819,7 +822,7 @@ void main_window::ui_on_key_press()
         }
         input.ki.wVk = virtualKeyCode;
     }
-    // MODIFIERS
+    // CHAIN 17: KEY MODIFIERS
     else if (virtualKeyCode == VK_RCONTROL ||
                virtualKeyCode == VK_RSHIFT ||
                virtualKeyCode == VK_RMENU ||
@@ -848,23 +851,26 @@ void main_window::ui_on_key_press()
             input.ki.dwFlags = KEYEVENTF_KEYUP;
             if (virtualKeyCode == VK_RCONTROL || virtualKeyCode == VK_RMENU)
             {
+                // https://learn.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input go to Extended-key flag
+                // Without this the keys get stuck in down mode by the OS.
                 input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
             }
         }
         input.ki.wVk = virtualKeyCode;
-        int32_t r = ::SendInput(1, &input, sizeof(input));
+        r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
         post_key_press(srcButton, modChanged, !currentlyDown);
+        // since we are emulating control and other non-lock modifier keys we
+        // return early so we can leave the keys pressed down.
         return;
     }
     else
     {
-        error_reporter::halt(__FILE__, __LINE__, "Missing key_mapping to virtual key translation for pushButton.");
+        error_reporter::stop(__FILE__, __LINE__, "Missing key_mapping to virtual key translation for pushButton.");
     }
-    uint32_t r;
     uint16_t toSendVKC = input.ki.wVk;
     if (toggleControl)
     {
@@ -872,7 +878,7 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     if (toggleShift)
@@ -881,16 +887,17 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     input.ki.wVk = toSendVKC;
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
-        error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
     // https://learn.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input go to Extended-key flag
+    // Without this the keys get stuck in down mode by the OS.
     if (toSendVKC == VK_RMENU ||
         toSendVKC == VK_RCONTROL ||
         toSendVKC == VK_INSERT ||
@@ -913,7 +920,7 @@ void main_window::ui_on_key_press()
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
-        error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
     input.ki.wVk = KEYEVENTF_KEYUP;
     if (toggleShift) {
@@ -921,7 +928,7 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     if (toggleControl)
@@ -930,7 +937,7 @@ void main_window::ui_on_key_press()
         r = ::SendInput(1, &input, sizeof(input));
         if (r == 0)
         {
-            error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
     post_key_press(srcButton, modChanged, modOn);
@@ -957,24 +964,25 @@ void main_window::post_key_press(QPushButton* srcButton, bool modChanged, bool m
     {
         ui->label_activeKey->setText(srcButton->text());
     }
+
+    // Flash the touched key cyan.
     QPalette palette = ui->label_activeKey->palette();
     palette.setColor(QPalette::WindowText, Qt::cyan);
     ui->label_activeKey->setPalette(palette);
-
-    if (activeKeyColorTimer == nullptr)
+    if (m_activeKeyColorTimer == nullptr)
     {
-        activeKeyColorTimer = new QTimer(this);
-        activeKeyColorTimer->setSingleShot(true);
-        connect(activeKeyColorTimer, &QTimer::timeout, this, &main_window::on_key_press_fade);
+        m_activeKeyColorTimer = new QTimer(this);
+        m_activeKeyColorTimer->setSingleShot(true);
+        connect(m_activeKeyColorTimer, &QTimer::timeout, this, &main_window::ui_on_key_press_fade);
     }
     else
     {
-        activeKeyColorTimer->stop();
+        m_activeKeyColorTimer->stop();
     }
-    activeKeyColorTimer->start(200);
+    m_activeKeyColorTimer->start(200);
 }
 
-void main_window::on_key_press_fade()
+void main_window::ui_on_key_press_fade()
 {
     QPalette defaultPalette = QApplication::palette();
     ui->label_activeKey->setPalette(defaultPalette);
@@ -1099,11 +1107,4 @@ void main_window::ui_on_restart()
     QString program = qApp->arguments()[0];
     QStringList arguments = qApp->arguments().mid(1);
     QProcess::startDetached(program, arguments);
-}
-
-void main_window::three_second_state_refresher()
-{
-    ui->label_activeWindow->setText(QString::fromStdWString(windows_subsystem::get_focus_window_name()));
-    m_keyModifiers = windows_subsystem::get_key_modifiers();
-    update_modifier_colors();
 }

@@ -26,7 +26,7 @@
 class error_reporter // static members only
 {
 public:
-    static void halt(const char* file, int32_t line, const char* message);
+    static void stop(const char* file, int32_t line, const char* message);
 };
 
 #endif // ERROR_REPORTER_H
