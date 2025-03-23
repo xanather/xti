@@ -98,6 +98,11 @@ public:
     // public get_key_modifiers(): Gets the current active key modifiers on the system.
     // see cpp file for more info.
     static key_modifiers get_key_modifiers();
+
+public:
+    // public get_focus_window_name(): Gets the current window title that has focus.
+    // see cpp file for more info.
+    static std::wstring get_focus_window_name();
 };
 
 #endif // WINDOWS_SUBSYSTEM_H

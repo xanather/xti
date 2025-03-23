@@ -410,19 +410,49 @@
     ::MessageBoxW(nullptr, error.c_str(), L"XTI Runtime Exception", MB_OK);
 }
 
-
 // --- get_key_modifiers(): Gets the current active key modifiers on the system.
 // ------- returns: All key modifier states
-// -----------------------------------------/
+// ---------------------------------------------------------------/
 /* public */ key_modifiers windows_subsystem::get_key_modifiers()
 {
     key_modifiers modifiers;
     modifiers.capsLock = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
     modifiers.scrollLock = (::GetKeyState(VK_SCROLL) & 0x0001) != 0;
     modifiers.numLock = (::GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
-    modifiers.control = false;
-    modifiers.shift = false;
-    modifiers.alt = false;
-    modifiers.windows = false;
+    modifiers.control = (::GetKeyState(VK_RCONTROL) & 0x8000) != 0;
+    modifiers.shift = (::GetKeyState(VK_RSHIFT) & 0x8000) != 0;
+    modifiers.alt = (::GetKeyState(VK_RMENU) & 0x8000) != 0;
+    modifiers.windows = (::GetKeyState(VK_RWIN) & 0x8000) != 0;;
     return modifiers;
+}
+
+// --- get_focus_window_name(): Gets the current window title that has focus.
+// ------- returns: Window title name text.
+/* public */ std::wstring windows_subsystem::get_focus_window_name() {
+    HWND window = ::GetForegroundWindow();
+    if (window == nullptr)
+    {
+        return L"";
+    }
+    ::SetLastError(ERROR_SUCCESS);
+    int32_t windowTitleLength = ::GetWindowTextLengthW(window);
+    // error response only available with GetLastError rather than return of GetWindowTextLengthW here.
+    uint32_t errCode = ::GetLastError();
+    if (errCode != ERROR_SUCCESS)
+    {
+        error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowTextLengthW() failure.");
+    }
+    std::unique_ptr<wchar_t[]> windowTitle = std::make_unique<wchar_t[]>(windowTitleLength + 1);
+    ::SetLastError(ERROR_SUCCESS);
+    int32_t r = ::GetWindowTextW(window, windowTitle.get(), windowTitleLength + 1);
+    if (r == 0)
+    {
+        errCode = ::GetLastError();
+        if (errCode != ERROR_SUCCESS)
+        {
+            error_reporter::halt(__FILE__, __LINE__, "Win32::GetWindowTextW() failure.");
+        }
+        return L"";
+    }
+    return windowTitle.get();
 }

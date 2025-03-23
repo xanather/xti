@@ -48,10 +48,11 @@ private:
     std::vector<QPushButton*> m_keyButtonRightList;
     app_dimensions m_appDimensions;
     key_modifiers m_keyModifiers;
+    QTimer* activeKeyColorTimer = nullptr;
     QJsonDocument m_appConfig;
     Ui::main_window *ui;
     void open_or_show_app(const QVariant& iObj);
-    void update_modifier_colors(bool withShiftControlAltWindows);
+    void update_modifier_colors();
 
 protected:
     virtual bool nativeEvent(const QByteArray &eventType, void* message, qintptr* result) override;
@@ -59,6 +60,8 @@ protected:
 private slots:
     void post_ctor();
     void ui_on_key_press();
+    void post_key_press(QPushButton* srcButton, bool changeModifierColors);
+    void on_key_press_fade();
     void ui_on_shortcuts_above_changed(int32_t index);
     void ui_on_shortcuts_above_reopen();
     void ui_on_shortcuts_below_changed(int32_t index);
@@ -67,5 +70,6 @@ private slots:
     void ui_on_move_active_below();
     void ui_on_panic();
     void ui_on_restart();
+    void three_second_state_refresher();
 };
 #endif // MAIN_WINDOW_H

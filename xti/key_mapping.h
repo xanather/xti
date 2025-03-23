@@ -26,8 +26,6 @@
 // 4. Project classes
 // 5. Forward decl
 
-#define VK_NEED_MORE_INFO -1
-
 #define VK_XTI_CUSTOM_EXCLAMATION_MARK -1002
 #define VK_XTI_CUSTOM_AT -1003
 #define VK_XTI_CUSTOM_HASH -1004

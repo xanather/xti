@@ -470,7 +470,11 @@ void main_window::post_ctor() {
     // Needs to be after the window has been constructed, otherwise certain resize values get ignored.
     m_appDimensions = windows_subsystem::initialize_orientate_main_window(reinterpret_cast<HWND>(winId()));
     m_keyModifiers = windows_subsystem::get_key_modifiers();
-    update_modifier_colors(true);
+    update_modifier_colors();
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &main_window::three_second_state_refresher);
+    timer->start(3000);
 }
 
 main_window::~main_window()
@@ -502,8 +506,8 @@ void main_window::open_or_show_app(const QVariant& iObj)
 }
 
 bool main_window::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
-    MSG* msg = reinterpret_cast<MSG*>(message);
-    qDebug() << msg->message;
+    //MSG* msg = reinterpret_cast<MSG*>(message);
+    //qDebug() << msg->message;
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
@@ -801,18 +805,6 @@ void main_window::ui_on_key_press()
              virtualKeyCode == VK_SCROLL ||
              virtualKeyCode == VK_NUMLOCK)
     {
-        switch (virtualKeyCode)
-        {
-        case VK_CAPITAL:
-            m_keyModifiers.capsLock = !m_keyModifiers.capsLock;
-            break;
-        case VK_SCROLL:
-            m_keyModifiers.scrollLock = !m_keyModifiers.scrollLock;
-            break;
-        case VK_NUMLOCK:
-            m_keyModifiers.numLock = !m_keyModifiers.numLock;
-            break;
-        }
         input.ki.wVk = virtualKeyCode;
     }
     // MODIFIERS
@@ -828,24 +820,24 @@ void main_window::ui_on_key_press()
         {
         case VK_RCONTROL:
             currentlyDown = m_keyModifiers.control;
-            m_keyModifiers.control = !m_keyModifiers.control;
             break;
         case VK_RSHIFT:
             currentlyDown = m_keyModifiers.shift;
-            m_keyModifiers.shift = !m_keyModifiers.shift;
             break;
         case VK_RMENU:
             currentlyDown = m_keyModifiers.alt;
-            m_keyModifiers.alt = !m_keyModifiers.alt;
             break;
         case VK_RWIN:
             currentlyDown = m_keyModifiers.windows;
-            m_keyModifiers.windows = !m_keyModifiers.windows;
             break;
         }
         if (currentlyDown)
         {
             input.ki.dwFlags = KEYEVENTF_KEYUP;
+            if (virtualKeyCode == VK_RCONTROL || virtualKeyCode == VK_RMENU)
+            {
+                input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+            }
         }
         input.ki.wVk = virtualKeyCode;
         int32_t r = ::SendInput(1, &input, sizeof(input));
@@ -853,10 +845,7 @@ void main_window::ui_on_key_press()
         {
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
-        if (changeModifierColors)
-        {
-            update_modifier_colors(true);
-        }
+        post_key_press(srcButton, changeModifierColors);
         return;
     }
     else
@@ -889,12 +878,32 @@ void main_window::ui_on_key_press()
     {
         error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
-    input.ki.dwFlags = KEYEVENTF_KEYUP;
+    // https://learn.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input go to Extended-key flag
+    if (toSendVKC == VK_RMENU ||
+        toSendVKC == VK_RCONTROL ||
+        toSendVKC == VK_INSERT ||
+        toSendVKC == VK_DELETE ||
+        toSendVKC == VK_HOME ||
+        toSendVKC == VK_END ||
+        toSendVKC == VK_PRIOR ||
+        toSendVKC == VK_NEXT ||
+        toSendVKC == VK_UP ||
+        toSendVKC == VK_DOWN ||
+        toSendVKC == VK_LEFT ||
+        toSendVKC == VK_RIGHT)
+    {
+        input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
+    }
+    else
+    {
+        input.ki.dwFlags = KEYEVENTF_KEYUP;
+    }
     r = ::SendInput(1, &input, sizeof(input));
     if (r == 0)
     {
         error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
+    input.ki.wVk = KEYEVENTF_KEYUP;
     if (toggleShift) {
         input.ki.wVk = VK_LSHIFT;
         r = ::SendInput(1, &input, sizeof(input));
@@ -912,62 +921,83 @@ void main_window::ui_on_key_press()
             error_reporter::halt(__FILE__, __LINE__, "Win32::SendInput() failure.");
         }
     }
-    if (changeModifierColors)
-    {
-        update_modifier_colors(true);
-    }
+    post_key_press(srcButton, changeModifierColors);
 }
 
-void main_window::update_modifier_colors(bool withShiftControlAltWindows)
+void main_window::post_key_press(QPushButton* srcButton, bool changeModifierColors)
+{
+    if (changeModifierColors)
+    {
+        update_modifier_colors();
+    }
+    ui->label_activeKey->setText(srcButton->text());
+    QPalette palette = ui->label_activeKey->palette();
+    palette.setColor(QPalette::WindowText, Qt::cyan);
+    ui->label_activeKey->setPalette(palette);
+
+    if (activeKeyColorTimer == nullptr)
+    {
+        activeKeyColorTimer = new QTimer(this);
+        activeKeyColorTimer->setSingleShot(true);
+        connect(activeKeyColorTimer, &QTimer::timeout, this, &main_window::on_key_press_fade);
+    }
+    else
+    {
+        activeKeyColorTimer->stop();
+    }
+    activeKeyColorTimer->start(200);
+}
+
+void main_window::on_key_press_fade()
 {
     QPalette defaultPalette = QApplication::palette();
-    if (withShiftControlAltWindows)
+    ui->label_activeKey->setPalette(defaultPalette);
+}
+
+void main_window::update_modifier_colors()
+{
+    m_keyModifiers = windows_subsystem::get_key_modifiers();
+    QPalette defaultPalette = QApplication::palette();
+    if (m_keyModifiers.shift)
     {
-        if (m_keyModifiers.shift)
-        {
-            QPalette palette = ui->pushButton_shift->palette();
-            palette.setColor(QPalette::Button, Qt::darkCyan);
-            ui->pushButton_shift->setPalette(palette);
-        }
-        else
-        {
-            ui->pushButton_shift->setPalette(defaultPalette);
-        }
-        if (m_keyModifiers.control)
-        {
-            QPalette palette = ui->pushButton_control->palette();
-            palette.setColor(QPalette::Button, Qt::darkCyan);
-            ui->pushButton_control->setPalette(palette);
-        }
-        else
-        {
-            ui->pushButton_control->setPalette(defaultPalette);
-        }
-        if (m_keyModifiers.alt)
-        {
-            QPalette palette = ui->pushButton_alt->palette();
-            palette.setColor(QPalette::Button, Qt::darkCyan);
-            ui->pushButton_alt->setPalette(palette);
-        }
-        else
-        {
-            ui->pushButton_alt->setPalette(defaultPalette);
-        }
-        if (m_keyModifiers.windows)
-        {
-            QPalette palette = ui->pushButton_windows->palette();
-            palette.setColor(QPalette::Button, Qt::darkCyan);
-            ui->pushButton_windows->setPalette(palette);
-        }
-        else
-        {
-            ui->pushButton_windows->setPalette(defaultPalette);
-        }
+        QPalette palette = ui->pushButton_shift->palette();
+        palette.setColor(QPalette::Button, Qt::darkCyan);
+        ui->pushButton_shift->setPalette(palette);
     }
-    key_modifiers modifiers = windows_subsystem::get_key_modifiers();
-    m_keyModifiers.capsLock = modifiers.capsLock;
-    m_keyModifiers.numLock = modifiers.numLock;
-    m_keyModifiers.scrollLock = modifiers.scrollLock;
+    else
+    {
+        ui->pushButton_shift->setPalette(defaultPalette);
+    }
+    if (m_keyModifiers.control)
+    {
+        QPalette palette = ui->pushButton_control->palette();
+        palette.setColor(QPalette::Button, Qt::darkCyan);
+        ui->pushButton_control->setPalette(palette);
+    }
+    else
+    {
+        ui->pushButton_control->setPalette(defaultPalette);
+    }
+    if (m_keyModifiers.alt)
+    {
+        QPalette palette = ui->pushButton_alt->palette();
+        palette.setColor(QPalette::Button, Qt::darkCyan);
+        ui->pushButton_alt->setPalette(palette);
+    }
+    else
+    {
+        ui->pushButton_alt->setPalette(defaultPalette);
+    }
+    if (m_keyModifiers.windows)
+    {
+        QPalette palette = ui->pushButton_windows->palette();
+        palette.setColor(QPalette::Button, Qt::darkCyan);
+        ui->pushButton_windows->setPalette(palette);
+    }
+    else
+    {
+        ui->pushButton_windows->setPalette(defaultPalette);
+    }
     if (m_keyModifiers.capsLock)
     {
         QPalette palette = ui->pushButton_capsLock->palette();
@@ -1044,4 +1074,11 @@ void main_window::ui_on_restart()
     QString program = qApp->arguments()[0];
     QStringList arguments = qApp->arguments().mid(1);
     QProcess::startDetached(program, arguments);
+}
+
+void main_window::three_second_state_refresher()
+{
+    ui->label_activeWindow->setText(QString::fromStdWString(windows_subsystem::get_focus_window_name()));
+    m_keyModifiers = windows_subsystem::get_key_modifiers();
+    update_modifier_colors();
 }
