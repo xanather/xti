@@ -1080,7 +1080,8 @@ bool main_window::event(QEvent* event) {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin(); touch != touchEvent->points().end(); ++touch)
         {
-            qDebug() << "grab: " << touch->globalPressPosition().toPoint() << ", point:" << touch->globalPosition().toPoint();
+
+            qDebug() << touch->id() << " grab: " << touch->globalPressPosition().toPoint() << ", point:" << touch->globalPosition().toPoint();
         }
     }
     if (event->type() == QEvent::TouchBegin)
