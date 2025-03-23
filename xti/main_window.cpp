@@ -57,7 +57,6 @@ main_window::main_window(QWidget *parent)
     // STEP 1: Make window top-most with no border + make background translucent.
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_AcceptTouchEvents);
 
     // STEP 2: Load app config. Assumes UTF-8 encoding.
     QFile configFile(QDir::homePath() + "/xti.json");
