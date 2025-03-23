@@ -1122,6 +1122,7 @@ bool main_window::event(QEvent* event)
             if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
             {
                 QPointF diff = touch->globalPosition() - touch->globalPressPosition();
+                qDebug() << "moving to" << (m_cursorStartPosition.x() + static_cast<int>(diff.x())) << "," << (m_cursorStartPosition.y() + static_cast<int>(diff.y()));
                 int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()), m_cursorStartPosition.y() + static_cast<int>(diff.y()));
                 if (r == 0)
                 {
