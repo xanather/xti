@@ -1085,11 +1085,11 @@ bool main_window::event(QEvent* event) {
                 QPushButton* topLeftKey = m_keyButtonLeftList[0];
                 QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
                 qDebug() << "topLeftKey" << topLeftKey->pos() << "position" << touch->position() <<
-                            "bottomRightKey" << QPoint(bottomRightKey->pos().x() + bottomRightKey->width(), bottomRightKey->pos().y() + bottomRightKey->height());
+                            "bottomRightKey" << QPoint(bottomRightKey->pos().x() + bottomRightKey->size().width(), bottomRightKey->pos().y() + bottomRightKey->size().height());
                 if (topLeftKey->pos().x() <= touch->position().x() &&
                     topLeftKey->pos().y() <= touch->position().y() &&
-                    bottomRightKey->pos().x() + bottomRightKey->width() > touch->position().x() &&
-                    bottomRightKey->pos().y() + bottomRightKey->height() > touch->position().y())
+                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
                 {
                     POINT startPos;
                     int32_t r = ::GetCursorPos(&startPos);
