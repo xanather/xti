@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::CoInitializeEx() failure.");
     }
-    ::EnableMouseInPointer(FALSE);
+    ::EnableMouseInPointer(TRUE);
     QApplication a(argc, argv);
     a.setStyle("fusion");
     main_window w(nullptr);
