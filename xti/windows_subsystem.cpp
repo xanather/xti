@@ -200,8 +200,7 @@
 {
     uint32_t processesArray[1024];
     uint32_t needed;
-    int32_t r;
-    r = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
+    int32_t r = ::EnumProcesses(reinterpret_cast<::DWORD*>(processesArray), sizeof(processesArray), reinterpret_cast<::DWORD*>(&needed));
     if (r == 0)
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::EnumProcesses() failure.");

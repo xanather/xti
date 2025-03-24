@@ -580,8 +580,6 @@ void main_window::ui_on_key_press()
         error_reporter::stop(__FILE__, __LINE__, "Missing key_mapping entry for pushButton.");
     }
     int32_t virtualKeyCode = keyCode->second;
-
-    // This is only place we call win32 API directly in this file, see windows_subsystem otherwise.
     ::INPUT input = {};
     input.type = INPUT_KEYBOARD;
     int32_t r;
@@ -1129,6 +1127,20 @@ bool main_window::event(QEvent* event)
                 if (r == 0)
                 {
                     error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                }
+                ::INPUT input[2] = {};
+                input[0].type = INPUT_MOUSE;
+                input[0].mi.dx = 1;
+                input[0].mi.dy = 0;
+                input[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+                input[1].type = INPUT_MOUSE;
+                input[1].mi.dx = -1;
+                input[1].mi.dy = 0;
+                input[1].mi.dwFlags = MOUSEEVENTF_MOVE;
+                r = ::SendInput(2, input, sizeof(INPUT));
+                if (r == 0)
+                {
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
                 }
             }
         }

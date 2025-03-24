@@ -32,6 +32,7 @@ class QWidget;
 class QPushButton;
 class QVariant;
 class QEvent;
+class QTimer;
 namespace Ui {
 class main_window;
 }
@@ -41,7 +42,7 @@ class main_window : public QMainWindow
     Q_OBJECT
 
 public:
-    main_window(QWidget *parent);
+    main_window(QWidget* parent);
     virtual ~main_window();
 
 private:
