@@ -1123,22 +1123,13 @@ bool main_window::event(QEvent* event)
             }
             if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
             {
-                //QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                //qDebug() << "moving to" << (m_cursorStartPosition.x() + static_cast<int>(diff.x())) << "," << (m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-                //int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()), m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-                //if (r == 0)
-                //{
-                //    error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
-                //}
-                ::INPUT input = {};
-                input.type = INPUT_MOUSE;
-                input.mi.dx = 1;
-                input.mi.dy = 1;
-                input.mi.dwFlags = MOUSEEVENTF_MOVE;
-                int32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                QPointF diff = touch->globalPosition() - touch->globalPressPosition();
+                qDebug() << "moving to" << (m_cursorStartPosition.x() + static_cast<int>(diff.x())) << "," << (m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                while(ShowCursor(TRUE) < 0);
+                int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()), m_cursorStartPosition.y() + static_cast<int>(diff.y()));
                 if (r == 0)
                 {
-                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                 }
             }
         }
