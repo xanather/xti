@@ -185,9 +185,9 @@
 /* private */ int64_t windows_subsystem::ll_mouse_proc(int32_t code, uint64_t wParam, int64_t lParam)
 {
     qDebug() << "[DEBUG]: hook called";
-    if (code >= 0 && wParam == WM_MOUSEMOVE)
+    if (code >= 0)
     {
-        qDebug() << "[DEBUG]: WM_MOUSEMOVE called";
+        qDebug() << "[DEBUG]: WM called called";
         ::MSLLHOOKSTRUCT* hookInfo = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
         uint64_t extraInfo = hookInfo->dwExtraInfo;
         if ((extraInfo & 0xFF515700) == 0xFF515700)
