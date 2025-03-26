@@ -1091,7 +1091,9 @@ void main_window::update_modifier_colors()
 
 bool main_window::event(QEvent* event)
 {
-    // TODO fix cursor not showing in tablet mode, annoying!
+    // TODO: fix cursor not showing in tablet mode, annoying!
+    // TODO: prevent window from resizing when hitting keys fast
+    // TODO: debug why left keys arent triggered due to virtual touchpad logic
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd)
@@ -1136,71 +1138,71 @@ bool main_window::event(QEvent* event)
         }
 
         // HANDLING CURSOR MOVEMENTS VIA TOUCH ONLY
-        //for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
-        //     touch != touchEvent->points().end(); ++touch)
-        //{
-        //    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate)
-        //    {
-        //        if (!m_cursorIsMoving && touch->id() == 0)
-        //        {
-        //            QPushButton* topLeftKey = m_keyButtonLeftList[0];
-        //            QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
-        //            if (topLeftKey->pos().x() <= touch->position().x() &&
-        //                topLeftKey->pos().y() <= touch->position().y() &&
-        //                bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
-        //                bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
-        //            {
-        //                ::POINT startPos;
-        //                int32_t r = ::GetCursorPos(&startPos);
-        //                if (r == 0)
-        //                {
-        //                    error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
-        //                }
-        //                m_cursorIsMoving = true;
-        //                m_cursorStartPosition.setX(startPos.x);
-        //                m_cursorStartPosition.setY(startPos.y);
-        //                // There needs to be some delay before we actually start moving the cursor
-        //                // otherwise normal touch key presses can move the cursor slightly.
-        //                if (m_cursorMoveTimerDelay == nullptr)
-        //                {
-        //                    m_cursorMoveTimerDelay = new QTimer(this);
-        //                    m_cursorMoveTimerDelay->setSingleShot(true);
-        //                    connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
-        //                }
-        //                m_cursorMoveTimerDelay->start(500);
-        //            }
-        //        }
-        //        if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
-        //        {
-        //            QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-        //            int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()),
-        //                                       m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-        //            if (r == 0)
-        //            {
-        //                error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
-        //            }
-        //        }
-        //    }
-        //}
-        //if (event->type() == QEvent::TouchEnd)
-        //{
-        //    if (m_cursorIsHooked)
-        //    {
-        //        QPalette defaultPalette = QApplication::palette();
-        //        for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
-        //        {
-        //            QPushButton* button = m_keyButtonLeftList[i];
-        //            button->setPalette(defaultPalette);
-        //        }
-        //        update_modifier_colors();
-        //        m_cursorIsHooked = false;
-        //    }
-        //    if (m_cursorIsMoving)
-        //    {
-        //        m_cursorMoveTimerDelay->stop();
-        //        m_cursorIsMoving = false;
-        //    }
-        //}
+        for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
+             touch != touchEvent->points().end(); ++touch)
+        {
+            if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate)
+            {
+                if (!m_cursorIsMoving && touch->id() == 0)
+                {
+                    QPushButton* topLeftKey = m_keyButtonLeftList[0];
+                    QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
+                    if (topLeftKey->pos().x() <= touch->position().x() &&
+                        topLeftKey->pos().y() <= touch->position().y() &&
+                        bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                        bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                    {
+                        ::POINT startPos;
+                        int32_t r = ::GetCursorPos(&startPos);
+                        if (r == 0)
+                        {
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
+                        }
+                        m_cursorIsMoving = true;
+                        m_cursorStartPosition.setX(startPos.x);
+                        m_cursorStartPosition.setY(startPos.y);
+                        // There needs to be some delay before we actually start moving the cursor
+                        // otherwise normal touch key presses can move the cursor slightly.
+                        if (m_cursorMoveTimerDelay == nullptr)
+                        {
+                            m_cursorMoveTimerDelay = new QTimer(this);
+                            m_cursorMoveTimerDelay->setSingleShot(true);
+                            connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
+                        }
+                        m_cursorMoveTimerDelay->start(500);
+                    }
+                }
+                if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
+                {
+                    QPointF diff = touch->globalPosition() - touch->globalPressPosition();
+                    int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()),
+                                               m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                    if (r == 0)
+                    {
+                        error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                    }
+                }
+            }
+        }
+        if (event->type() == QEvent::TouchEnd)
+        {
+            if (m_cursorIsHooked)
+            {
+                QPalette defaultPalette = QApplication::palette();
+                for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
+                {
+                    QPushButton* button = m_keyButtonLeftList[i];
+                    button->setPalette(defaultPalette);
+                }
+                update_modifier_colors();
+                m_cursorIsHooked = false;
+            }
+            if (m_cursorIsMoving)
+            {
+                m_cursorMoveTimerDelay->stop();
+                m_cursorIsMoving = false;
+            }
+        }
     }
     if (event->type() == QEvent::TouchBegin)
     {
