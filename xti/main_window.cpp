@@ -1125,7 +1125,7 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
-                        //m_downButton->click();
+                        m_downButton->click();
                     }
                 }
             }
@@ -1200,11 +1200,11 @@ bool main_window::event(QEvent* event)
                 m_cursorMoveTimerDelay->stop();
                 m_cursorIsMoving = false;
             }
-            m_downButton = nullptr;
         }
     }
     if (event->type() == QEvent::TouchBegin)
     {
+        // Need to return true here, else Qt starts ignoring the rest of the touch events.
         return true;
     }
     return QMainWindow::event(event);
