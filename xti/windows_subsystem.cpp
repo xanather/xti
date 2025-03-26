@@ -170,7 +170,6 @@
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowsHookExW() failure.");
     }
-    qDebug() << "[DEBUG]: hook installed";
 }
 /* public */ void windows_subsystem::cleanup_prevent_touch_from_moving_cursor()
 {
@@ -179,20 +178,16 @@
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::UnhookWindowsHookEx() failure.");
     }
-    qDebug() << "[DEBUG]: hook uninstalled";
 }
 /* private */ ::HHOOK windows_subsystem::llMouseHook;
 /* private */ int64_t windows_subsystem::ll_mouse_proc(int32_t code, uint64_t wParam, int64_t lParam)
 {
-    qDebug() << "[DEBUG]: hook called";
     if (code >= 0)
     {
-        qDebug() << "[DEBUG]: WM called called";
         ::MSLLHOOKSTRUCT* hookInfo = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
         uint64_t extraInfo = hookInfo->dwExtraInfo;
         if ((extraInfo & 0xFF515700) == 0xFF515700)
         {
-            qDebug() << "[DEBUG]: message skipped called";
             return 1;
         }
     }
