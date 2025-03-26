@@ -1135,7 +1135,7 @@ bool main_window::event(QEvent* event)
             m_downButton = nullptr;
         }
 
-        // HANDLING CURSOR MOVEMENT
+        // HANDLING CURSOR MOVEMENTS VIA TOUCH ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
@@ -1167,7 +1167,7 @@ bool main_window::event(QEvent* event)
                             m_cursorMoveTimerDelay->setSingleShot(true);
                             connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
                         }
-                        m_cursorMoveTimerDelay->start(50);
+                        m_cursorMoveTimerDelay->start(500);
                     }
                 }
                 if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
