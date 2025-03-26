@@ -16,6 +16,7 @@
 #include "windows_subsystem.h"
 
 // 1. Qt framework headers
+#include <QDebug>
 // 2. System/OS headers
 #include <Psapi.h>
 #include <shellapi.h>
@@ -153,6 +154,49 @@
         return;
     }
     move_window(window, above, appDimensions);
+}
+
+// --- initialize_prevent_touch_from_moving_cursor(): Prevents touch input from interfering with the virtual touchpad.
+// --------------------------------------------------------------------------------------/
+/* public */ void windows_subsystem::initialize_prevent_touch_from_moving_cursor()
+{
+    ::HMODULE handle = ::GetModuleHandleW(nullptr);
+    if (handle == nullptr)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::GetModuleHandleW() failure.");
+    }
+    llMouseHook = ::SetWindowsHookExW(WH_MOUSE_LL, ll_mouse_proc, handle, 0);
+    if (llMouseHook == nullptr)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowsHookExW() failure.");
+    }
+    qDebug() << "[DEBUG]: hook installed";
+}
+/* public */ void windows_subsystem::cleanup_prevent_touch_from_moving_cursor()
+{
+    int32_t r = ::UnhookWindowsHookEx(llMouseHook);
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::UnhookWindowsHookEx() failure.");
+    }
+    qDebug() << "[DEBUG]: hook uninstalled";
+}
+/* private */ ::HHOOK windows_subsystem::llMouseHook;
+/* private */ int64_t windows_subsystem::ll_mouse_proc(int32_t code, uint64_t wParam, int64_t lParam)
+{
+    qDebug() << "[DEBUG]: hook called";
+    if (code >= 0 && wParam == WM_MOUSEMOVE)
+    {
+        qDebug() << "[DEBUG]: WM_MOUSEMOVE called";
+        ::MSLLHOOKSTRUCT* hookInfo = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
+        uint64_t extraInfo = hookInfo->dwExtraInfo;
+        if ((extraInfo & 0xFF515700) == 0xFF515700)
+        {
+            qDebug() << "[DEBUG]: message skipped called";
+            return 1;
+        }
+    }
+    return ::CallNextHookEx(llMouseHook, code, wParam, lParam);
 }
 
 // --- start_process(): Starts a new process and positioning either above or below the xti keyboard.

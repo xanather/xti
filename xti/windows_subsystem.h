@@ -53,6 +53,16 @@ public:
 public:
     static void initialize_apply_system_super_admin_privilege();
 
+public:
+    // USED AT APP STARTUP
+    // public initialize_prevent_touch_from_moving_cursor(): Prevents touch input from interfering with the virtual touchpad.
+    // see cpp file for more info.
+    static void initialize_prevent_touch_from_moving_cursor();
+    static void cleanup_prevent_touch_from_moving_cursor();
+private:
+    static ::HHOOK llMouseHook;
+    static int64_t ll_mouse_proc(int32_t code, uint64_t wParam, int64_t lParam);
+
     // public move_active_window(): Moves the current active foreground window above or below the xti keyboard.
     // see cpp file for more info.
 public:

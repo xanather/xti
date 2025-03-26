@@ -471,6 +471,7 @@ main_window::main_window(QWidget *parent)
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
     // windows_subsystem::initialize_force_cursor_visible(); --- not needed at this time.  see cpp definition in file for more info.
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
+    windows_subsystem::initialize_prevent_touch_from_moving_cursor();
     key_mapping::initialize();
     // continue at post_ctor after win32 message pump has had the opportunity to process above changes.
     QTimer::singleShot(0, this, &main_window::ui_on_post_ctor);
@@ -478,6 +479,7 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window()
 {
+    windows_subsystem::cleanup_prevent_touch_from_moving_cursor();
     delete ui;
 }
 
