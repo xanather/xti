@@ -471,7 +471,7 @@ main_window::main_window(QWidget *parent)
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
     // windows_subsystem::initialize_force_cursor_visible(); --- not needed at this time.  see cpp definition in file for more info.
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
-    //windows_subsystem::initialize_prevent_touch_from_moving_cursor();
+    windows_subsystem::initialize_prevent_touch_from_moving_cursor();
     key_mapping::initialize();
     // continue at post_ctor after win32 message pump has had the opportunity to process above changes.
     QTimer::singleShot(0, this, &main_window::ui_on_post_ctor);
@@ -479,7 +479,7 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window()
 {
-    //windows_subsystem::cleanup_prevent_touch_from_moving_cursor();
+    windows_subsystem::cleanup_prevent_touch_from_moving_cursor();
     delete ui;
 }
 
@@ -1125,11 +1125,15 @@ bool main_window::event(QEvent* event)
             {
                 QPointF diff = touch->globalPosition() - touch->globalPressPosition();
                 qDebug() << "moving to" << (m_cursorStartPosition.x() + static_cast<int>(diff.x())) << "," << (m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-                while(ShowCursor(TRUE) < 0);
-                int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()), m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                ::INPUT input = {};
+                input.type = INPUT_MOUSE;
+                input.mi.dx = m_cursorStartPosition.x() + static_cast<int>(diff.x());
+                input.mi.dy = m_cursorStartPosition.y() + static_cast<int>(diff.y());
+                input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+                int32_t r = ::SendInput(1, &input, sizeof(INPUT));
                 if (r == 0)
                 {
-                    error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
                 }
             }
         }
