@@ -457,15 +457,24 @@ main_window::main_window(QWidget *parent)
     for (size_t i = 0; i < m_keyButtonList.size(); i++)
     {
         connect(m_keyButtonList[i], &QPushButton::clicked, this, &main_window::ui_on_key_press);
+        m_allButtonsList.push_back(m_keyButtonList[i]);
     }
     connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);
+    m_allButtonsList.push_back(ui->pushButton_reopenAbove);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
+    //m_allButtonsList.push_back(ui->comboBox_shortcutsAbove);
     connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
+    m_allButtonsList.push_back(ui->pushButton_reopenBelow);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
+    //m_allButtonsList.push_back(ui->comboBox_shortcutsBelow);
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
+    m_allButtonsList.push_back(ui->pushButton_moveAbove);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
+    m_allButtonsList.push_back(ui->pushButton_moveBelow);
     connect(ui->pushButton_panic, &QPushButton::clicked, this, &main_window::ui_on_panic);
+    m_allButtonsList.push_back(ui->pushButton_panic);
     connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
+    m_allButtonsList.push_back(ui->pushButton_restart);
 
     // STEP 9: Final system setup.
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
@@ -1083,57 +1092,93 @@ void main_window::update_modifier_colors()
 bool main_window::event(QEvent* event)
 {
     // TODO fix cursor not showing in tablet mode, annoying!
-    // TODO fix pressing keys after cursor move occurred but touch landed on same original key afterwards.
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd)
     {
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
+
+        // HANDLING PUSHING BUTTONS VIA TOUCH ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
-            if (!m_cursorIsMoving && event->type() == QEvent::TouchBegin && touch->id() == 0)
+            if (touch->id() == 0)
             {
-                QPushButton* topLeftKey = m_keyButtonLeftList[0];
-                QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
-                if (topLeftKey->pos().x() <= touch->position().x() &&
-                    topLeftKey->pos().y() <= touch->position().y() &&
-                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
-                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                if (event->type() == QEvent::TouchBegin)
                 {
-                    ::POINT startPos;
-                    int32_t r = ::GetCursorPos(&startPos);
-                    if (r == 0)
+                    for (size_t i = 0; i < m_allButtonsList.size(); i++)
                     {
-                        error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
+                        QPushButton* button = m_allButtonsList[i];
+                        if (button->pos().x() <= touch->position().x() &&
+                            button->pos().y() <= touch->position().y() &&
+                            button->pos().x() + button->size().width() > touch->position().x() &&
+                            button->pos().y() + button->size().height() > touch->position().y())
+                        {
+                            m_downButton = button;
+                        }
                     }
-                    m_cursorIsMoving = true;
-                    m_cursorStartPosition.setX(startPos.x);
-                    m_cursorStartPosition.setY(startPos.y);
-                    // There needs to be some delay before we actually start moving the cursor
-                    // otherwise normal touch key presses can move the cursor slightly.
-                    if (m_cursorMoveTimerDelay == nullptr)
+                }
+                if (event->type() == QEvent::TouchEnd && !m_cursorIsHooked && m_downButton != nullptr)
+                {
+                    if (m_downButton->pos().x() <= touch->position().x() &&
+                        m_downButton->pos().y() <= touch->position().y() &&
+                        m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
+                        m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
-                        m_cursorMoveTimerDelay = new QTimer(this);
-                        m_cursorMoveTimerDelay->setSingleShot(true);
-                        connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
+                        m_downButton->click();
                     }
-                    m_cursorMoveTimerDelay->start(50);
                 }
             }
-            if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
+        }
+        if (event->type() == QEvent::TouchEnd)
+        {
+            m_downButton = nullptr;
+        }
+
+        // HANDLING CURSOR MOVEMENT
+        for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
+             touch != touchEvent->points().end(); ++touch)
+        {
+            if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate)
             {
-                QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                qDebug() << "moving to" << (m_cursorStartPosition.x() + static_cast<int>(diff.x())) << "," << (m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-                ::INPUT input = {};
-                input.type = INPUT_MOUSE;
-                input.mi.dx = m_cursorStartPosition.x() + static_cast<int>(diff.x());
-                input.mi.dy = m_cursorStartPosition.y() + static_cast<int>(diff.y());
-                input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE_NOCOALESCE;
-                int32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                if (r == 0)
+                if (!m_cursorIsMoving && touch->id() == 0)
                 {
-                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                    QPushButton* topLeftKey = m_keyButtonLeftList[0];
+                    QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
+                    if (topLeftKey->pos().x() <= touch->position().x() &&
+                        topLeftKey->pos().y() <= touch->position().y() &&
+                        bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                        bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                    {
+                        ::POINT startPos;
+                        int32_t r = ::GetCursorPos(&startPos);
+                        if (r == 0)
+                        {
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
+                        }
+                        m_cursorIsMoving = true;
+                        m_cursorStartPosition.setX(startPos.x);
+                        m_cursorStartPosition.setY(startPos.y);
+                        // There needs to be some delay before we actually start moving the cursor
+                        // otherwise normal touch key presses can move the cursor slightly.
+                        if (m_cursorMoveTimerDelay == nullptr)
+                        {
+                            m_cursorMoveTimerDelay = new QTimer(this);
+                            m_cursorMoveTimerDelay->setSingleShot(true);
+                            connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
+                        }
+                        m_cursorMoveTimerDelay->start(50);
+                    }
+                }
+                if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
+                {
+                    QPointF diff = touch->globalPosition() - touch->globalPressPosition();
+                    int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()),
+                                               m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                    if (r == 0)
+                    {
+                        error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                    }
                 }
             }
         }
@@ -1155,6 +1200,7 @@ bool main_window::event(QEvent* event)
                 m_cursorMoveTimerDelay->stop();
                 m_cursorIsMoving = false;
             }
+            m_downButton = nullptr;
         }
     }
     if (event->type() == QEvent::TouchBegin)

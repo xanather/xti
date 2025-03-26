@@ -50,6 +50,8 @@ private:
     std::vector<QPushButton*> m_keyButtonLeftList;
     std::vector<QPushButton*> m_keyButtonRightTopList;
     std::vector<QPushButton*> m_keyButtonRightBottomList;
+    std::vector<QPushButton*> m_allButtonsList;
+    QPushButton* m_downButton = nullptr;
 
     QJsonDocument m_appConfig;
 
