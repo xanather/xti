@@ -1212,7 +1212,7 @@ bool main_window::event(QEvent* event)
 
 void main_window::ui_on_cursor_move_ready()
 {
-    m_cursorIsHooked = true;
+    //m_cursorIsHooked = true;
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];
