@@ -1129,7 +1129,7 @@ bool main_window::event(QEvent* event)
                 input.type = INPUT_MOUSE;
                 input.mi.dx = m_cursorStartPosition.x() + static_cast<int>(diff.x());
                 input.mi.dy = m_cursorStartPosition.y() + static_cast<int>(diff.y());
-                input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+                input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE_NOCOALESCE;
                 int32_t r = ::SendInput(1, &input, sizeof(INPUT));
                 if (r == 0)
                 {
