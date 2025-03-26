@@ -16,7 +16,6 @@
 #include "windows_subsystem.h"
 
 // 1. Qt framework headers
-#include <QDebug>
 // 2. System/OS headers
 #include <Psapi.h>
 #include <shellapi.h>
