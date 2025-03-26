@@ -1125,7 +1125,7 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
-                        m_downButton->click();
+                        //m_downButton->click();
                     }
                 }
             }
