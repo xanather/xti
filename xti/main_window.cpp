@@ -1150,6 +1150,7 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
                         m_downButton->click();
+                        qDebug() << "click";
                     }
                 }
             }
@@ -1192,6 +1193,7 @@ bool main_window::event(QEvent* event)
                             // There needs to be some delay before we actually start moving the cursor
                             // otherwise normal touch key presses can move the cursor slightly.
                             m_cursorMoveTimerDelay->start(50);
+                            qDebug() << "ui_on_cursor_move_ready start";
                         }
                     }
                     if (m_cursorIsMoving)
@@ -1217,6 +1219,7 @@ bool main_window::event(QEvent* event)
                 }
                 update_modifier_colors();
                 m_cursorIsHooked = false;
+                qDebug() << "ui_on_cursor_move_ready stop";
             }
             if (m_cursorIsMoving)
             {
@@ -1237,6 +1240,7 @@ bool main_window::event(QEvent* event)
 
 void main_window::ui_on_cursor_move_ready()
 {
+    qDebug() << "ui_on_cursor_move_ready hit";
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];
