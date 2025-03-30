@@ -80,7 +80,7 @@ protected:
     bool m_cursorIsMoving = false;
     bool m_cursorIsHooked = false;
     QPoint m_cursorStartPosition;
-    QPoint m_cursorSetPosition;
+    QPoint m_cursorDiffPosition;
     int32_t m_cursorSpeed = 1;
     bool m_cursorFirstMove = false;
     QTimer* m_cursorMoveTimerDelay = nullptr;
