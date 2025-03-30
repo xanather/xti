@@ -1146,10 +1146,11 @@ bool main_window::event(QEvent* event)
             m_downButton = nullptr;
         }
 
-        // STEP 2: HANDLING CURSOR MOVEMENTS VIA TOUCH ONLY
+        // STEP 2: HANDLING MOUSE MOVEMENTS AND PRESSES VIA TOUCHPAD ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
+            // handling cursor mouse move
             if (touch->id() == 0)
             {
                 if (event->type() == QEvent::TouchBegin)
@@ -1194,6 +1195,11 @@ bool main_window::event(QEvent* event)
                         }
                     }
                 }
+            }
+            else
+            // handling left/right click
+            {
+                qDebug() << event->type();
             }
         }
 
