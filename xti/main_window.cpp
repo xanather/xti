@@ -482,6 +482,8 @@ main_window::main_window(QWidget *parent)
     connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
     m_setCursorPosTimer = new QTimer(this);
     connect(m_setCursorPosTimer, &QTimer::timeout, this, &main_window::ui_on_move_cursor_now);
+    ui->line->setAutoFillBackground(true);
+    ui->line_2->setAutoFillBackground(true);
 
     // STEP 10: Final system setup.
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
