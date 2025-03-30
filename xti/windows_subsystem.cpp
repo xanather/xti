@@ -473,3 +473,15 @@
     }
     return windowTitle.get();
 }
+
+// --- get_mouse_speed(): Gets the current mouse sensitivity setting. Value from 1 to 20.
+// ------- returns: Speed value.
+/* public */ int32_t windows_subsystem::get_mouse_speed() {
+    int32_t speed;
+    int32_t r = ::SystemParametersInfoW(SPI_GETMOUSESPEED, 0, &speed, 0);
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SystemParametersInfoW() failure.");
+    }
+    return speed;
+}

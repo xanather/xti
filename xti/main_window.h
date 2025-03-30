@@ -81,6 +81,7 @@ protected:
     bool m_cursorIsHooked = false;
     QPoint m_cursorStartPosition;
     QPoint m_cursorSetPosition;
+    int32_t m_cursorSpeed;
     QTimer* m_cursorMoveTimerDelay = nullptr;
     QTimer* m_setCursorPosTimer = nullptr;
     virtual bool event(QEvent* ev) override;

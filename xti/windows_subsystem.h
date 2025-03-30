@@ -107,6 +107,10 @@ public:
     // public get_focus_window_name(): Gets the current window title that has focus.
     // see cpp file for more info.
     static std::wstring get_focus_window_name();
+
+public:
+    // public get_mouse_speed(): Gets the current mouse sensitivity setting. Value from 1 to 20.
+    static int32_t get_mouse_speed();
 };
 
 #endif // WINDOWS_SUBSYSTEM_H

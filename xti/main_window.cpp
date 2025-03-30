@@ -1174,21 +1174,21 @@ bool main_window::event(QEvent* event)
                 if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
                 {
                     QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                    m_cursorSetPosition.setX(m_cursorStartPosition.x() + static_cast<int>(diff.x()));
-                    m_cursorSetPosition.setY(m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                    m_cursorSetPosition.setX(m_cursorStartPosition.x() + static_cast<int>(diff.x() * m_cursorSpeed));
+                    m_cursorSetPosition.setY(m_cursorStartPosition.y() + static_cast<int>(diff.y() * m_cursorSpeed));
                     if (!m_setCursorPosTimer->isActive())
                     {
                         // Send one SendInput to make cursor visible after touch event.
-                        //::INPUT input = {};
-                        //input.type = INPUT_MOUSE;
-                        //input.mi.dx = 1;
-                        //input.mi.dy = 0;
-                        //input.mi.dwFlags = MOUSEEVENTF_MOVE;
-                        //int32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                        //if (r == 0)
-                        //{
-                        //    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-                        //}
+                        ::INPUT input = {};
+                        input.type = INPUT_MOUSE;
+                        input.mi.dx = 1;
+                        input.mi.dy = 0;
+                        input.mi.dwFlags = MOUSEEVENTF_MOVE;
+                        int32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                        if (r == 0)
+                        {
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                        }
                         m_setCursorPosTimer->start();
                     }
                 }
@@ -1226,6 +1226,7 @@ bool main_window::event(QEvent* event)
 void main_window::ui_on_cursor_move_ready()
 {
     m_cursorIsHooked = true;
+    m_cursorSpeed = windows_subsystem::get_mouse_speed();
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];
