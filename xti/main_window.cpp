@@ -1178,16 +1178,17 @@ bool main_window::event(QEvent* event)
                     m_cursorSetPosition.setY(m_cursorStartPosition.y() + static_cast<int>(diff.y()));
                     if (!m_setCursorPosTimer->isActive())
                     {
-                        ::INPUT input = {};
-                        input.type = INPUT_MOUSE;
-                        input.mi.dx = 1;
-                        input.mi.dy = 0;
-                        input.mi.dwFlags = MOUSEEVENTF_MOVE;
-                        int32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                        if (r == 0)
-                        {
-                            error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-                        }
+                        // Send one SendInput to make cursor visible after touch event.
+                        //::INPUT input = {};
+                        //input.type = INPUT_MOUSE;
+                        //input.mi.dx = 1;
+                        //input.mi.dy = 0;
+                        //input.mi.dwFlags = MOUSEEVENTF_MOVE;
+                        //int32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                        //if (r == 0)
+                        //{
+                        //    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                        //}
                         m_setCursorPosTimer->start();
                     }
                 }
@@ -1236,8 +1237,6 @@ void main_window::ui_on_cursor_move_ready()
 
 void main_window::ui_on_move_cursor_now()
 {
-    // We can't use ::SetCursorPos() because the cursor will still be hidden while touching the screen.
-    // Use ::SendInput() instead on repeat to force visibility.
     int32_t r = ::SetCursorPos(m_cursorSetPosition.x(), m_cursorSetPosition.y());
     if (r == 0)
     {
