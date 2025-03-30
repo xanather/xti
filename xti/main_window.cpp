@@ -1102,6 +1102,9 @@ void main_window::update_modifier_colors()
 
 bool main_window::event(QEvent* event)
 {
+    bool foundMouseLeftId = false;
+    bool foundMouseRightId = false;
+
     // only hooking into QEvents stream for touch handling
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
@@ -1146,7 +1149,7 @@ bool main_window::event(QEvent* event)
             m_downButton = nullptr;
         }
 
-        // STEP 2: HANDLING MOUSE MOVEMENTS AND PRESSES VIA TOUCHPAD ONLY
+        // STEP 2: HANDLING MOUSE MOVEMENTS VIA TOUCHPAD ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
@@ -1196,22 +1199,28 @@ bool main_window::event(QEvent* event)
                     }
                 }
             }
-            else
-            // handling left/right click
+        }
+
+        // STEP 3: HANDLING MOUSE PRESSES VIA TOUCHPAD ONLY
+        if (m_cursorIsHooked)
+        {
+            for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
+                 touch != touchEvent->points().end(); ++touch)
             {
-                // left
-                QPushButton* topLeftKey = m_keyButtonRightTopList[0];
-                QPushButton* bottomRightKey = m_keyButtonRightTopList[m_keyButtonRightTopList.size() - 1];
-                if (topLeftKey->pos().x() <= touch->position().x() &&
-                    topLeftKey->pos().y() <= touch->position().y() &&
-                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
-                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                if (event->type() == QEvent::TouchBegin ||
+                    event->type() == QEvent::TouchUpdate)
                 {
-                    if (m_cursorIsHooked)
+                    // left
+                    QPushButton* topLeftKey = m_keyButtonRightTopList[0];
+                    QPushButton* bottomRightKey = m_keyButtonRightTopList[m_keyButtonRightTopList.size() - 1];
+                    if (topLeftKey->pos().x() <= touch->position().x() &&
+                        topLeftKey->pos().y() <= touch->position().y() &&
+                        bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                        bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
                     {
-                        if (!m_leftMouseDown)
+                        if (m_leftMouseDownId == -1)
                         {
-                            m_leftMouseDown = true;
+                            m_leftMouseDownId = touch->id();
                             for (size_t i = 0; i < m_keyButtonRightTopList.size(); i++)
                             {
                                 QPushButton* button = m_keyButtonRightTopList[i];
@@ -1228,40 +1237,23 @@ bool main_window::event(QEvent* event)
                                 error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
                             }
                         }
-                    }
-                }
-                else if (m_leftMouseDown)
-                {
-                    m_leftMouseDown = false;
-                    QPalette defaultPalette = QApplication::palette();
-                    for (size_t i = 0; i < m_keyButtonRightTopList.size(); i++)
-                    {
-                        QPushButton* button = m_keyButtonRightTopList[i];
-                        button->setPalette(defaultPalette);
-                    }
-                    ::INPUT input = {};
-                    input.type = INPUT_MOUSE;
-                    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-                    uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                    if (r == 0)
-                    {
-                        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-                    }
-                }
-
-                // right
-                topLeftKey = m_keyButtonRightBottomList[0];
-                bottomRightKey = m_keyButtonRightBottomList[m_keyButtonRightBottomList.size() - 1];
-                if (topLeftKey->pos().x() <= touch->position().x() &&
-                    topLeftKey->pos().y() <= touch->position().y() &&
-                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
-                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
-                {
-                    if (m_cursorIsHooked)
-                    {
-                        if (!m_rightMouseDown)
+                        if (m_leftMouseDownId == touch->id())
                         {
-                            m_rightMouseDown = true;
+                            foundMouseLeftId = true;
+                        }
+                    }
+
+                    // right
+                    topLeftKey = m_keyButtonRightBottomList[0];
+                    bottomRightKey = m_keyButtonRightBottomList[m_keyButtonRightBottomList.size() - 1];
+                    if (topLeftKey->pos().x() <= touch->position().x() &&
+                        topLeftKey->pos().y() <= touch->position().y() &&
+                        bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                        bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                    {
+                        if (m_rightMouseDownId == -1)
+                        {
+                            m_rightMouseDownId = touch->id();
                             for (size_t i = 0; i < m_keyButtonRightBottomList.size(); i++)
                             {
                                 QPushButton* button = m_keyButtonRightBottomList[i];
@@ -1278,29 +1270,54 @@ bool main_window::event(QEvent* event)
                                 error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
                             }
                         }
-                    }
-                }
-                else if (m_rightMouseDown)
-                {
-                    m_rightMouseDown = false;
-                    QPalette defaultPalette = QApplication::palette();
-                    for (size_t i = 0; i < m_keyButtonRightBottomList.size(); i++)
-                    {
-                        QPushButton* button = m_keyButtonRightBottomList[i];
-                        button->setPalette(defaultPalette);
-                    }
-                    ::INPUT input = {};
-                    input.type = INPUT_MOUSE;
-                    input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-                    uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                    if (r == 0)
-                    {
-                        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                        if (m_rightMouseDownId == touch->id())
+                        {
+                            foundMouseRightId = true;
+                        }
                     }
                 }
             }
         }
 
+        // STEP 3: Reset mouse buttons if necessary
+        if (foundMouseLeftId == false && m_leftMouseDownId != -1)
+        {
+            m_leftMouseDownId = -1;
+            QPalette defaultPalette = QApplication::palette();
+            for (size_t i = 0; i < m_keyButtonRightTopList.size(); i++)
+            {
+                QPushButton* button = m_keyButtonRightTopList[i];
+                button->setPalette(defaultPalette);
+            }
+            ::INPUT input = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+            if (r == 0)
+            {
+                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            }
+        }
+        if (foundMouseRightId == false && m_rightMouseDownId != -1)
+        {
+            m_rightMouseDownId = -1;
+            QPalette defaultPalette = QApplication::palette();
+            for (size_t i = 0; i < m_keyButtonRightBottomList.size(); i++)
+            {
+                QPushButton* button = m_keyButtonRightBottomList[i];
+                button->setPalette(defaultPalette);
+            }
+            ::INPUT input = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+            if (r == 0)
+            {
+                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+            }
+        }
+
+        // STEP 4: Cleanup mouse movement if necessary
         if (event->type() == QEvent::TouchEnd)
         {
             if (m_cursorIsHooked)

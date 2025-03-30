@@ -84,8 +84,8 @@ protected:
     int32_t m_cursorSpeed = 1;
     QTimer* m_cursorMoveTimerDelay = nullptr;
     touchpad_cursor* m_cursor = nullptr;
-    bool m_leftMouseDown = false;
-    bool m_rightMouseDown = false;
+    int32_t m_leftMouseDownId = -1;
+    int32_t m_rightMouseDownId = -1;
     virtual bool event(QEvent* ev) override;
 private slots:
     void ui_on_cursor_move_ready();
