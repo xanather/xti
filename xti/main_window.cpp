@@ -480,8 +480,6 @@ main_window::main_window(QWidget *parent)
     m_cursorMoveTimerDelay = new QTimer(this);
     m_cursorMoveTimerDelay->setSingleShot(true);
     connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
-    m_setCursorPosTimer = new QTimer(this);
-    connect(m_setCursorPosTimer, &QTimer::timeout, this, &main_window::ui_on_move_cursor_now);
     ui->line->setAutoFillBackground(true);
     ui->line_2->setAutoFillBackground(true);
 
@@ -1104,25 +1102,9 @@ bool main_window::event(QEvent* event)
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd)
     {
-        // STEP 1: FIX CURSOR HIDING AFTER TOUCH BEGIN
-        if (event->type() == QEvent::TouchBegin)
-        {
-            // Send one SendInput to make cursor visible after touch begin event.
-            ::INPUT input = {};
-            input.type = INPUT_MOUSE;
-            input.mi.dx = 1;
-            input.mi.dy = 0;
-            input.mi.dwFlags = MOUSEEVENTF_MOVE;
-            int32_t r = ::SendInput(1, &input, sizeof(INPUT));
-            if (r == 0)
-            {
-                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-            }
-        }
-
-        // STEP 2: HANDLING PUSHING BUTTONS VIA TOUCH ONLY
         QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(event);
 
+        // STEP 1: HANDLING PUSHING BUTTONS VIA TOUCH ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
@@ -1150,7 +1132,6 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
                         m_downButton->click();
-                        qDebug() << "click";
                     }
                 }
             }
@@ -1160,55 +1141,53 @@ bool main_window::event(QEvent* event)
             m_downButton = nullptr;
         }
 
-        // STEP 3: HANDLING CURSOR MOVEMENTS VIA TOUCH ONLY
-        if (event->type() == QEvent::TouchBegin)
-        {
-            ::POINT startPos;
-            int32_t r = ::GetCursorPos(&startPos);
-            if (r == 0)
-            {
-                error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
-            }
-            m_cursorStartPosition.setX(startPos.x);
-            m_cursorStartPosition.setY(startPos.y);
-            //m_setCursorPosTimer->start();
-        }
+        // STEP 2: HANDLING CURSOR MOVEMENTS VIA TOUCH ONLY
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
         {
-            if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate)
+            if (touch->id() == 0)
             {
-                if (touch->id() == 0)
+                if (event->type() == QEvent::TouchBegin)
                 {
-                    if (!m_cursorIsMoving)
+                    QPushButton* topLeftKey = m_keyButtonLeftList[0];
+                    QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
+                    if (topLeftKey->pos().x() <= touch->position().x() &&
+                        topLeftKey->pos().y() <= touch->position().y() &&
+                        bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                        bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
                     {
-                        QPushButton* topLeftKey = m_keyButtonLeftList[0];
-                        QPushButton* bottomRightKey = m_keyButtonLeftList[m_keyButtonLeftList.size() - 1];
-                        if (topLeftKey->pos().x() <= touch->position().x() &&
-                            topLeftKey->pos().y() <= touch->position().y() &&
-                            bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
-                            bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                        ::POINT startPos;
+                        int32_t r = ::GetCursorPos(&startPos);
+                        if (r == 0)
                         {
-                            m_cursorIsMoving = true;
-                            // There needs to be some delay before we actually start moving the cursor
-                            // otherwise normal touch key presses can move the cursor slightly.
-                            m_cursorMoveTimerDelay->start(150);
-                            qDebug() << "ui_on_cursor_move_ready start";
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::GetCursorPos() failure.");
                         }
+                        m_cursorStartPosition.setX(startPos.x);
+                        m_cursorStartPosition.setY(startPos.y);
+                        m_cursorIsMoving = true;
+                        // There needs to be some delay before we actually start moving the cursor
+                        // otherwise normal touch key presses can move the cursor slightly.
+                        m_cursorMoveTimerDelay->start(150);
                     }
-                    if (m_cursorIsMoving)
+                }
+                else if (event->type() == QEvent::TouchUpdate)
+                {
+                    if (m_cursorIsHooked)
                     {
                         QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                        m_cursorDiffPosition.setX(static_cast<int>(diff.x() * m_cursorSpeed));
-                        m_cursorDiffPosition.setY(static_cast<int>(diff.y() * m_cursorSpeed));
+                        int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x() * m_cursorSpeed),
+                                                   m_cursorStartPosition.y() + static_cast<int>(diff.y() * m_cursorSpeed));
+                        if (r == 0)
+                        {
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                        }
                     }
                 }
             }
         }
-        ui_on_move_cursor_now();
+
         if (event->type() == QEvent::TouchEnd)
         {
-            //m_setCursorPosTimer->stop();
             if (m_cursorIsHooked)
             {
                 QPalette defaultPalette = QApplication::palette();
@@ -1223,14 +1202,11 @@ bool main_window::event(QEvent* event)
             if (m_cursorIsMoving)
             {
                 m_cursorMoveTimerDelay->stop();
-                qDebug() << "ui_on_cursor_move_ready stop";
                 m_cursorIsMoving = false;
             }
         }
     }
-    if (event->type() == QEvent::TouchBegin ||
-        event->type() == QEvent::TouchUpdate ||
-        event->type() == QEvent::TouchEnd)
+    if (event->type() == QEvent::TouchBegin)
     {
         // Need to return true here, else Qt starts ignoring the rest of the touch events.
         return true;
@@ -1240,7 +1216,6 @@ bool main_window::event(QEvent* event)
 
 void main_window::ui_on_cursor_move_ready()
 {
-    qDebug() << "ui_on_cursor_move_ready hit";
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];
@@ -1250,26 +1225,6 @@ void main_window::ui_on_cursor_move_ready()
     }
     m_cursorIsHooked = true;
     m_cursorSpeed = windows_subsystem::get_mouse_speed();
-}
-
-void main_window::ui_on_move_cursor_now()
-{
-    if (!m_cursorIsHooked)
-    {
-        int32_t r = ::SetCursorPos(m_cursorStartPosition.x(), m_cursorStartPosition.y());
-        if (r == 0)
-        {
-            error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
-        }
-    }
-    else
-    {
-        int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + m_cursorDiffPosition.x(), m_cursorStartPosition.y() + m_cursorDiffPosition.y());
-        if (r == 0)
-        {
-            error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
-        }
-    }
 }
 
 void main_window::ui_on_shortcuts_above_changed(int32_t index)
