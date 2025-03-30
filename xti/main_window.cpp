@@ -478,7 +478,7 @@ main_window::main_window(QWidget *parent)
 
     // STEP 9: Final system setup.
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
-    // windows_subsystem::initialize_force_cursor_visible(); --- not needed at this time.  see cpp definition in file for more info.
+    windows_subsystem::initialize_force_cursor_visible();
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
     windows_subsystem::initialize_prevent_touch_from_moving_cursor();
     key_mapping::initialize();
@@ -539,7 +539,7 @@ void main_window::open_or_show_app(const QVariant& shortcutConfig)
 
 void main_window::ui_on_key_press()
 {
-    if (m_cursorIsMoving)
+    if (m_cursorIsHooked)
     {
         return;
     }
@@ -1093,7 +1093,6 @@ void main_window::update_modifier_colors()
 bool main_window::event(QEvent* event)
 {
     // TODO: fix cursor not showing in tablet mode, annoying!
-    // TODO: debug why left keys arent triggered due to virtual touchpad logic
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
         event->type() == QEvent::TouchEnd)
@@ -1117,7 +1116,6 @@ bool main_window::event(QEvent* event)
                             button->pos().y() + button->size().height() > touch->position().y())
                         {
                             m_downButton = button;
-                            qDebug() << "m_downButton set" << m_downButton->objectName();
                         }
                     }
                 }
@@ -1128,7 +1126,6 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
-                        qDebug() << "m_downButton click" << m_downButton->objectName();
                         m_downButton->click();
                     }
                 }
@@ -1171,7 +1168,7 @@ bool main_window::event(QEvent* event)
                             m_cursorMoveTimerDelay->setSingleShot(true);
                             connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
                         }
-                        m_cursorMoveTimerDelay->start(500);
+                        m_cursorMoveTimerDelay->start(75);
                     }
                 }
                 if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
@@ -1198,7 +1195,6 @@ bool main_window::event(QEvent* event)
                 }
                 update_modifier_colors();
                 m_cursorIsHooked = false;
-                qDebug() << "m_cursorIsHooked = false";
             }
             if (m_cursorIsMoving)
             {
@@ -1218,7 +1214,6 @@ bool main_window::event(QEvent* event)
 void main_window::ui_on_cursor_move_ready()
 {
     m_cursorIsHooked = true;
-    qDebug() << "m_cursorIsHooked = true";
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];
