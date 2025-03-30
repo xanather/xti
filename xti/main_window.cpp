@@ -1192,7 +1192,7 @@ bool main_window::event(QEvent* event)
                             m_cursorIsMoving = true;
                             // There needs to be some delay before we actually start moving the cursor
                             // otherwise normal touch key presses can move the cursor slightly.
-                            m_cursorMoveTimerDelay->start(50);
+                            m_cursorMoveTimerDelay->start(150);
                             qDebug() << "ui_on_cursor_move_ready start";
                         }
                     }
@@ -1202,10 +1202,10 @@ bool main_window::event(QEvent* event)
                         m_cursorDiffPosition.setX(static_cast<int>(diff.x() * m_cursorSpeed));
                         m_cursorDiffPosition.setY(static_cast<int>(diff.y() * m_cursorSpeed));
                     }
-                    ui_on_move_cursor_now();
                 }
             }
         }
+        ui_on_move_cursor_now();
         if (event->type() == QEvent::TouchEnd)
         {
             m_setCursorPosTimer->stop();

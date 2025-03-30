@@ -30,7 +30,16 @@ int main(int argc, char *argv[])
     {
         error_reporter::stop(__FILE__, __LINE__, "Win32::CoInitializeEx() failure.");
     }
-    ::SetPriorityClass(::GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+    HANDLE pHandle = ::GetCurrentProcess();
+    if (pHandle == nullptr)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::GetCurrentProcess() failure.");
+    }
+    r = ::SetPriorityClass(pHandle, REALTIME_PRIORITY_CLASS);
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SetPriorityClass() failure.");
+    }
     QApplication a(argc, argv);
     a.setStyle("fusion");
     main_window w(nullptr);
