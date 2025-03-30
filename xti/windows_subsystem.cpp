@@ -130,9 +130,9 @@
     move_window(window, above, appDimensions);
 }
 
-// --- initialize_prevent_touch_from_moving_cursor(): Prevents touch input from interfering with the virtual touchpad.
+// --- initialize_disable_touch_input(): Prevents touch input from interfering with the virtual touchpad.
 // --------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_prevent_touch_from_moving_cursor()
+/* public */ void windows_subsystem::initialize_disable_touch_input()
 {
     ::HMODULE handle = ::GetModuleHandleW(nullptr);
     if (handle == nullptr)
@@ -145,7 +145,7 @@
         error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowsHookExW() failure.");
     }
 }
-/* public */ void windows_subsystem::cleanup_prevent_touch_from_moving_cursor()
+/* public */ void windows_subsystem::cleanup_disable_touch_input()
 {
     int32_t r = ::UnhookWindowsHookEx(llMouseHook);
     if (r == 0)

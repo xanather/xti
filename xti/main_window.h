@@ -82,7 +82,6 @@ protected:
     QPoint m_cursorStartPosition;
     QPoint m_cursorDiffPosition;
     int32_t m_cursorSpeed = 1;
-    bool m_cursorFirstMove = false;
     QTimer* m_cursorMoveTimerDelay = nullptr;
     QTimer* m_setCursorPosTimer = nullptr;
     virtual bool event(QEvent* ev) override;
