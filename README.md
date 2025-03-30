@@ -51,6 +51,7 @@ It is recommended to run QT Creator as admin so when debugging xti will also run
 1. Don't create new thread each time for dispatching SendInput mouse events.
 2. Virtual touchpad cursor goes behind some native Win32 contexts/windows.
 3. General code cleanup/renaming and creating `build.ps1`.
+4. Erroneous 'R' window icon showing on taskbar.
 
 ## License
 GNU General Public License 3.0
