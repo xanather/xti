@@ -1186,7 +1186,7 @@ bool main_window::event(QEvent* event)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                         }
-                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX, newY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_ASYNCWINDOWPOS);
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 10, newY + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_ASYNCWINDOWPOS);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
