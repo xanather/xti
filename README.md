@@ -3,14 +3,10 @@
 ![screenshotv01.png](screenshotv01.png)
 
 The pre-existing Windows virtual touch keyboard is terrible for typing on for productivity.
-+ Mainly designed for programmers.
++ Mainly designed for power users where all standard keyboard keys are available.
 + Has basic extensible JSON config.
 + Designed to work on with thumbs only in the middle of the tablet in portrait mode (like a big mobile phone).
 + Brings the cursor back by using virtual keyboard area as a touchpad simultaneously.
-
-WORK IN PROGRESS:
-1. Moving cursor by using left and right key area's as a virtual touchpad.
-2. Modifier keys support.
 
 ## Known limitations
 - Don't change scaling or DPI of the system after starting.
@@ -24,7 +20,7 @@ Supports either x64 or Arm64 computers running Windows 11.
 1. Install C++ Visual Studio feature (or Visual Studio C++ Build Tools).
 2. Install Qt open source with MSVC desktop feature.
 3. Install CMake.
-4. TODO (does not exist yet): Run build.ps1.
+4. TODO (does not exist yet): Run `build.ps1`.
 5. Copy the set of .dll's and exe binaries in /release-output to where ever you want. Run the exe as admin. Creating an official installer and registering to start at startup as Admin might come later if I get time. I recommend configuring the exe to run with Windows Scheduler as admin at startup to begin with.
 
 ## Before Running
@@ -50,6 +46,11 @@ Restart computer after making above changes.
 ## Developing
 This is a C++ CMake QT Creator project https://en.wikipedia.org/wiki/Qt_Creator. Simply open up the CMakeLists.txt file.
 It is recommended to run QT Creator as admin so when debugging xti will also run as admin.
+
+## Remaining TODO's
+1. Don't create new thread each time for dispatching SendInput mouse events.
+2. Virtual touchpad cursor goes behind some native Win32 contexts/windows.
+3. General code cleanup/renaming and creating `build.ps1`.
 
 ## License
 GNU General Public License 3.0
