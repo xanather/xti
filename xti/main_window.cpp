@@ -1117,7 +1117,7 @@ bool main_window::event(QEvent* event)
                             button->pos().y() + button->size().height() > touch->position().y())
                         {
                             m_downButton = button;
-                            qDebug() << "m_downButton set" << button->objectName();
+                            qDebug() << "m_downButton set" << m_downButton->objectName();
                         }
                     }
                 }
@@ -1128,6 +1128,7 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
+                        qDebug() << "m_downButton click" << m_downButton->objectName();
                         m_downButton->click();
                     }
                 }
