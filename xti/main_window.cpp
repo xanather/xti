@@ -1212,6 +1212,13 @@ bool main_window::event(QEvent* event)
                         if (!m_leftMouseDown)
                         {
                             m_leftMouseDown = true;
+                            for (size_t i = 0; i < m_keyButtonRightTopList.size(); i++)
+                            {
+                                QPushButton* button = m_keyButtonRightTopList[i];
+                                QPalette palette = button->palette();
+                                palette.setColor(QPalette::Button, Qt::red);
+                                button->setPalette(palette);
+                            }
                             ::INPUT input = {};
                             input.type = INPUT_MOUSE;
                             input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
@@ -1226,6 +1233,12 @@ bool main_window::event(QEvent* event)
                 else if (m_leftMouseDown)
                 {
                     m_leftMouseDown = false;
+                    QPalette defaultPalette = QApplication::palette();
+                    for (size_t i = 0; i < m_keyButtonRightTopList.size(); i++)
+                    {
+                        QPushButton* button = m_keyButtonRightTopList[i];
+                        button->setPalette(defaultPalette);
+                    }
                     ::INPUT input = {};
                     input.type = INPUT_MOUSE;
                     input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
@@ -1249,6 +1262,13 @@ bool main_window::event(QEvent* event)
                         if (!m_rightMouseDown)
                         {
                             m_rightMouseDown = true;
+                            for (size_t i = 0; i < m_keyButtonRightBottomList.size(); i++)
+                            {
+                                QPushButton* button = m_keyButtonRightBottomList[i];
+                                QPalette palette = button->palette();
+                                palette.setColor(QPalette::Button, Qt::red);
+                                button->setPalette(palette);
+                            }
                             ::INPUT input = {};
                             input.type = INPUT_MOUSE;
                             input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
@@ -1263,6 +1283,12 @@ bool main_window::event(QEvent* event)
                 else if (m_rightMouseDown)
                 {
                     m_rightMouseDown = false;
+                    QPalette defaultPalette = QApplication::palette();
+                    for (size_t i = 0; i < m_keyButtonRightBottomList.size(); i++)
+                    {
+                        QPushButton* button = m_keyButtonRightBottomList[i];
+                        button->setPalette(defaultPalette);
+                    }
                     ::INPUT input = {};
                     input.type = INPUT_MOUSE;
                     input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
