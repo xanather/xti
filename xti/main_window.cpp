@@ -1171,7 +1171,7 @@ bool main_window::event(QEvent* event)
             }
             m_cursorStartPosition.setX(startPos.x);
             m_cursorStartPosition.setY(startPos.y);
-            m_setCursorPosTimer->start();
+            //m_setCursorPosTimer->start();
         }
         for (QList<QEventPoint>::const_iterator touch = touchEvent->points().begin();
              touch != touchEvent->points().end(); ++touch)
@@ -1208,7 +1208,7 @@ bool main_window::event(QEvent* event)
         ui_on_move_cursor_now();
         if (event->type() == QEvent::TouchEnd)
         {
-            m_setCursorPosTimer->stop();
+            //m_setCursorPosTimer->stop();
             if (m_cursorIsHooked)
             {
                 QPalette defaultPalette = QApplication::palette();
