@@ -26,6 +26,7 @@
 #include <cstdint>
 // 4. Project classes
 #include "app_dimensions.h"
+#include "touchpad_cursor.h"
 #include "key_modifiers.h"
 // 5. Forward decl
 class QWidget;
@@ -82,6 +83,7 @@ protected:
     QPoint m_cursorStartPosition;
     int32_t m_cursorSpeed = 1;
     QTimer* m_cursorMoveTimerDelay = nullptr;
+    touchpad_cursor* m_cursor = nullptr;
     virtual bool event(QEvent* ev) override;
 private slots:
     void ui_on_cursor_move_ready();

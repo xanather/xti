@@ -8,9 +8,12 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(PROJECT_SOURCES
         main.cpp
-        main_window.cpp
         main_window.h
+        main_window.cpp
         main_window.ui
+        touchpad_cursor.h
+        touchpad_cursor.cpp
+        touchpad_cursor.ui
         windows_subsystem.h
         windows_subsystem.cpp
         key_mapping.h

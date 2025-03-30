@@ -43,6 +43,7 @@
 #include <algorithm>
 // 4. Project classes
 #include "windows_subsystem.h"
+#include "touchpad_cursor.h"
 #include "key_mapping.h"
 #include "error_reporter.h"
 
@@ -503,6 +504,9 @@ void main_window::ui_on_post_ctor() {
     setFixedSize(size());
     m_keyModifiers = windows_subsystem::get_key_modifiers();
     update_modifier_colors();
+
+    m_cursor = new touchpad_cursor(this);
+    m_cursor->show();
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &main_window::ui_on_state_refresher_loop);
@@ -1175,11 +1179,17 @@ bool main_window::event(QEvent* event)
                     if (m_cursorIsHooked)
                     {
                         QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                        int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x() * m_cursorSpeed),
-                                                   m_cursorStartPosition.y() + static_cast<int>(diff.y() * m_cursorSpeed));
+                        int32_t newX = m_cursorStartPosition.x() + static_cast<int>(diff.x() * m_cursorSpeed);
+                        int32_t newY = m_cursorStartPosition.y() + static_cast<int>(diff.y() * m_cursorSpeed);
+                        int32_t r = ::SetCursorPos(newX, newY);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                        }
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), HWND_TOPMOST, newX, newY, 0, 0, SWP_NOSIZE);
+                        if (r == 0)
+                        {
+                            error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
                         }
                     }
                 }
