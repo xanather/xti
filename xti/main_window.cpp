@@ -518,9 +518,9 @@ void main_window::ui_on_post_ctor() {
 void main_window::ui_on_state_refresher_loop()
 {
     std::wstring text = windows_subsystem::get_focus_window_name();
-    if (text.length() > 30)
+    if (text.length() > 38)
     {
-        text = text.substr(0, 30);
+        text = text.substr(0, 38);
         text.append(L"...");
     }
     ui->label_activeWindow->setText(QString::fromStdWString(text));
