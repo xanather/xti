@@ -1093,7 +1093,6 @@ void main_window::update_modifier_colors()
 bool main_window::event(QEvent* event)
 {
     // TODO: fix cursor not showing in tablet mode, annoying!
-    // TODO: prevent window from resizing when hitting keys fast
     // TODO: debug why left keys arent triggered due to virtual touchpad logic
     if (event->type() == QEvent::TouchBegin ||
         event->type() == QEvent::TouchUpdate ||
@@ -1118,6 +1117,7 @@ bool main_window::event(QEvent* event)
                             button->pos().y() + button->size().height() > touch->position().y())
                         {
                             m_downButton = button;
+                            qDebug() << "m_downButton set" << button->objectName();
                         }
                     }
                 }
@@ -1197,6 +1197,7 @@ bool main_window::event(QEvent* event)
                 }
                 update_modifier_colors();
                 m_cursorIsHooked = false;
+                qDebug() << "m_cursorIsHooked = false";
             }
             if (m_cursorIsMoving)
             {
@@ -1216,6 +1217,7 @@ bool main_window::event(QEvent* event)
 void main_window::ui_on_cursor_move_ready()
 {
     m_cursorIsHooked = true;
+    qDebug() << "m_cursorIsHooked = true";
     for (size_t i = 0; i < m_keyButtonLeftList.size(); i++)
     {
         QPushButton* button = m_keyButtonLeftList[i];

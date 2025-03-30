@@ -185,7 +185,7 @@
     {
         ::MSLLHOOKSTRUCT* hookInfo = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
         uint64_t extraInfo = hookInfo->dwExtraInfo;
-        if ((extraInfo & 0xFF515700) == 0xFF515700)
+        if ((extraInfo & 0xFF515700) == 0xFF515700) // ignore all touch input
         {
             return 1;
         }
