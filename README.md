@@ -1,6 +1,6 @@
 # XTI Windows Virtual Keyboard
 
-![screenshotv01.png](screenshotv01.png)
+![screenshotv1.png](screenshotv1.png)
 
 The pre-existing Windows virtual touch keyboard is terrible for typing on for productivity.
 + Mainly designed for power users where all standard keyboard keys are available.
