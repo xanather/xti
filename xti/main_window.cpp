@@ -486,7 +486,7 @@ main_window::main_window(QWidget *parent)
     // STEP 10: Final system setup.
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
-    windows_subsystem::initialize_prevent_touch_from_moving_cursor();
+    //windows_subsystem::initialize_prevent_touch_from_moving_cursor();
     key_mapping::initialize();
     // continue at post_ctor after win32 message pump has had the opportunity to process above changes.
     QTimer::singleShot(0, this, &main_window::ui_on_post_ctor);
@@ -494,7 +494,7 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window()
 {
-    windows_subsystem::cleanup_prevent_touch_from_moving_cursor();
+    //windows_subsystem::cleanup_prevent_touch_from_moving_cursor();
     delete ui;
 }
 
@@ -1177,7 +1177,7 @@ bool main_window::event(QEvent* event)
                     {
                         QPointF diff = touch->globalPosition() - touch->globalPressPosition();
                         m_cursorDiffPosition.setX(static_cast<int>(diff.x() * m_cursorSpeed));
-                        m_cursorDiffPosition.setY(static_cast<int>(diff.x() * m_cursorSpeed));
+                        m_cursorDiffPosition.setY(static_cast<int>(diff.y() * m_cursorSpeed));
                     }
                 }
             }
