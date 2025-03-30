@@ -1221,7 +1221,7 @@ void main_window::ui_on_cursor_move_ready()
     {
         QPushButton* button = m_keyButtonLeftList[i];
         QPalette palette = button->palette();
-        palette.setColor(QPalette::Button, Qt::blue);
+        palette.setColor(QPalette::Button, Qt::red);
         button->setPalette(palette);
     }
 }
