@@ -1219,11 +1219,11 @@ bool main_window::event(QEvent* event)
                 }
                 update_modifier_colors();
                 m_cursorIsHooked = false;
-                qDebug() << "ui_on_cursor_move_ready stop";
             }
             if (m_cursorIsMoving)
             {
                 m_cursorMoveTimerDelay->stop();
+                qDebug() << "ui_on_cursor_move_ready stop";
                 m_cursorIsMoving = false;
             }
         }
