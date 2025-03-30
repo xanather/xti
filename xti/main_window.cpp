@@ -505,7 +505,7 @@ void main_window::ui_on_post_ctor() {
     m_keyModifiers = windows_subsystem::get_key_modifiers();
     update_modifier_colors();
 
-    m_cursor = new touchpad_cursor(this);
+    m_cursor = new touchpad_cursor(nullptr);
     m_cursor->show();
 
     QTimer* timer = new QTimer(this);
@@ -1186,7 +1186,7 @@ bool main_window::event(QEvent* event)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                         }
-                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 10, newY + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_ASYNCWINDOWPOS);
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 10, newY + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
