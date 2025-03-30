@@ -41,12 +41,6 @@ public:
 public:
     static app_dimensions initialize_orientate_main_window(::HWND window);
 
-    // USED AT APP STARTUP
-    // public initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
-    // see cpp file for more info.
-public:
-    static void initialize_apply_system_super_admin_privilege();
-
 public:
     // USED AT APP STARTUP
     // public initialize_disable_touch_input(): Prevents touch input from interfering with the virtual touchpad.

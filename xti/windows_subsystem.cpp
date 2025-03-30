@@ -79,43 +79,6 @@
     return out;
 }
 
-// --- initialize_apply_system_super_admin_privilege(): Tells windows to apply for super admin privileges.
-// --------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_apply_system_super_admin_privilege()
-{
-    // Even though we run the app as Admin modern windows kernel will not
-    // grant certain privileges unless we ask for it directly.
-    // Based on how the app currently operates and hooks into the OS
-    // this is not needed at this time or called at startup. This was really only used for debugging.
-    ::HANDLE processTokenHandle;
-    int32_t r = ::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &processTokenHandle);
-    if (r == 0)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::OpenProcessToken() failure.");
-    }
-    ::LUID privilegeId;
-    r = ::LookupPrivilegeValueW(nullptr, SE_DEBUG_NAME /* Apply for everything */, &privilegeId);
-    if (r == 0)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::LookupPrivilegeValueW() failure.");
-    }
-    ::TOKEN_PRIVILEGES tokenPrivilegesRequest;
-    tokenPrivilegesRequest.PrivilegeCount = 1;
-    tokenPrivilegesRequest.Privileges[0].Luid = privilegeId;
-    tokenPrivilegesRequest.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-    r = ::AdjustTokenPrivileges(processTokenHandle, false, &tokenPrivilegesRequest, sizeof(TOKEN_PRIVILEGES), nullptr, nullptr);
-    if (r == 0)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
-    }
-    // edge case: need to check GetLastError to ensure not ERROR_NOT_ALL_ASSIGNED
-    uint32_t errCode = ::GetLastError();
-    if (errCode != ERROR_SUCCESS)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::AdjustTokenPrivileges() failure.");
-    }
-}
-
 // --- move_active_window(): Moves the current active foreground window above or below the xti keyboard.
 // ----- above: True if to open above the xti keyboard, false if move below the xti keyboard.
 // ----- appDimensions: Where windows should be placed in the desktop.
