@@ -41,6 +41,7 @@
 #include <string>
 #include <cctype>
 #include <algorithm>
+#include <thread>
 // 4. Project classes
 #include "windows_subsystem.h"
 #include "touchpad_cursor.h"
@@ -1191,7 +1192,7 @@ bool main_window::event(QEvent* event)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                         }
-                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), HWND_TOPMOST, newX + 1, newY + 1, 0, 0, SWP_NOSIZE);
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 1, newY + 1, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");
@@ -1228,14 +1229,16 @@ bool main_window::event(QEvent* event)
                                 palette.setColor(QPalette::Button, Qt::red);
                                 button->setPalette(palette);
                             }
-                            ::INPUT input = {};
-                            input.type = INPUT_MOUSE;
-                            input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-                            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                            if (r == 0)
-                            {
-                                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-                            }
+                            std::thread([](){
+                                ::INPUT input = {};
+                                input.type = INPUT_MOUSE;
+                                input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+                                uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                                if (r == 0)
+                                {
+                                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                                }
+                            }).detach();
                         }
                         if (m_leftMouseDownId == touch->id())
                         {
@@ -1261,14 +1264,16 @@ bool main_window::event(QEvent* event)
                                 palette.setColor(QPalette::Button, Qt::red);
                                 button->setPalette(palette);
                             }
-                            ::INPUT input = {};
-                            input.type = INPUT_MOUSE;
-                            input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-                            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-                            if (r == 0)
-                            {
-                                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-                            }
+                            std::thread([](){
+                                ::INPUT input = {};
+                                input.type = INPUT_MOUSE;
+                                input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+                                uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                                if (r == 0)
+                                {
+                                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                                }
+                            }).detach();
                         }
                         if (m_rightMouseDownId == touch->id())
                         {
@@ -1289,14 +1294,16 @@ bool main_window::event(QEvent* event)
                 QPushButton* button = m_keyButtonRightTopList[i];
                 button->setPalette(defaultPalette);
             }
-            ::INPUT input = {};
-            input.type = INPUT_MOUSE;
-            input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-            if (r == 0)
-            {
-                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-            }
+            std::thread([](){
+                ::INPUT input = {};
+                input.type = INPUT_MOUSE;
+                input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+                uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                if (r == 0)
+                {
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                }
+            }).detach();
         }
         if (foundMouseRightId == false && m_rightMouseDownId != -1)
         {
@@ -1307,14 +1314,16 @@ bool main_window::event(QEvent* event)
                 QPushButton* button = m_keyButtonRightBottomList[i];
                 button->setPalette(defaultPalette);
             }
-            ::INPUT input = {};
-            input.type = INPUT_MOUSE;
-            input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
-            if (r == 0)
-            {
-                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
-            }
+            std::thread([](){
+                ::INPUT input = {};
+                input.type = INPUT_MOUSE;
+                input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+                uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                if (r == 0)
+                {
+                    error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                }
+            }).detach();
         }
 
         // STEP 4: Cleanup mouse movement if necessary
