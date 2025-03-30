@@ -35,12 +35,6 @@ public:
     // see cpp file for more info.
     static void initialize_apply_keyboard_window_style(::HWND window);
 
-public:
-    // USED AT APP STARTUP
-    // public initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
-    // see cpp file for more info.
-    static void initialize_force_cursor_visible();
-
     // USED AT APP STARTUP
     // public initialize_orientate_main_window(): Moves the main QT window into position.
     // see cpp file for more info.

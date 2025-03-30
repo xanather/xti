@@ -46,31 +46,6 @@
     }
 }
 
-// --- initialize_force_cursor_visible(): Forces the cursor to be visible even in tablet mode contexts.
-// --------------------------------------------------------------------------------------------/
-/* public */ void windows_subsystem::initialize_force_cursor_visible()
-{
-    ::HKEY hKey;
-    wchar_t subKey[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System";
-    wchar_t valueName[] = L"EnableCursorSuppression";
-    uint32_t valueData = 0; // DWORD value - 0 = Force cursor to stay visible
-    int32_t r = ::RegOpenKeyExW(HKEY_LOCAL_MACHINE, subKey, 0, KEY_SET_VALUE, &hKey);
-    if (r != ERROR_SUCCESS)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::RegOpenKeyExW() failure.");
-    }
-    r = ::RegSetValueExW(hKey, valueName, 0, REG_DWORD, reinterpret_cast<BYTE*>(&valueData), sizeof(valueData));
-    if (r != ERROR_SUCCESS)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::RegSetValueExW() failure.");
-    }
-    r = ::RegCloseKey(hKey);
-    if (r != ERROR_SUCCESS)
-    {
-        error_reporter::stop(__FILE__, __LINE__, "Win32::RegCloseKey() failure.");
-    }
-}
-
 // --- initialize_orientate_main_window(): Moves the main QT window into position.
 // ----- window: HWND of the Qt app.
 // ------- returns: app dimensions to be used later on for re-positioning other windows.
@@ -185,7 +160,7 @@
     {
         ::MSLLHOOKSTRUCT* hookInfo = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
         uint64_t extraInfo = hookInfo->dwExtraInfo;
-        if ((extraInfo & 0xFF515700) == 0xFF515700) // ignore all touch input
+        if ((extraInfo & 0xFF515700) == 0xFF515700) // ignore all synthesized mouse input events
         {
             return 1;
         }

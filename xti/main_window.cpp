@@ -476,9 +476,15 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
     m_allButtonsList.push_back(ui->pushButton_restart);
 
-    // STEP 9: Final system setup.
+    // STEP 9. Initialize some timers.
+    m_cursorMoveTimerDelay = new QTimer(this);
+    m_cursorMoveTimerDelay->setSingleShot(true);
+    connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
+    m_setCursorPosTimer = new QTimer(this);
+    connect(m_setCursorPosTimer, &QTimer::timeout, this, &main_window::ui_on_move_cursor_now);
+
+    // STEP 10: Final system setup.
     // windows_subsystem::initialize_apply_system_super_admin_privilege(); --- not needed at this time. see cpp definition in file for more info.
-    windows_subsystem::initialize_force_cursor_visible();
     windows_subsystem::initialize_apply_keyboard_window_style(reinterpret_cast<HWND>(winId()));
     windows_subsystem::initialize_prevent_touch_from_moving_cursor();
     key_mapping::initialize();
@@ -1162,23 +1168,17 @@ bool main_window::event(QEvent* event)
                         m_cursorStartPosition.setY(startPos.y);
                         // There needs to be some delay before we actually start moving the cursor
                         // otherwise normal touch key presses can move the cursor slightly.
-                        if (m_cursorMoveTimerDelay == nullptr)
-                        {
-                            m_cursorMoveTimerDelay = new QTimer(this);
-                            m_cursorMoveTimerDelay->setSingleShot(true);
-                            connect(m_cursorMoveTimerDelay, &QTimer::timeout, this, &main_window::ui_on_cursor_move_ready);
-                        }
                         m_cursorMoveTimerDelay->start(75);
                     }
                 }
                 if (m_cursorIsMoving && m_cursorIsHooked && touch->id() == 0)
                 {
                     QPointF diff = touch->globalPosition() - touch->globalPressPosition();
-                    int32_t r = ::SetCursorPos(m_cursorStartPosition.x() + static_cast<int>(diff.x()),
-                                               m_cursorStartPosition.y() + static_cast<int>(diff.y()));
-                    if (r == 0)
+                    m_cursorSetPosition.setX(m_cursorStartPosition.x() + static_cast<int>(diff.x()));
+                    m_cursorSetPosition.setY(m_cursorStartPosition.y() + static_cast<int>(diff.y()));
+                    if (!m_setCursorPosTimer->isActive())
                     {
-                        error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
+                        m_setCursorPosTimer->start();
                     }
                 }
             }
@@ -1195,6 +1195,7 @@ bool main_window::event(QEvent* event)
                 }
                 update_modifier_colors();
                 m_cursorIsHooked = false;
+                m_setCursorPosTimer->stop();
             }
             if (m_cursorIsMoving)
             {
@@ -1220,6 +1221,22 @@ void main_window::ui_on_cursor_move_ready()
         QPalette palette = button->palette();
         palette.setColor(QPalette::Button, Qt::blue);
         button->setPalette(palette);
+    }
+}
+
+void main_window::ui_on_move_cursor_now()
+{
+    // We can't use ::SetCursorPos() because the cursor will still be hidden while touching the screen.
+    // Use ::SendInput() instead on repeat to force visibility.
+    ::INPUT input = {};
+    input.type = INPUT_MOUSE;
+    input.mi.dx = m_cursorSetPosition.x();
+    input.mi.dy = m_cursorSetPosition.y();
+    input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+    int32_t r = ::SendInput(1, &input, sizeof(INPUT));
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
     }
 }
 
