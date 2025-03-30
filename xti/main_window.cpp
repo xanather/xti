@@ -495,6 +495,7 @@ main_window::main_window(QWidget *parent)
 main_window::~main_window()
 {
     windows_subsystem::cleanup_disable_touch_input();
+    delete m_cursor;
     delete ui;
 }
 
@@ -1186,7 +1187,7 @@ bool main_window::event(QEvent* event)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                         }
-                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 10, newY + 10, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX + 1, newY + 1, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");

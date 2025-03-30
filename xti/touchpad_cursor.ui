@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>104</width>
-    <height>86</height>
+    <width>38</width>
+    <height>16</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,11 +25,11 @@
    <property name="font">
     <font>
      <family>Consolas</family>
-     <pointsize>16</pointsize>
+     <pointsize>20</pointsize>
     </font>
    </property>
    <property name="text">
-    <string>◄</string>
+    <string>⬉</string>
    </property>
   </widget>
  </widget>
