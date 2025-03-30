@@ -495,6 +495,7 @@ main_window::~main_window()
 void main_window::ui_on_post_ctor() {
     // Needs to be after the window has been constructed, otherwise certain resize values get ignored.
     m_appDimensions = windows_subsystem::initialize_orientate_main_window(reinterpret_cast<HWND>(winId()));
+    setFixedSize(size())
     m_keyModifiers = windows_subsystem::get_key_modifiers();
     update_modifier_colors();
 
