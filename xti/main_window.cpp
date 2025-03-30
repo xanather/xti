@@ -1199,7 +1199,79 @@ bool main_window::event(QEvent* event)
             else
             // handling left/right click
             {
-                qDebug() << event->type();
+                // left
+                QPushButton* topLeftKey = m_keyButtonRightTopList[0];
+                QPushButton* bottomRightKey = m_keyButtonRightTopList[m_keyButtonRightTopList.size() - 1];
+                if (topLeftKey->pos().x() <= touch->position().x() &&
+                    topLeftKey->pos().y() <= touch->position().y() &&
+                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                {
+                    if (m_cursorIsHooked)
+                    {
+                        if (!m_leftMouseDown)
+                        {
+                            m_leftMouseDown = true;
+                            ::INPUT input = {};
+                            input.type = INPUT_MOUSE;
+                            input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+                            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                            if (r == 0)
+                            {
+                                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                            }
+                        }
+                    }
+                }
+                else if (m_leftMouseDown)
+                {
+                    m_leftMouseDown = false;
+                    ::INPUT input = {};
+                    input.type = INPUT_MOUSE;
+                    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+                    uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                    if (r == 0)
+                    {
+                        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                    }
+                }
+
+                // right
+                topLeftKey = m_keyButtonRightBottomList[0];
+                bottomRightKey = m_keyButtonRightBottomList[m_keyButtonRightBottomList.size() - 1];
+                if (topLeftKey->pos().x() <= touch->position().x() &&
+                    topLeftKey->pos().y() <= touch->position().y() &&
+                    bottomRightKey->pos().x() + bottomRightKey->size().width() > touch->position().x() &&
+                    bottomRightKey->pos().y() + bottomRightKey->size().height() > touch->position().y())
+                {
+                    if (m_cursorIsHooked)
+                    {
+                        if (!m_rightMouseDown)
+                        {
+                            m_rightMouseDown = true;
+                            ::INPUT input = {};
+                            input.type = INPUT_MOUSE;
+                            input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+                            uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                            if (r == 0)
+                            {
+                                error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                            }
+                        }
+                    }
+                }
+                else if (m_rightMouseDown)
+                {
+                    m_rightMouseDown = false;
+                    ::INPUT input = {};
+                    input.type = INPUT_MOUSE;
+                    input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+                    uint32_t r = ::SendInput(1, &input, sizeof(INPUT));
+                    if (r == 0)
+                    {
+                        error_reporter::stop(__FILE__, __LINE__, "Win32::SendInput() failure.");
+                    }
+                }
             }
         }
 
