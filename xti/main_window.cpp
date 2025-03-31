@@ -466,12 +466,10 @@ main_window::main_window(QWidget *parent)
     m_allButtonsList.push_back(ui->pushButton_reopenAbove);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
     m_allButtonsList.push_back(ui->comboBox_shortcutsAbove);
-    ui->comboBox_shortcutsAbove->setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
     m_allButtonsList.push_back(ui->pushButton_reopenBelow);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
     m_allButtonsList.push_back(ui->comboBox_shortcutsBelow);
-    ui->comboBox_shortcutsBelow->setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
     m_allButtonsList.push_back(ui->pushButton_moveAbove);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
@@ -480,6 +478,10 @@ main_window::main_window(QWidget *parent)
     m_allButtonsList.push_back(ui->pushButton_panic);
     connect(ui->pushButton_restart, &QPushButton::clicked, this, &main_window::ui_on_restart);
     m_allButtonsList.push_back(ui->pushButton_restart);
+    for (size_t i = 0; i < m_allButtonsList.size(); i++)
+    {
+        m_allButtonsList[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
+    }
 
     // STEP 9. Initialize some timers.
     m_cursorMoveTimerDelay = new QTimer(this);

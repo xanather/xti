@@ -20,6 +20,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 // 2. System/OS headers
+#include <Windows.h>
 // 3. C++ standard library headers
 // 4. Project classes
 
@@ -42,7 +43,9 @@ touchpad_cursor::touchpad_cursor(QWidget* parent)
     animation->setEndValue(QColor(Qt::blue));
     animation->setLoopCount(-1);
     animation->start();
-    ui->label->setAttribute(Qt::WA_TransparentForMouseEvents);
+    HWND hwnd = reinterpret_cast<HWND>(this->winId());
+    LONG exStyle = GetWindowLongW(hwnd, GWL_EXSTYLE);
+    SetWindowLongW(hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
 }
 
 touchpad_cursor::~touchpad_cursor()
