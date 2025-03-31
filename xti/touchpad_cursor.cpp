@@ -42,6 +42,7 @@ touchpad_cursor::touchpad_cursor(QWidget* parent)
     animation->setEndValue(QColor(Qt::blue));
     animation->setLoopCount(-1);
     animation->start();
+    ui->label->setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 touchpad_cursor::~touchpad_cursor()
