@@ -17,6 +17,8 @@
 #include "ui_touchpad_cursor.h"
 
 // 1. Qt framework headers
+#include <QGraphicsDropShadowEffect>
+#include <QPropertyAnimation>
 // 2. System/OS headers
 // 3. C++ standard library headers
 // 4. Project classes
@@ -30,7 +32,16 @@ touchpad_cursor::touchpad_cursor(QWidget* parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    ui->label->setStyleSheet("border: 2px solid black;");
+    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect(ui->label);
+    effect->setOffset(0, 0);
+    effect->setBlurRadius(5);
+    ui->label->setGraphicsEffect(effect);
+    QPropertyAnimation* animation = new QPropertyAnimation(effect, "color");
+    animation->setDuration(2000);
+    animation->setStartValue(QColor(Qt::red));
+    animation->setEndValue(QColor(Qt::blue));
+    animation->setLoopCount(-1);
+    animation->start();
 }
 
 touchpad_cursor::~touchpad_cursor()
