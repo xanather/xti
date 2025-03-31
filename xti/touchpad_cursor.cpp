@@ -22,6 +22,7 @@
 // 2. System/OS headers
 #include <Windows.h>
 // 3. C++ standard library headers
+#include "error_reporter.h"
 // 4. Project classes
 
 touchpad_cursor::touchpad_cursor(QWidget* parent)
@@ -44,8 +45,16 @@ touchpad_cursor::touchpad_cursor(QWidget* parent)
     animation->setLoopCount(-1);
     animation->start();
     HWND hwnd = reinterpret_cast<HWND>(this->winId());
-    LONG exStyle = GetWindowLongW(hwnd, GWL_EXSTYLE);
-    SetWindowLongW(hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
+    int64_t r = ::GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::GetWindowLongPtr() failure.");
+    }
+    r = ::SetWindowLongPtrW(hwnd, GWL_EXSTYLE, r | WS_EX_TRANSPARENT);
+    if (r == 0)
+    {
+        error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowLongPtrW() failure.");
+    }
 }
 
 touchpad_cursor::~touchpad_cursor()
