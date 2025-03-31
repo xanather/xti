@@ -34,7 +34,6 @@ class QPushButton;
 class QVariant;
 class QEvent;
 class QTimer;
-class QComboBox;
 namespace Ui {
 class main_window;
 }
