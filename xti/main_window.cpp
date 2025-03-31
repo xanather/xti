@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QProcess>
 #include <QPushButton>
+#include <QComboBox>
 #include <QPalette>
 #include <QBrush>
 #include <QColor>
@@ -464,11 +465,13 @@ main_window::main_window(QWidget *parent)
     connect(ui->pushButton_reopenAbove, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_above_reopen);
     m_allButtonsList.push_back(ui->pushButton_reopenAbove);
     connect(ui->comboBox_shortcutsAbove, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_above_changed);
-    //m_allButtonsList.push_back(ui->comboBox_shortcutsAbove);
+    m_allButtonsList.push_back(ui->comboBox_shortcutsAbove);
+    ui->comboBox_shortcutsAbove->setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(ui->pushButton_reopenBelow, &QPushButton::clicked, this, &main_window::ui_on_shortcuts_below_reopen);
     m_allButtonsList.push_back(ui->pushButton_reopenBelow);
     connect(ui->comboBox_shortcutsBelow, &QComboBox::currentIndexChanged, this, &main_window::ui_on_shortcuts_below_changed);
-    //m_allButtonsList.push_back(ui->comboBox_shortcutsBelow);
+    m_allButtonsList.push_back(ui->comboBox_shortcutsBelow);
+    ui->comboBox_shortcutsBelow->setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(ui->pushButton_moveAbove, &QPushButton::clicked, this, &main_window::ui_on_move_active_above);
     m_allButtonsList.push_back(ui->pushButton_moveAbove);
     connect(ui->pushButton_moveBelow, &QPushButton::clicked, this, &main_window::ui_on_move_active_below);
@@ -1129,7 +1132,7 @@ bool main_window::event(QEvent* event)
                 {
                     for (size_t i = 0; i < m_allButtonsList.size(); i++)
                     {
-                        QPushButton* button = m_allButtonsList[i];
+                        QWidget* button = m_allButtonsList[i];
                         if (button->pos().x() <= touch->position().x() &&
                             button->pos().y() <= touch->position().y() &&
                             button->pos().x() + button->size().width() > touch->position().x() &&
@@ -1146,7 +1149,14 @@ bool main_window::event(QEvent* event)
                         m_downButton->pos().x() + m_downButton->size().width() > touch->position().x() &&
                         m_downButton->pos().y() + m_downButton->size().height() > touch->position().y())
                     {
-                        m_downButton->click();
+                        if (QPushButton* button = qobject_cast<QPushButton*>(m_downButton))
+                        {
+                            button->click();
+                        }
+                        else if (QComboBox* comboBox = qobject_cast<QComboBox*>(m_downButton))
+                        {
+                            comboBox->showPopup();
+                        }
                     }
                 }
             }
@@ -1198,7 +1208,7 @@ bool main_window::event(QEvent* event)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetCursorPos() failure.");
                         }
-                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX - 12, newY - 12, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                        r = ::SetWindowPos(reinterpret_cast<HWND>(m_cursor->winId()), nullptr, newX - 18, newY - 18, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
                         if (r == 0)
                         {
                             error_reporter::stop(__FILE__, __LINE__, "Win32::SetWindowPos() failure.");

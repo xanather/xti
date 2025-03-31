@@ -34,6 +34,7 @@ class QPushButton;
 class QVariant;
 class QEvent;
 class QTimer;
+class QComboBox;
 namespace Ui {
 class main_window;
 }
@@ -51,8 +52,8 @@ private:
     std::vector<QPushButton*> m_keyButtonLeftList;
     std::vector<QPushButton*> m_keyButtonRightTopList;
     std::vector<QPushButton*> m_keyButtonRightBottomList;
-    std::vector<QPushButton*> m_allButtonsList;
-    QPushButton* m_downButton = nullptr;
+    std::vector<QWidget*> m_allButtonsList;
+    QWidget* m_downButton = nullptr;
 
     QJsonDocument m_appConfig;
 
