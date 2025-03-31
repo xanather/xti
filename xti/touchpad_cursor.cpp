@@ -29,6 +29,8 @@ touchpad_cursor::touchpad_cursor(QWidget* parent)
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
+
+    ui->label->setStyleSheet("border: 2px solid black;");
 }
 
 touchpad_cursor::~touchpad_cursor()
