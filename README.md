@@ -51,6 +51,8 @@ It is recommended to run QT Creator as admin so when debugging xti will also run
 2. Virtual touchpad cursor goes behind some native Win32 contexts/windows.
 3. General code cleanup/renaming and creating `build.ps1`.
 4. Erroneous 'R' window icon showing on taskbar.
+5. Key repeat on Backspace
+6. Seems to be an issue with one of the modifier keys getting stuck (I think ALT).
 
 ## License
 GNU General Public License 3.0
